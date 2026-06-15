@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IELTS Vocabulary Web App
 
-## Getting Started
+Ứng dụng học từ vựng IELTS với hệ thống ôn tập thông minh (SRS).
 
-First, run the development server:
+## Tech Stack
+
+- **Frontend**: Next.js 16 (App Router)
+- **Styling**: TailwindCSS
+- **Database**: PostgreSQL (Neon)
+- **ORM**: Prisma 5
+
+## Tính năng
+
+- Học từ vựng theo chủ đề (9 chủ đề IELTS)
+- Hệ thống ôn tập thông minh (SM-2 Algorithm)
+- Lọc theo mức độ (A1-C2)
+- Dashboard theo dõi tiến độ
+
+## Setup
+
+### 1. Cài đặt dependencies
+
+```bash
+npm install
+```
+
+### 2. Cấu hình Database (Neon SQL)
+
+Tạo project mới trên [Neon Console](https://console.neon.tech) và lấy connection string:
+
+```bash
+# Copy .env.example thành .env
+cp .env.example .env
+
+# Cập nhật DATABASE_URL với connection string từ Neon
+DATABASE_URL="postgresql://user:password@host.neon.tech/neondb?sslmode=require"
+```
+
+### 3. Push database schema
+
+```bash
+npx prisma db push
+```
+
+### 4. Seed dữ liệu
+
+```bash
+npm run db:seed
+```
+
+### 5. Chạy development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy lên Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Push code lên GitHub
+2. Import project trên [Vercel](https://vercel.com)
+3. Thêm Environment Variable `DATABASE_URL` với connection string từ Neon
+4. Deploy!
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Endpoints
 
-## Learn More
+- `GET /api/words` - Lấy danh sách từ (hỗ trợ filter theo topic, level, search)
+- `GET /api/words/[id]` - Lấy chi tiết một từ
+- `PATCH /api/words/[id]` - Cập nhật SRS data
+- `GET /api/review` - Lấy từ cần ôn tập hôm nay
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run dev      # Development server
+npm run build    # Production build
+npm run start    # Production server
+npm run lint     # ESLint
+npm run db:seed  # Seed database
+```

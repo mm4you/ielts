@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Word {
+  id              Int       @id @default(autoincrement())
+  word            String
+  ipa             String?
+  meaning_vi      String
+  example         String?
+  synonyms        String?
+  topic           String
+  level           String    @default("A2")
+
+  ease_factor     Float     @default(2.5)
+  interval_days   Int       @default(0)
+  repetition_count Int      @default(0)
+  next_review_date DateTime @default(now())
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}

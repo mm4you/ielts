@@ -1,26 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f7fa;
+  --foreground: #222222;
+  --primary: #4f7cff;
+  --primary-hover: #3d66e6;
+  --border: #e5e7eb;
+  --card: #ffffff;
+  --muted: #6b7280;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[var(--primary)] text-white px-6 py-3 rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors;
+  }
+  .btn-secondary {
+    @apply bg-white text-[var(--foreground)] px-4 py-2 rounded-lg font-medium border border-[var(--border)] hover:bg-gray-50 transition-colors;
+  }
+  .card {
+    @apply bg-[var(--card)] rounded-xl border border-[var(--border)] p-6;
+  }
+  .stat-value {
+    @apply text-3xl font-bold text-[var(--foreground)];
+  }
+  .stat-label {
+    @apply text-sm text-[var(--muted)] mt-1;
+  }
 }
