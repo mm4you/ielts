@@ -126,9 +126,15 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
         <div>
           <h1 className="text-4xl font-black font-serif text-[var(--ink)] uppercase">Quản Trị Hệ Thống</h1>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap justify-end">
           {activeTab === 'words' && (
             <>
+              <Link 
+                href="/admin/seed-bot" 
+                className="btn-brutal bg-[var(--green)] text-white px-4 md:px-6 py-3 uppercase flex items-center justify-center text-sm md:text-base font-bold whitespace-nowrap"
+              >
+                Bơm Từ Mới Bằng Bot
+              </Link>
               <Link 
                 href="/admin/migrate" 
                 className="btn-brutal bg-[var(--blue)] text-white px-4 md:px-6 py-3 uppercase flex items-center justify-center text-sm md:text-base font-bold whitespace-nowrap"
