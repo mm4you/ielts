@@ -45,13 +45,21 @@ export default async function WordDetailPage({
         <div className="space-y-6">
           <div>
             <p className="text-sm text-[var(--muted)] mb-1">Nghĩa</p>
-            <p className="text-lg whitespace-pre-line">{word.meaning_vi}</p>
+            {(() => {
+              const [en, vi] = (word.meaning_vi || '').split('|||');
+              return (
+                <div className="space-y-1">
+                  <p className="text-xl font-bold text-[var(--ink)]">{en?.trim()}</p>
+                  {vi && <p className="text-base text-[var(--muted)]">{vi.trim()}</p>}
+                </div>
+              );
+            })()}
           </div>
 
           {word.example && (
             <div>
               <p className="text-sm text-[var(--muted)] mb-1">Ví dụ</p>
-              <p className="text-gray-600 italic whitespace-pre-line">"{word.example}"</p>
+              <p className="text-gray-600 italic">"{word.example}"</p>
             </div>
           )}
 

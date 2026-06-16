@@ -115,10 +115,10 @@ async function main() {
 
     // Translate to Vietnamese
     const translatedMeaning = await translateText(dictInfo.definition);
-    const translatedExample = dictInfo.example ? await translateText(dictInfo.example) : '';
-
-    const finalMeaning = `[${dictInfo.partOfSpeech}] ${translatedMeaning}\n(EN: ${dictInfo.definition})`;
-    const finalExample = dictInfo.example ? `${translatedExample}\n(EN: ${dictInfo.example})` : '';
+    
+    // Format: English ||| Vietnamese
+    const finalMeaning = `${dictInfo.definition} ||| ${translatedMeaning}`;
+    const finalExample = dictInfo.example || ''; // Keep example purely in English
 
     await prisma.word.create({
       data: {

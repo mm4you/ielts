@@ -126,15 +126,19 @@ export default function SpeedrunPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {currentQ.options.map((opt, idx) => (
-          <button
-            key={idx}
-            onClick={() => handleSelect(opt)}
-            className="btn-brutal text-left p-6 text-base hover:bg-[var(--line)] hover:text-white transition-colors whitespace-pre-line leading-relaxed"
-          >
-            {opt}
-          </button>
-        ))}
+        {currentQ.options.map((opt, idx) => {
+          const [en, vi] = (opt || '').split('|||');
+          return (
+            <button
+              key={idx}
+              onClick={() => handleSelect(opt)}
+              className="btn-brutal text-left p-6 hover:bg-[var(--line)] hover:text-white transition-colors"
+            >
+              <p className="text-base font-bold leading-relaxed mb-1">{en?.trim()}</p>
+              {vi && <p className="text-sm font-bold opacity-70 leading-relaxed">{vi.trim()}</p>}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

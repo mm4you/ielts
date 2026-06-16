@@ -117,12 +117,20 @@ export default function ReviewPage() {
 
         {showMeaning ? (
           <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-4 mb-4">
-            <p className="text-2xl font-bold whitespace-pre-line text-left">{currentWord.meaning_vi}</p>
+            {(() => {
+              const [en, vi] = (currentWord.meaning_vi || '').split('|||');
+              return (
+                <div className="mb-4">
+                  <p className="text-2xl font-bold text-[var(--ink)] mb-2">{en?.trim()}</p>
+                  {vi && <p className="text-lg font-bold text-[var(--muted)]">{vi.trim()}</p>}
+                </div>
+              );
+            })()}
             
             {currentWord.example && (
               <>
-                <h3 className="text-lg font-bold mb-2 text-[var(--green)] mt-6">Ví dụ:</h3>
-                <p className="text-lg text-[var(--muted)] font-serif italic border-l-4 border-[var(--yellow)] pl-4">
+                <h3 className="text-lg font-bold mb-2 text-[var(--green)] mt-2">Ví dụ:</h3>
+                <p className="text-lg text-[var(--ink)] font-serif italic border-l-4 border-[var(--yellow)] pl-4">
                   "{currentWord.example}"
                 </p>
               </>

@@ -101,8 +101,16 @@ export default function SwipePage() {
               {currentWord.ipa}
             </p>
           )}
-          <div className="text-xl font-bold border-t-2 border-dashed border-[var(--line)] pt-4 w-full whitespace-pre-line">
-            {currentWord.meaning_vi}
+          <div className="border-t-2 border-dashed border-[var(--line)] pt-4 w-full">
+            {(() => {
+              const [en, vi] = (currentWord.meaning_vi || '').split('|||');
+              return (
+                <div className="text-left px-2">
+                  <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight">{en?.trim()}</p>
+                  {vi && <p className="text-base font-bold text-[var(--muted)]">{vi.trim()}</p>}
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>

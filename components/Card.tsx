@@ -13,7 +13,15 @@ export default function Card({ word }: { word: Word }) {
         </div>
       </div>
       
-      <p className="mt-2 text-[var(--ink)] line-clamp-2 flex-1 mb-4">{word.meaning_vi}</p>
+      {(() => {
+        const [en, vi] = (word.meaning_vi || '').split('|||');
+        return (
+          <div className="mt-2 flex-1 mb-4">
+            <p className="text-[var(--ink)] font-bold line-clamp-1">{en?.trim()}</p>
+            {vi && <p className="text-[var(--muted)] text-sm line-clamp-1">{vi.trim()}</p>}
+          </div>
+        );
+      })()}
       
       <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
         <span className="chip bg-[var(--yellow)]">{word.level}</span>
