@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS, POS_TYPES } from '@/types';
 import { createWord, updateWord, deleteWord } from './actions';
 import { parseMeaning } from '@/lib/parse';
@@ -125,14 +126,24 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
         <div>
           <h1 className="text-4xl font-black font-serif text-[var(--ink)] uppercase">Quản Trị Hệ Thống</h1>
         </div>
-        {activeTab === 'words' && (
-          <button 
-            onClick={() => handleOpenModal()} 
-            className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-6 py-3 uppercase"
-          >
-            + Thêm Từ Mới
-          </button>
-        )}
+        <div className="flex gap-3">
+          {activeTab === 'words' && (
+            <>
+              <Link 
+                href="/admin/migrate" 
+                className="btn-brutal bg-[var(--blue)] text-white px-4 md:px-6 py-3 uppercase flex items-center justify-center text-sm md:text-base font-bold whitespace-nowrap"
+              >
+                Cập nhật Loại từ AI
+              </Link>
+              <button 
+                onClick={() => handleOpenModal()} 
+                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-4 md:px-6 py-3 uppercase text-sm md:text-base whitespace-nowrap"
+              >
+                + Thêm Từ Mới
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="flex gap-4 mb-8 border-b-4 border-[var(--line)]">
