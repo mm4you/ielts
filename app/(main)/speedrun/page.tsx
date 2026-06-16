@@ -13,7 +13,7 @@ interface Question {
 export default function SpeedrunPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(15);
   const [score, setScore] = useState(0);
   const [gameState, setGameState] = useState<'start' | 'playing' | 'processing' | 'gameover'>('start');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -79,7 +79,7 @@ export default function SpeedrunPage() {
 
   const startGame = () => {
     setScore(0);
-    setTimeLeft(10);
+    setTimeLeft(15);
     setCurrentIndex(0);
     setGameState('playing');
   };
@@ -88,7 +88,7 @@ export default function SpeedrunPage() {
     return (
       <div className="panel max-w-xl mx-auto text-center py-20 mt-10">
         <h1 className="text-6xl font-serif font-black text-[var(--red)] mb-4 uppercase tracking-tighter">Tốc Chiến</h1>
-        <p className="text-xl font-bold mb-8 text-[var(--muted)]">Sinh tồn 10 giây. Đúng +2s. Sai là CHẾT!</p>
+        <p className="text-xl font-bold mb-8 text-[var(--muted)]">Sinh tồn 15 giây. Đúng +2s. Sai là CHẾT!</p>
         <button onClick={startGame} className="btn-brutal bg-[var(--red)] text-white text-2xl px-12 py-6 animate-pulse">
           Bắt Đầu
         </button>

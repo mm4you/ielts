@@ -9,6 +9,7 @@ export default function SwipePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [showMeaning, setShowMeaning] = useState(false);
 
   useEffect(() => {
     fetch('/api/swipe')
@@ -45,6 +46,7 @@ export default function SwipePage() {
     setTimeout(() => {
       setCurrentIndex(prev => prev + 1);
       setSwipeDirection(null);
+      setShowMeaning(false);
     }, 400); // Wait for animation
   };
 
@@ -86,7 +88,8 @@ export default function SwipePage() {
 
         {/* Current Card (Foreground) */}
         <div 
-          className={`absolute inset-0 panel flex flex-col justify-center items-center text-center shadow-[8px_8px_0_var(--line)] bg-[var(--paper)] z-10 transition-transform duration-300 ${
+          onClick={() => setShowMeaning(true)}
+          className={`absolute inset-0 panel flex flex-col justify-center items-center text-center shadow-[8px_8px_0_var(--line)] bg-[var(--paper)] z-10 transition-transform duration-300 cursor-pointer ${
             swipeDirection === 'left' ? '-translate-x-[120%] -rotate-12 opacity-0' :
             swipeDirection === 'right' ? 'translate-x-[120%] rotate-12 opacity-0' : ''
           }`}
@@ -101,17 +104,24 @@ export default function SwipePage() {
               {currentWord.ipa}
             </p>
           )}
-          <div className="border-t-2 border-dashed border-[var(--line)] pt-4 w-full">
-            {(() => {
-              const [en, vi] = (currentWord.meaning_vi || '').split('|||');
-              return (
-                <div className="text-left px-2">
-                  <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight">{en?.trim()}</p>
-                  {vi && <p className="text-base font-bold text-[var(--muted)]">{vi.trim()}</p>}
-                </div>
-              );
-            })()}
-          </div>
+
+          {showMeaning ? (
+            <div className="border-t-2 border-dashed border-[var(--line)] pt-4 w-full animate-fade-in">
+              {(() => {
+                const [en, vi] = (currentWord.meaning_vi || '').split('|||');
+                return (
+                  <div className="text-left px-2">
+                    <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight">{en?.trim()}</p>
+                    {vi && <p className="text-base font-bold text-[var(--muted)]">{vi.trim()}</p>}
+                  </div>
+                );
+              })()}
+            </div>
+          ) : (
+            <div className="border-t-2 border-dashed border-[var(--line)] pt-4 w-full flex justify-center items-center h-[100px]">
+              <p className="text-[var(--muted)] font-bold animate-pulse">Bấm vào thẻ để xem nghĩa</p>
+            </div>
+          )}
         </div>
       </div>
 

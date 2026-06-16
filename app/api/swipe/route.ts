@@ -2,10 +2,10 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Lấy ngẫu nhiên 50 từ vựng chưa được đánh giá là "quá dễ" (repetition_count < 5)
+  // Lấy ngẫu nhiên 100 từ vựng chưa từng học (repetition_count === 0)
   const words = await prisma.word.findMany({
     where: {
-      repetition_count: { lt: 5 }
+      repetition_count: 0
     },
     take: 100,
   });
