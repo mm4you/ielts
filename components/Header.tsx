@@ -5,15 +5,19 @@ export default function Header() {
   const navItems = [
     { href: '/', label: 'Trang chủ' },
     { href: '/review', label: 'Ôn tập' },
+    { href: '/quiz', label: 'Thi thử' },
     { href: '/library', label: 'Thư viện' },
   ];
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-[var(--paper)] border-b-[3px] border-[var(--line)] z-20 shadow-[0_4px_0_var(--line)]">
-      <nav className="max-w-[1120px] mx-auto px-4 flex items-center justify-between h-16">
-        <Link href="/" className="text-2xl font-bold font-serif tracking-tight text-[var(--ink)] flex items-center gap-2">
-          <div className="w-6 h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-full"></div>
-          IELTS Vocab
+      <nav className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        <Link href="/" className="text-2xl font-bold font-serif tracking-tight text-[var(--ink)] flex items-center gap-2 group">
+          <div className="relative w-8 h-8">
+            <div className="absolute top-0 left-0 w-6 h-6 bg-[var(--blue)] border-2 border-[var(--line)] rounded-md transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-md"></div>
+          </div>
+          <span className="group-hover:text-[var(--blue)] transition-colors">IELTS Vocab</span>
         </Link>
         <div className="flex items-center gap-6">
           {navItems.map((item) => (

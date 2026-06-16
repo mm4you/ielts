@@ -13,12 +13,11 @@
 }
 
 .dark {
-  --bg: #0f172a;
-  --paper: #1e293b;
-  --ink: #f8fafc;
-  --muted: #94a3b8;
-  --line: #334155;
-  /* Dark mode accent colors remain mostly the same for contrast */
+  --bg: #121212;
+  --paper: #1e1e1e;
+  --ink: #f3f4f6;
+  --muted: #9ca3af;
+  --line: #4b5563;
 }
 
 @theme inline {
@@ -91,7 +90,7 @@ body {
   }
   
   .btn-brutal {
-    @apply border-[3px] border-[var(--line)] rounded-xl font-bold px-6 py-3 transition-transform bg-white text-[var(--line)] cursor-pointer;
+    @apply border-[3px] border-[var(--line)] rounded-xl font-bold px-6 py-3 transition-transform bg-[var(--paper)] text-[var(--ink)] cursor-pointer;
     box-shadow: 4px 4px 0 var(--line);
   }
   

@@ -1,12 +1,16 @@
 'use client';
 
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function NavLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-[var(--bg)] flex flex-col">
       <Header />
-      <main className="max-w-5xl mx-auto px-4 pt-24 pb-10">{children}</main>
+      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10 flex-1">
+        {children}
+      </main>
+      <Footer />
     </div>
   );
 }

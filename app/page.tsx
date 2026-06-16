@@ -1,4 +1,5 @@
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 
@@ -16,7 +17,7 @@ export default async function HomePage() {
       <div className="bg-orb orb-2"></div>
       <Header />
       
-      <main className="max-w-[1120px] mx-auto px-4 pt-32 pb-10">
+      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-10">
         <section className="flex flex-col md:flex-row gap-6 justify-between items-start mb-12">
           <div className="max-w-2xl">
             <div className="inline-block mb-4 px-3 py-1 border-2 border-[var(--line)] rounded-full bg-white font-bold text-xs">
@@ -36,26 +37,40 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--blue)] rounded-bl-full opacity-10"></div>
             <h2 className="text-2xl font-serif font-bold mb-2">Học & Ôn tập</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
-              Ôn tập các từ vựng đến hạn. Hệ thống sẽ tự động tính toán thời điểm lặp lại tối ưu cho từng thẻ.
+              Ôn tập các từ vựng đến hạn. Hệ thống sẽ tự động tính toán thời điểm lặp lại tối ưu.
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
               <span className="font-bold">{dueWords > 0 ? `${dueWords} thẻ cần ôn` : 'Đã ôn xong'}</span>
               <Link href="/review" className="btn-primary">
-                Bắt đầu ôn
+                Bắt đầu
+              </Link>
+            </div>
+          </article>
+
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green)] rounded-bl-full opacity-10"></div>
+            <h2 className="text-2xl font-serif font-bold mb-2">Thi Trắc Nghiệm</h2>
+            <p className="text-[var(--muted)] mb-6 flex-1">
+              Kiểm tra trí nhớ phản xạ với bài test 10 câu hỏi ngẫu nhiên từ kho từ vựng.
+            </p>
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+              <span className="font-bold">Đề thi 10 câu</span>
+              <Link href="/quiz" className="btn-brutal bg-[var(--green)] text-white">
+                Thi thử
               </Link>
             </div>
           </article>
 
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--yellow)] rounded-bl-full opacity-10"></div>
-            <h2 className="text-2xl font-serif font-bold mb-2">Thư viện từ vựng</h2>
+            <h2 className="text-2xl font-serif font-bold mb-2">Thư viện</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
-              Tra cứu, tìm kiếm và xem lại danh sách toàn bộ từ vựng theo chủ đề hoặc cấp độ (A1-C2).
+              Tra cứu, tìm kiếm danh sách toàn bộ từ vựng theo chủ đề hoặc cấp độ (A1-C2).
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
               <span className="font-bold">Khám phá {totalWords} từ</span>
@@ -66,6 +81,7 @@ export default async function HomePage() {
           </article>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
