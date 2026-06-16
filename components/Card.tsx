@@ -15,7 +15,7 @@ export default function Card({ word }: { word: Word }) {
       </div>
       
       {(() => {
-        const { pos, en, vi } = parseMeaning(word.meaning_vi);
+        const { pos, en, vi } = parseMeaning(word.meaning_vi, word.pos);
         const hasMeaning = en || vi;
 
         return (

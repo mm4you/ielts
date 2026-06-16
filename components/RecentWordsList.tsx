@@ -7,6 +7,7 @@ import { parseMeaning } from '@/lib/parse';
 interface RecentWord {
   id: number;
   word: string;
+  pos?: string | null;
   meaning_vi: string;
 }
 
@@ -36,14 +37,17 @@ export default function RecentWordsList() {
       </h2>
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
         {recentWords.map((w, idx) => {
-          const { en } = parseMeaning(w.meaning_vi);
+          const { pos, en } = parseMeaning(w.meaning_vi, w.pos);
           return (
             <Link 
               key={`${w.id}-${idx}`}
               href={`/word/${w.id}`}
               className="flex-shrink-0 bg-[var(--paper)] border-2 border-[var(--line)] rounded-xl px-4 py-2 shadow-[2px_2px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--blue)] hover:border-[var(--blue)] transition-all group"
             >
-              <p className="font-bold text-[var(--ink)] group-hover:text-[var(--blue)]">{w.word}</p>
+              <div className="flex gap-1 items-center">
+                <p className="font-bold text-[var(--ink)] group-hover:text-[var(--blue)]">{w.word}</p>
+                {pos && <span className="bg-gray-100 border border-[var(--line)] px-1.5 py-0.5 rounded text-[8px] font-bold">{pos}</span>}
+              </div>
               <p className="text-xs text-[var(--muted)] truncate max-w-[120px]">{en}</p>
             </Link>
           );

@@ -13,6 +13,7 @@ async function checkAdmin() {
 
 export async function createWord(data: {
   word: string;
+  pos?: string;
   ipa?: string;
   meaning_vi: string;
   example?: string;
@@ -29,6 +30,7 @@ export async function createWord(data: {
 
 export async function updateWord(id: number, data: {
   word: string;
+  pos?: string;
   ipa?: string;
   meaning_vi: string;
   example?: string;

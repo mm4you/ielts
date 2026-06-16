@@ -10,6 +10,7 @@ datasource db {
 model Word {
   id              Int       @id @default(autoincrement())
   word            String
+  pos             String?
   ipa             String?
   meaning_vi      String
   example         String?

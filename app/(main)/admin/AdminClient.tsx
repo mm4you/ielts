@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
+import { Word, TOPICS, LEVELS, TOPIC_LABELS, POS_TYPES } from '@/types';
 import { createWord, updateWord, deleteWord } from './actions';
 import { parseMeaning } from '@/lib/parse';
 
@@ -28,6 +28,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
   // Form State
   const [formData, setFormData] = useState({
     word: '',
+    pos: '',
     ipa: '',
     meaning_vi: '',
     example: '',
@@ -47,6 +48,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
       setEditingWord(word);
       setFormData({
         word: word.word,
+        pos: word.pos || '',
         ipa: word.ipa || '',
         meaning_vi: word.meaning_vi,
         example: word.example || '',
@@ -58,6 +60,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
       setEditingWord(null);
       setFormData({
         word: '',
+        pos: '',
         ipa: '',
         meaning_vi: '',
         example: '',
@@ -80,6 +83,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
     try {
       const payload = {
         word: formData.word.trim(),
+        pos: formData.pos || undefined,
         ipa: formData.ipa.trim() || undefined,
         meaning_vi: formData.meaning_vi.trim(),
         example: formData.example.trim() || undefined,
@@ -172,13 +176,16 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
             </thead>
             <tbody>
               {filteredWords.map((word) => {
-                const { en, vi } = parseMeaning(word.meaning_vi);
+                const { en, vi } = parseMeaning(word.meaning_vi, word.pos);
                 return (
                   <tr key={word.id} className="border-b border-[var(--line)] last:border-b-0 hover:bg-gray-50">
                     <td className="px-4 py-3 font-mono text-sm border-r border-[var(--line)]">{word.id}</td>
                     <td className="px-4 py-3 border-r border-[var(--line)]">
-                      <p className="font-black text-[var(--blue)] text-lg">{word.word}</p>
-                      <p className="text-sm font-bold opacity-70">{en}</p>
+                      <div className="flex gap-2 items-center">
+                        <p className="font-black text-[var(--blue)] text-lg">{word.word}</p>
+                        {word.pos && <span className="bg-gray-100 border border-[var(--line)] px-2 py-0.5 rounded-full text-[10px] font-bold">{word.pos}</span>}
+                      </div>
+                      <p className="text-sm font-bold opacity-70 mt-1">{en}</p>
                     </td>
                     <td className="px-4 py-3 text-sm font-bold border-r border-[var(--line)]">{TOPIC_LABELS[word.topic] || word.topic}</td>
                     <td className="px-4 py-3 text-sm font-bold border-r border-[var(--line)]">{word.level}</td>
@@ -254,10 +261,17 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
           <div className="panel max-w-2xl w-full bg-[var(--paper)] my-8">
             <h2 className="text-2xl font-black mb-6 uppercase">{editingWord ? 'Sửa Từ Vựng' : 'Thêm Từ Mới'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-bold mb-1">Từ vựng (Tiếng Anh)</label>
                   <input required value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-bold" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">Loại từ</label>
+                  <select value={formData.pos} onChange={e => setFormData({...formData, pos: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-bold">
+                    <option value="">Không phân loại</option>
+                    {POS_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-bold mb-1">Phiên âm (IPA) - Tùy chọn</label>

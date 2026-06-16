@@ -14,12 +14,13 @@ export default function ReviewPage() {
   const [loading, setLoading] = useState(false);
   const [gameState, setGameState] = useState<'setup' | 'playing'>('setup');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
+  const [selectedLimit, setSelectedLimit] = useState<string>('50');
 
   const fetchWords = useCallback(async () => {
     setLoading(true);
     setGameState('playing');
     try {
-      const res = await fetch(`/api/review?level=${selectedLevel}`);
+      const res = await fetch(`/api/review?level=${selectedLevel}&limit=${selectedLimit}`);
       const data = await res.json();
       if (res.status === 401 || data.error) {
         setWords([]);
@@ -31,7 +32,7 @@ export default function ReviewPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedLevel]);
+  }, [selectedLevel, selectedLimit]);
 
   const handleRating = async (rating: ReviewRating) => {
     const word = words[currentIndex];
@@ -77,10 +78,24 @@ export default function ReviewPage() {
           <select 
             value={selectedLevel}
             onChange={(e) => setSelectedLevel(e.target.value)}
-            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-8 appearance-none cursor-pointer text-center text-lg"
+            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-4 appearance-none cursor-pointer text-center text-lg"
           >
             <option value="all">Tất cả mức độ</option>
             {LEVELS.map(l => <option key={l} value={l}>Mức độ {l}</option>)}
+          </select>
+
+          <p className="text-[var(--muted)] font-bold mb-4">Số lượng từ muốn ôn tập?</p>
+          
+          <select 
+            value={selectedLimit}
+            onChange={(e) => setSelectedLimit(e.target.value)}
+            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-8 appearance-none cursor-pointer text-center text-lg"
+          >
+            <option value="10">10 từ</option>
+            <option value="20">20 từ</option>
+            <option value="50">50 từ</option>
+            <option value="100">100 từ</option>
+            <option value="200">200 từ</option>
           </select>
 
           <button onClick={fetchWords} className="w-full btn-brutal bg-[var(--green)] text-white py-4 text-xl uppercase">
@@ -150,7 +165,7 @@ export default function ReviewPage() {
         {showMeaning ? (
           <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-6 mt-2 animate-fade-in flex flex-col items-center">
             {(() => {
-              const { pos, en, vi } = parseMeaning(currentWord.meaning_vi);
+              const { pos, en, vi } = parseMeaning(currentWord.meaning_vi, currentWord.pos);
               return (
                 <div className="mb-4 text-center">
                   {pos && (

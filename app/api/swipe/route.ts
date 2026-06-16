@@ -10,6 +10,8 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const level = searchParams.get('level');
+  const limitParam = searchParams.get('limit');
+  const limit = limitParam ? parseInt(limitParam, 10) : 50;
 
   const userId = session.user.id;
 
@@ -36,5 +38,5 @@ export async function GET(request: Request) {
   // Shuffle and pick 50
   const shuffled = [...words].sort(() => 0.5 - Math.random());
   
-  return NextResponse.json(shuffled.slice(0, 50));
+  return NextResponse.json(shuffled.slice(0, limit));
 }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { TOPIC_LABELS } from '@/types';
 import { auth } from '@/auth';
 import RecentWordTracker from '@/components/RecentWordTracker';
+import { parseMeaning } from '@/lib/parse';
 
 async function getWordAndProgress(id: string) {
   const session = await auth();
@@ -65,11 +66,14 @@ export default async function WordDetailPage({
           <div>
             <p className="text-sm text-[var(--muted)] mb-1">Nghĩa</p>
             {(() => {
-              const [en, vi] = (word.meaning_vi || '').split('|||');
+              const { pos, en, vi } = parseMeaning(word.meaning_vi, word.pos);
               return (
                 <div className="space-y-1">
-                  <p className="text-xl font-bold text-[var(--ink)]">{en?.trim()}</p>
-                  {vi && <p className="text-base text-[var(--muted)]">{vi.trim()}</p>}
+                  <p className="text-xl font-bold text-[var(--ink)]">
+                    {pos && <span className="text-[var(--blue)] mr-2 text-sm border-2 border-[var(--blue)] px-2 py-0.5 rounded-full">{pos}</span>}
+                    {en}
+                  </p>
+                  {vi && <p className="text-base text-[var(--muted)]">{vi}</p>}
                 </div>
               );
             })()}

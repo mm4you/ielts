@@ -1,18 +1,19 @@
-export function parseMeaning(rawMeaning: string | null) {
+export function parseMeaning(rawMeaning: string | null, dbPos?: string | null) {
   if (!rawMeaning || rawMeaning.trim() === '') {
-    return { pos: null, en: '', vi: '' };
+    return { pos: dbPos || null, en: '', vi: '' };
   }
 
   const [enPart, viPart] = rawMeaning.split('|||');
   let en = enPart?.trim() || '';
   const vi = viPart?.trim() || '';
 
-  let pos = null;
+  let pos = dbPos || null;
   const match = en.match(/^(n|v|adj|adv|prep|conj|pron)\s+(.*)$/i) || en.match(/^(n|v|adj|adv|prep|conj|pron)\t(.*)$/i);
 
   if (match) {
-    const posTag = match[1].toLowerCase();
-    en = match[2].trim();
+    en = match[2].trim(); // always strip the tag from en
+    if (!pos) {
+      const posTag = match[1].toLowerCase();
     switch (posTag) {
       case 'n': pos = 'Danh từ'; break;
       case 'v': pos = 'Động từ'; break;
@@ -21,6 +22,7 @@ export function parseMeaning(rawMeaning: string | null) {
       case 'prep': pos = 'Giới từ'; break;
       case 'conj': pos = 'Liên từ'; break;
       case 'pron': pos = 'Đại từ'; break;
+      }
     }
   }
 

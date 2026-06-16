@@ -10,6 +10,8 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const level = searchParams.get('level');
+  const limitParam = searchParams.get('limit');
+  const limit = limitParam ? parseInt(limitParam, 10) : 50;
 
   const userId = session.user.id;
   const today = new Date();
@@ -22,7 +24,7 @@ export async function GET(request: Request) {
       ...(level && level !== 'all' ? { word: { level } } : {})
     },
     orderBy: { next_review_date: 'asc' },
-    take: 50,
+    take: limit,
     include: { word: true },
   });
 
@@ -40,7 +42,7 @@ export async function GET(request: Request) {
       where: {
         ...(level && level !== 'all' ? { level } : {})
       },
-      take: 20,
+      take: limit,
     });
     words = rawWords.map(w => ({
       ...w,

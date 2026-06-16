@@ -1,6 +1,7 @@
 export interface Word {
   id: number;
   word: string;
+  pos: string | null;
   ipa: string | null;
   meaning_vi: string;
   example: string | null;
@@ -35,6 +36,16 @@ export const TOPICS = [
 ] as const;
 
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+
+export const POS_TYPES = [
+  'Danh từ',
+  'Động từ',
+  'Tính từ',
+  'Trạng từ',
+  'Giới từ',
+  'Liên từ',
+  'Đại từ'
+] as const;
 
 export const TOPIC_LABELS: Record<string, string> = {
   Academic: 'Học thuật chung',
