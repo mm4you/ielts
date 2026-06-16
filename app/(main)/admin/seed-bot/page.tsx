@@ -1,25 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export default function SeedBotPage() {
   const [status, setStatus] = useState<string>('Bot đang ngủ...');
   const [insertedCount, setInsertedCount] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const isRunningRef = useRef(false);
   const [logs, setLogs] = useState<string[]>([]);
 
   const addLog = (msg: string) => {
     setLogs(prev => [msg, ...prev].slice(0, 50));
   };
 
+  const stopBot = () => {
+    setIsRunning(false);
+    isRunningRef.current = false;
+  };
+
   const startBot = async () => {
     setIsRunning(true);
+    isRunningRef.current = true;
     setStatus('Bot đang chạy...');
     let totalInserted = 0;
 
     // Run 100 times max to prevent infinite loops, each time adds ~5 words
     for (let i = 0; i < 100; i++) {
-      if (!isRunning) break;
+      if (!isRunningRef.current) break;
       
       try {
         addLog(`Đang tìm kiếm từ vựng mới... (Lượt ${i + 1}/100)`);
@@ -40,6 +47,7 @@ export default function SeedBotPage() {
     }
     
     setIsRunning(false);
+    isRunningRef.current = false;
     setStatus('Bot đã dừng. Tổng thu hoạch: ' + totalInserted + ' từ.');
   };
 
@@ -57,7 +65,7 @@ export default function SeedBotPage() {
         </div>
 
         <button 
-          onClick={isRunning ? () => setIsRunning(false) : startBot} 
+          onClick={isRunning ? stopBot : startBot} 
           className={`btn-brutal w-full py-4 text-xl uppercase text-white mb-8 ${isRunning ? 'bg-[var(--red)]' : 'bg-[var(--blue)]'}`}
         >
           {isRunning ? 'Dừng Bot Ngay!' : 'Khởi Động Bot 🚀'}
