@@ -41,10 +41,13 @@ export async function GET(request: Request) {
     const rawWords = await prisma.word.findMany({
       where: {
         ...(level && level !== 'all' ? { level } : {})
-      },
-      take: limit,
+      }
     });
-    words = rawWords.map(w => ({
+    
+    const shuffled = rawWords.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, limit);
+
+    words = selected.map(w => ({
       ...w,
       ease_factor: 2.5,
       interval_days: 0,

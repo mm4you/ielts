@@ -31,8 +31,7 @@ export async function GET(request: Request) {
     where: {
       id: { notIn: learnedWordIds },
       ...(level && level !== 'all' ? { level } : {})
-    },
-    take: 100,
+    }
   });
 
   // Shuffle and pick 50
