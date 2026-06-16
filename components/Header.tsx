@@ -64,7 +64,11 @@ export default function Header() {
             {session ? (
               <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
                 <span className="text-sm font-bold truncate max-w-[100px]" title={session.user?.email || ''}>{session.user?.name || 'User'}</span>
-                {(session.user as any)?.role === 'admin' && <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[var(--line)]">ADMIN</span>}
+                {(session.user as any)?.role === 'admin' && (
+                  <Link href="/admin" className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[var(--line)] hover:-translate-y-0.5 transition-transform">
+                    ADMIN
+                  </Link>
+                )}
                 <button onClick={() => signOut()} className="btn-brutal bg-[var(--red)] text-white text-xs px-3 py-1.5 uppercase hover:translate-y-0.5">Đăng xuất</button>
               </div>
             ) : (
@@ -81,9 +85,12 @@ export default function Header() {
           <div className="md:hidden flex items-center gap-3">
             {session ? (
               <div className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-xs shadow-[2px_2px_0_var(--line)]">
+                <span className="w-8 h-8 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-[var(--ink)] text-xs shadow-[2px_2px_0_var(--line)]">
                   {session.user?.name?.charAt(0).toUpperCase() || 'U'}
                 </span>
+                {(session.user as any)?.role === 'admin' && (
+                  <Link href="/admin" className="text-xs font-bold text-[var(--blue)] underline">Admin</Link>
+                )}
                 <button onClick={() => signOut()} className="text-xs font-bold underline text-[var(--red)]">Thoát</button>
               </div>
             ) : (

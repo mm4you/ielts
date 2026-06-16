@@ -41,7 +41,7 @@ export default function RecentWordsList() {
             <Link 
               key={`${w.id}-${idx}`}
               href={`/word/${w.id}`}
-              className="flex-shrink-0 bg-white border-2 border-[var(--line)] rounded-xl px-4 py-2 shadow-[2px_2px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--blue)] hover:border-[var(--blue)] transition-all group"
+              className="flex-shrink-0 bg-[var(--paper)] border-2 border-[var(--line)] rounded-xl px-4 py-2 shadow-[2px_2px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--blue)] hover:border-[var(--blue)] transition-all group"
             >
               <p className="font-bold text-[var(--ink)] group-hover:text-[var(--blue)]">{w.word}</p>
               <p className="text-xs text-[var(--muted)] truncate max-w-[120px]">{en}</p>
