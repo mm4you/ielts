@@ -1,7 +1,12 @@
+"use client";
+
 import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Header() {
+  const { data: session } = useSession();
+
   const navItems = [
     { href: '/', label: 'Trang chủ' },
     { href: '/review', label: 'Ôn tập' },
@@ -33,7 +38,21 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            ))}
             <ThemeToggle />
+            {session ? (
+              <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
+                <span className="text-sm font-bold truncate max-w-[100px]" title={session.user?.email || ''}>{session.user?.name || 'User'}</span>
+                {session.user?.role === 'admin' && <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] px-1 font-bold rounded">ADMIN</span>}
+                <button onClick={() => signOut()} className="btn-brutal bg-[var(--red)] text-white text-xs px-3 py-1.5 uppercase hover:translate-y-0.5">Đăng xuất</button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
+                <button onClick={() => signIn()} className="btn-brutal bg-[var(--blue)] text-white text-xs px-4 py-1.5 uppercase hover:translate-y-0.5 whitespace-nowrap shadow-[2px_2px_0_var(--blue)]">
+                  Đăng nhập
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Theme Toggle (Nav is at bottom) */}

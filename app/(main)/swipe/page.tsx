@@ -14,11 +14,15 @@ export default function SwipePage() {
 
   useEffect(() => {
     fetch('/api/swipe')
-      .then(res => res.json())
-      .then(data => {
-        setWords(data);
-        setLoading(false);
-      });
+      .then(async res => {
+        const data = await res.json();
+        if (res.status === 401 || data.error) {
+          setWords([]);
+          return;
+        }
+        setWords(Array.isArray(data) ? data : []);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -59,12 +63,14 @@ export default function SwipePage() {
     );
   }
 
-  if (currentIndex >= words.length) {
+  if (!words || words.length === 0 || currentIndex >= words.length) {
     return (
-      <div className="panel max-w-2xl mx-auto text-center py-20">
-        <h2 className="text-4xl font-serif mb-4">Hết Thẻ!</h2>
-        <p className="text-[var(--muted)] mb-8 font-bold">Bạn đã quẹt hết các thẻ của hôm nay.</p>
-        <Link href="/" className="btn-brutal bg-[var(--yellow)]">Về Trang Chủ</Link>
+      <div className="panel text-center py-20 max-w-2xl mx-auto mt-10">
+        <h2 className="text-3xl font-serif mb-4">Bạn chưa đăng nhập hoặc hết thẻ!</h2>
+        <p className="text-[var(--muted)] mb-8 font-bold">Vui lòng đăng nhập để bắt đầu học, hoặc bạn đã quẹt hết thẻ chưa học.</p>
+        <button onClick={() => router.push('/review')} className="btn-brutal bg-[var(--blue)] text-white">
+          Đi tới Ôn tập
+        </button>
       </div>
     );
   }

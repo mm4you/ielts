@@ -17,6 +17,10 @@ export default function ReviewPage() {
     try {
       const res = await fetch('/api/review');
       const data = await res.json();
+      if (res.status === 401 || data.error) {
+        setWords([]);
+        return;
+      }
       setWords(data);
     } catch (error) {
       console.error('Failed to fetch words:', error);
@@ -71,11 +75,11 @@ export default function ReviewPage() {
     );
   }
 
-  if (words.length === 0) {
+  if (!words || words.length === 0) {
     return (
       <div className="panel text-center py-20 max-w-2xl mx-auto mt-10">
-        <h2 className="text-3xl font-serif mb-4">Hoàn thành!</h2>
-        <p className="text-[var(--muted)] mb-8 font-bold">Bạn đã học xong tất cả các từ cần ôn tập hôm nay.</p>
+        <h2 className="text-3xl font-serif mb-4">Bạn chưa đăng nhập hoặc đã học xong!</h2>
+        <p className="text-[var(--muted)] mb-8 font-bold">Vui lòng đăng nhập để theo dõi tiến trình học, hoặc khám phá thêm từ vựng mới trong Thư viện.</p>
         <button onClick={() => router.push('/library')} className="btn-brutal bg-[var(--yellow)]">
           Khám phá thư viện
         </button>

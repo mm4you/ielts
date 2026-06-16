@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/Providers";
 
 const fraunces = Fraunces({
   subsets: ["latin", "vietnamese"],
@@ -25,7 +26,9 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className={`${spaceGrotesk.variable} ${fraunces.variable} font-sans`}>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
