@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Word, ReviewRating, RATING_LABELS } from '@/types';
+import { ReviewWord, ReviewRating, RATING_LABELS } from '@/types';
 import { calculateSRS } from '@/lib/srs';
 import { parseMeaning } from '@/lib/parse';
 
 export default function ReviewPage() {
   const router = useRouter();
-  const [words, setWords] = useState<Word[]>([]);
+  const [words, setWords] = useState<ReviewWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMeaning, setShowMeaning] = useState(false);
   const [loading, setLoading] = useState(true);

@@ -42,7 +42,7 @@ export default function Header() {
             {session ? (
               <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
                 <span className="text-sm font-bold truncate max-w-[100px]" title={session.user?.email || ''}>{session.user?.name || 'User'}</span>
-                {session.user?.role === 'admin' && <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] px-1 font-bold rounded">ADMIN</span>}
+                {(session.user as any)?.role === 'admin' && <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[var(--line)]">ADMIN</span>}
                 <button onClick={() => signOut()} className="btn-brutal bg-[var(--red)] text-white text-xs px-3 py-1.5 uppercase hover:translate-y-0.5">Đăng xuất</button>
               </div>
             ) : (

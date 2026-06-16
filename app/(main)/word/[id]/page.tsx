@@ -2,12 +2,29 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { TOPIC_LABELS } from '@/types';
+import { auth } from '@/auth';
 
-async function getWord(id: string) {
+async function getWordAndProgress(id: string) {
+  const session = await auth();
   const word = await prisma.word.findUnique({
     where: { id: parseInt(id) },
   });
-  return word;
+
+  if (!word) return { word: null, progress: null };
+
+  let progress = null;
+  if (session?.user?.id) {
+    progress = await prisma.userProgress.findUnique({
+      where: {
+        userId_wordId: {
+          userId: session.user.id,
+          wordId: word.id
+        }
+      }
+    });
+  }
+
+  return { word, progress };
 }
 
 export default async function WordDetailPage({
@@ -16,7 +33,7 @@ export default async function WordDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const word = await getWord(id);
+  const { word, progress } = await getWordAndProgress(id);
 
   if (!word) {
     notFound();
@@ -90,15 +107,15 @@ export default async function WordDetailPage({
             <p className="text-sm text-[var(--muted)] mb-3">Thống kê ôn tập</p>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-2xl font-bold">{word.repetition_count}</p>
+                <p className="text-2xl font-bold">{progress?.repetition_count ?? 0}</p>
                 <p className="text-xs text-[var(--muted)]">Lần ôn</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-2xl font-bold">{word.interval_days}</p>
-                <p className="text-xs text-[var(--muted)]">Ngày间隔</p>
+                <p className="text-2xl font-bold">{progress?.interval_days ?? 0}</p>
+                <p className="text-xs text-[var(--muted)]">Giãn cách (ngày)</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-2xl font-bold">{word.ease_factor.toFixed(1)}</p>
+                <p className="text-2xl font-bold">{progress?.ease_factor?.toFixed(1) ?? "2.5"}</p>
                 <p className="text-xs text-[var(--muted)]">Độ dễ</p>
               </div>
             </div>

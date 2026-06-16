@@ -7,12 +7,15 @@ export interface Word {
   synonyms: string | null;
   topic: string;
   level: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface ReviewWord extends Word {
   ease_factor: number;
   interval_days: number;
   repetition_count: number;
   next_review_date: Date;
-  created_at: Date;
-  updated_at: Date;
 }
 
 export type ReviewRating = 'forgot' | 'hard' | 'good' | 'easy';
