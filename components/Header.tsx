@@ -48,7 +48,7 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
-                <button onClick={() => signIn()} className="btn-brutal bg-[var(--blue)] text-white text-xs px-4 py-1.5 uppercase hover:translate-y-0.5 whitespace-nowrap shadow-[2px_2px_0_var(--blue)]">
+                <button onClick={() => signIn('google')} className="btn-brutal bg-[var(--blue)] text-white text-xs px-4 py-1.5 uppercase hover:translate-y-0.5 whitespace-nowrap shadow-[2px_2px_0_var(--blue)]">
                   Đăng nhập
                 </button>
               </div>
