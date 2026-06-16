@@ -101,7 +101,7 @@ export default function SwipePage() {
               {currentWord.ipa}
             </p>
           )}
-          <div className="text-xl font-bold border-t-2 border-dashed border-[var(--line)] pt-4 w-full">
+          <div className="text-xl font-bold border-t-2 border-dashed border-[var(--line)] pt-4 w-full whitespace-pre-line">
             {currentWord.meaning_vi}
           </div>
         </div>

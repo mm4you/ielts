@@ -45,13 +45,13 @@ export default async function WordDetailPage({
         <div className="space-y-6">
           <div>
             <p className="text-sm text-[var(--muted)] mb-1">Nghĩa</p>
-            <p className="text-lg">{word.meaning_vi}</p>
+            <p className="text-lg whitespace-pre-line">{word.meaning_vi}</p>
           </div>
 
           {word.example && (
             <div>
               <p className="text-sm text-[var(--muted)] mb-1">Ví dụ</p>
-              <p className="text-gray-600 italic">"{word.example}"</p>
+              <p className="text-gray-600 italic whitespace-pre-line">"{word.example}"</p>
             </div>
           )}
 

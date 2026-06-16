@@ -116,13 +116,12 @@ export default function ReviewPage() {
         )}
 
         {showMeaning ? (
-          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-8 mt-4 animate-fade-in">
-            <h3 className="text-xl font-bold mb-2 text-[var(--blue)]">Định nghĩa:</h3>
-            <p className="text-2xl mb-6 font-bold text-[var(--ink)] leading-snug">{currentWord.meaning_vi}</p>
+          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-4 mb-4">
+            <p className="text-2xl font-bold whitespace-pre-line text-left">{currentWord.meaning_vi}</p>
             
             {currentWord.example && (
               <>
-                <h3 className="text-lg font-bold mb-2 text-[var(--green)]">Ví dụ:</h3>
+                <h3 className="text-lg font-bold mb-2 text-[var(--green)] mt-6">Ví dụ:</h3>
                 <p className="text-lg text-[var(--muted)] font-serif italic border-l-4 border-[var(--yellow)] pl-4">
                   "{currentWord.example}"
                 </p>
