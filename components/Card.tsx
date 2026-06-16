@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Word } from '@/types';
+import { parseMeaning } from '@/lib/parse';
 
 export default function Card({ word }: { word: Word }) {
   return (
@@ -14,11 +15,22 @@ export default function Card({ word }: { word: Word }) {
       </div>
       
       {(() => {
-        const [en, vi] = (word.meaning_vi || '').split('|||');
+        const { pos, en, vi } = parseMeaning(word.meaning_vi);
+        const hasMeaning = en || vi;
+
         return (
           <div className="mt-2 flex-1 mb-4">
-            <p className="text-[var(--ink)] font-bold line-clamp-1">{en?.trim()}</p>
-            {vi && <p className="text-[var(--muted)] text-sm line-clamp-1">{vi.trim()}</p>}
+            {!hasMeaning ? (
+              <p className="text-[var(--muted)] font-bold italic text-sm">(Chưa có định nghĩa)</p>
+            ) : (
+              <>
+                <p className="text-[var(--ink)] font-bold line-clamp-1">
+                  {pos && <span className="text-[var(--blue)] mr-1">[{pos}]</span>}
+                  {en}
+                </p>
+                {vi && <p className="text-[var(--muted)] text-sm line-clamp-1">{vi}</p>}
+              </>
+            )}
           </div>
         );
       })()}

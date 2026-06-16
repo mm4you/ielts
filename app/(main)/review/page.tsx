@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Word, ReviewRating, RATING_LABELS } from '@/types';
 import { calculateSRS } from '@/lib/srs';
+import { parseMeaning } from '@/lib/parse';
 
 export default function ReviewPage() {
   const router = useRouter();
@@ -119,29 +120,25 @@ export default function ReviewPage() {
         )}
 
         {showMeaning ? (
-          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-6 mt-2 animate-fade-in">
+          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-6 mt-2 animate-fade-in flex flex-col items-center">
             {(() => {
-              const [en, vi] = (currentWord.meaning_vi || '').split('|||');
+              const { pos, en, vi } = parseMeaning(currentWord.meaning_vi);
               return (
-                <div className="mb-4">
-                  <p className="text-2xl font-bold text-[var(--ink)] mb-2">{en?.trim()}</p>
-                  {vi && <p className="text-lg font-bold text-[var(--muted)]">{vi.trim()}</p>}
+                <div className="mb-4 text-center">
+                  {pos && (
+                    <span className="inline-block bg-[var(--blue)] text-white text-sm font-bold px-3 py-1 rounded-md mb-3 shadow-[2px_2px_0_var(--ink)]">
+                      {pos}
+                    </span>
+                  )}
+                  <p className="text-2xl font-bold text-[var(--ink)] mb-2">{en}</p>
+                  {vi && <p className="text-lg font-bold text-[var(--muted)]">{vi}</p>}
                 </div>
               );
             })()}
-            
-            {currentWord.example && (
-              <>
-                <h3 className="text-lg font-bold mb-2 text-[var(--green)] mt-4">Ví dụ:</h3>
-                <p className="text-lg text-[var(--ink)] font-serif italic border-l-4 border-[var(--yellow)] pl-4">
-                  "{currentWord.example}"
-                </p>
-              </>
-            )}
           </div>
         ) : (
           <div className="absolute bottom-8 text-[var(--muted)] font-bold text-lg animate-pulse flex items-center gap-2">
-            <span>👆</span> Bấm vào thẻ để xem đáp án
+            <span>👆</span> Bấm vào thẻ để xem nghĩa
           </div>
         )}
       </div>

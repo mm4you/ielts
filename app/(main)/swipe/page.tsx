@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Word } from '@/types';
+import { parseMeaning } from '@/lib/parse';
 
 export default function SwipePage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -106,13 +107,18 @@ export default function SwipePage() {
           )}
 
           {showMeaning ? (
-            <div className="border-t-2 border-dashed border-[var(--line)] pt-4 w-full animate-fade-in">
+            <div className="border-t-2 border-dashed border-[var(--line)] pt-4 w-full animate-fade-in flex flex-col items-center">
               {(() => {
-                const [en, vi] = (currentWord.meaning_vi || '').split('|||');
+                const { pos, en, vi } = parseMeaning(currentWord.meaning_vi);
                 return (
-                  <div className="text-left px-2">
-                    <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight">{en?.trim()}</p>
-                    {vi && <p className="text-base font-bold text-[var(--muted)]">{vi.trim()}</p>}
+                  <div className="text-center px-2">
+                    {pos && (
+                      <span className="inline-block bg-[var(--blue)] text-white text-xs font-bold px-2 py-1 rounded-md mb-2 shadow-[2px_2px_0_var(--ink)]">
+                        {pos}
+                      </span>
+                    )}
+                    <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight">{en}</p>
+                    {vi && <p className="text-base font-bold text-[var(--muted)]">{vi}</p>}
                   </div>
                 );
               })()}
