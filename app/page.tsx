@@ -40,7 +40,7 @@ export default async function HomePage() {
               Ôn tập các từ vựng đến hạn bằng flashcard. Hệ thống tự tính thời điểm lặp lại tối ưu.
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-              <span className="font-bold">{dueWords > 0 ? `${dueWords} thẻ cần ôn` : 'Đã ôn xong'}</span>
+              <span className="font-bold text-lg">{dueWords > 0 ? `${dueWords.toLocaleString('vi-VN')} thẻ cần ôn` : 'Đã ôn xong'}</span>
               <Link href="/review" className="btn-primary">
                 Bắt đầu
               </Link>
@@ -54,7 +54,7 @@ export default async function HomePage() {
               Quẹt trái/phải để lọc nhanh hàng trăm từ vựng, giúp hệ thống biết bạn đã rành từ nào.
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-              <span className="font-bold">Lọc siêu tốc</span>
+              <span className="font-bold text-lg text-[var(--green)]">Lọc siêu tốc</span>
               <Link href="/swipe" className="btn-brutal bg-[var(--green)] text-white">
                 Quẹt ngay
               </Link>
@@ -68,7 +68,7 @@ export default async function HomePage() {
               10 giây sinh tồn. Trả lời đúng +2s. Sai là GAME OVER ngay lập tức!
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-              <span className="font-bold text-[var(--red)]">Ép nhịp tim</span>
+              <span className="font-bold text-lg text-[var(--red)]">Ép nhịp tim</span>
               <Link href="/speedrun" className="btn-brutal bg-[var(--red)] text-white animate-pulse">
                 Chơi luôn
               </Link>
@@ -82,7 +82,7 @@ export default async function HomePage() {
               Tra cứu, tìm kiếm danh sách toàn bộ từ vựng theo chủ đề hoặc cấp độ (A1-C2).
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-              <span className="font-bold">Khám phá {totalWords} từ</span>
+              <span className="font-bold text-lg">Khám phá <span className="text-[var(--blue)]">{totalWords.toLocaleString('vi-VN')}</span> từ</span>
               <Link href="/library" className="btn-brutal bg-[var(--yellow)] text-[var(--ink)]">
                 Vào thư viện
               </Link>

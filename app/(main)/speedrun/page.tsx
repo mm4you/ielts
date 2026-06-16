@@ -15,7 +15,7 @@ export default function SpeedrunPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
   const [score, setScore] = useState(0);
-  const [gameState, setGameState] = useState<'start' | 'playing' | 'gameover'>('start');
+  const [gameState, setGameState] = useState<'start' | 'playing' | 'processing' | 'gameover'>('start');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function SpeedrunPage() {
       .then(data => {
         setQuestions(data);
       });
-  }, [gameState]);
+  }, [gameState === 'start']); // Only fetch on start
 
   useEffect(() => {
     if (gameState === 'playing') {
@@ -46,7 +46,10 @@ export default function SpeedrunPage() {
   }, [gameState]);
 
   const handleSelect = (option: string) => {
+    if (gameState !== 'playing') return; // Prevent double clicks
+    
     const isCorrect = option === questions[currentIndex].correctAnswer;
+    setGameState('processing'); // Pause timer and disable clicks
     
     if (isCorrect) {
       setScore(s => s + 1);
@@ -54,19 +57,23 @@ export default function SpeedrunPage() {
       
       // Flash screen green temporarily
       document.body.style.backgroundColor = 'var(--green)';
-      setTimeout(() => document.body.style.backgroundColor = '', 100);
-
-      if (currentIndex < questions.length - 1) {
-        setCurrentIndex(c => c + 1);
-      } else {
-        // Fetch more questions invisibly in a real app, but for now we loop or end
-        setGameState('gameover');
-      }
+      
+      setTimeout(() => {
+        document.body.style.backgroundColor = '';
+        if (currentIndex < questions.length - 1) {
+          setCurrentIndex(c => c + 1);
+          setGameState('playing'); // Resume timer
+        } else {
+          setGameState('gameover');
+        }
+      }, 500); // 500ms delay to see the result
     } else {
       // Instant death
       document.body.style.backgroundColor = 'var(--red)';
-      setTimeout(() => document.body.style.backgroundColor = '', 100);
-      setGameState('gameover');
+      setTimeout(() => {
+        document.body.style.backgroundColor = '';
+        setGameState('gameover');
+      }, 500);
     }
   };
 

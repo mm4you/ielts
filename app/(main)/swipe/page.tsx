@@ -115,20 +115,20 @@ export default function SwipePage() {
         </div>
       </div>
 
-      <div className="flex justify-between gap-4 mt-12 relative z-20">
+      <div className="flex justify-center gap-12 mt-12 relative z-20">
         <button 
           onClick={() => handleSwipe('left')}
-          className="flex-1 btn-brutal bg-[var(--red)] text-white text-xl py-4 flex flex-col items-center"
+          className="w-24 h-24 rounded-full border-[4px] border-[var(--red)] flex items-center justify-center text-5xl text-[var(--red)] bg-[var(--paper)] shadow-[6px_6px_0_var(--red)] hover:translate-y-1 hover:shadow-[2px_2px_0_var(--red)] transition-all active:scale-95"
+          aria-label="Học lại"
         >
-          <span className="text-3xl mb-1">👈</span>
-          <span>Học lại</span>
+          <span className="-mt-1">✖</span>
         </button>
         <button 
           onClick={() => handleSwipe('right')}
-          className="flex-1 btn-brutal bg-[var(--green)] text-white text-xl py-4 flex flex-col items-center"
+          className="w-24 h-24 rounded-full border-[4px] border-[var(--green)] flex items-center justify-center text-6xl text-[var(--green)] bg-[var(--paper)] shadow-[6px_6px_0_var(--green)] hover:translate-y-1 hover:shadow-[2px_2px_0_var(--green)] transition-all active:scale-95"
+          aria-label="Đã biết"
         >
-          <span className="text-3xl mb-1">👉</span>
-          <span>Đã biết</span>
+          <span className="mt-2">♥</span>
         </button>
       </div>
     </div>
