@@ -3,18 +3,15 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Lấy 10 từ ngẫu nhiên để làm bài thi
-    const words = await prisma.word.findMany({
-      take: 40, // Lấy nhiều hơn một chút để chọn ngẫu nhiên
-    });
+    const words = await prisma.word.findMany();
 
     if (words.length < 4) {
       return NextResponse.json({ error: 'Not enough words to generate quiz' }, { status: 400 });
     }
 
-    // Shuffle and pick 10
+    // Shuffle and pick 100
     const shuffled = [...words].sort(() => 0.5 - Math.random());
-    const selectedWords = shuffled.slice(0, 10);
+    const selectedWords = shuffled.slice(0, 100);
 
     const questions = selectedWords.map((word) => {
       // Lấy 3 đáp án sai ngẫu nhiên

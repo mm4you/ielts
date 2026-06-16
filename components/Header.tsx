@@ -5,7 +5,8 @@ export default function Header() {
   const navItems = [
     { href: '/', label: 'Trang chủ' },
     { href: '/review', label: 'Ôn tập' },
-    { href: '/quiz', label: 'Thi thử' },
+    { href: '/swipe', label: 'Lọc thẻ' },
+    { href: '/speedrun', label: 'Tốc chiến' },
     { href: '/library', label: 'Thư viện' },
   ];
 

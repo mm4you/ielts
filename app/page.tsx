@@ -32,12 +32,12 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--blue)] rounded-bl-full opacity-10"></div>
             <h2 className="text-2xl font-serif font-bold mb-2">Học & Ôn tập</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
-              Ôn tập các từ vựng đến hạn. Hệ thống sẽ tự động tính toán thời điểm lặp lại tối ưu.
+              Ôn tập các từ vựng đến hạn bằng flashcard. Hệ thống tự tính thời điểm lặp lại tối ưu.
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
               <span className="font-bold">{dueWords > 0 ? `${dueWords} thẻ cần ôn` : 'Đã ôn xong'}</span>
@@ -49,21 +49,35 @@ export default async function HomePage() {
 
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green)] rounded-bl-full opacity-10"></div>
-            <h2 className="text-2xl font-serif font-bold mb-2">Thi Trắc Nghiệm</h2>
+            <h2 className="text-2xl font-serif font-bold mb-2">Quẹt Thẻ Tinder</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
-              Kiểm tra trí nhớ phản xạ với bài test 10 câu hỏi ngẫu nhiên từ kho từ vựng.
+              Quẹt trái/phải để lọc nhanh hàng trăm từ vựng, giúp hệ thống biết bạn đã rành từ nào.
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-              <span className="font-bold">Đề thi 10 câu</span>
-              <Link href="/quiz" className="btn-brutal bg-[var(--green)] text-white">
-                Thi thử
+              <span className="font-bold">Lọc siêu tốc</span>
+              <Link href="/swipe" className="btn-brutal bg-[var(--green)] text-white">
+                Quẹt ngay
+              </Link>
+            </div>
+          </article>
+
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--red)] shadow-[8px_8px_0_var(--red)]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--red)] rounded-bl-full opacity-10"></div>
+            <h2 className="text-2xl font-serif font-bold mb-2 text-[var(--red)]">Sinh Tồn Tốc Chiến</h2>
+            <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
+              10 giây sinh tồn. Trả lời đúng +2s. Sai là GAME OVER ngay lập tức!
+            </p>
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+              <span className="font-bold text-[var(--red)]">Ép nhịp tim</span>
+              <Link href="/speedrun" className="btn-brutal bg-[var(--red)] text-white animate-pulse">
+                Chơi luôn
               </Link>
             </div>
           </article>
 
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--yellow)] rounded-bl-full opacity-10"></div>
-            <h2 className="text-2xl font-serif font-bold mb-2">Thư viện</h2>
+            <h2 className="text-2xl font-serif font-bold mb-2">Thư viện Từ điển</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
               Tra cứu, tìm kiếm danh sách toàn bộ từ vựng theo chủ đề hoặc cấp độ (A1-C2).
             </p>
