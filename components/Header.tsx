@@ -38,7 +38,6 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
-            ))}
             <ThemeToggle />
             {session ? (
               <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
