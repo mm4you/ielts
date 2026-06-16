@@ -36,7 +36,12 @@ export default function LibraryPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold font-serif mb-2">Thư viện từ vựng</h1>
+        <div className="flex items-baseline gap-4 mb-2">
+          <h1 className="text-4xl font-bold font-serif">Thư viện từ vựng</h1>
+          <span className="text-xl text-[var(--muted)] font-bold bg-gray-100 px-3 py-1 rounded-full border-2 border-[var(--line)]">
+            {words.length} từ
+          </span>
+        </div>
         <p className="text-[var(--muted)]">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
       </div>
 
