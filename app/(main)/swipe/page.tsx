@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Word } from '@/types';
+import { Word, LEVELS } from '@/types';
 import { parseMeaning } from '@/lib/parse';
 
 export default function SwipePage() {
@@ -14,8 +14,13 @@ export default function SwipePage() {
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [showMeaning, setShowMeaning] = useState(false);
 
-  useEffect(() => {
-    fetch('/api/swipe')
+  const [gameState, setGameState] = useState<'setup' | 'playing'>('setup');
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
+
+  const startLearning = () => {
+    setLoading(true);
+    setGameState('playing');
+    fetch(`/api/swipe?level=${selectedLevel}`)
       .then(async res => {
         const data = await res.json();
         if (res.status === 401 || data.error) {
@@ -25,7 +30,7 @@ export default function SwipePage() {
         setWords(Array.isArray(data) ? data : []);
       })
       .finally(() => setLoading(false));
-  }, []);
+  };
 
   const handleSwipe = (direction: 'left' | 'right') => {
     if (swipeDirection !== null) return;
@@ -56,6 +61,30 @@ export default function SwipePage() {
       setShowMeaning(false);
     }, 400); // Wait for animation
   };
+
+  if (gameState === 'setup') {
+    return (
+      <div className="flex items-center justify-center py-20 px-4">
+        <div className="panel max-w-md w-full text-center">
+          <h2 className="text-3xl font-serif font-black uppercase mb-4">Lọc thẻ từ mới</h2>
+          <p className="text-[var(--muted)] font-bold mb-8">Hôm nay bạn muốn học ở mức độ nào?</p>
+          
+          <select 
+            value={selectedLevel}
+            onChange={(e) => setSelectedLevel(e.target.value)}
+            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-8 appearance-none cursor-pointer text-center text-lg"
+          >
+            <option value="all">Tất cả mức độ</option>
+            {LEVELS.map(l => <option key={l} value={l}>Mức độ {l}</option>)}
+          </select>
+
+          <button onClick={startLearning} className="w-full btn-brutal bg-[var(--blue)] text-white py-4 text-xl uppercase">
+            Bắt đầu học
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

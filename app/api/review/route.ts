@@ -2,11 +2,14 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const { searchParams } = new URL(request.url);
+  const level = searchParams.get('level');
 
   const userId = session.user.id;
   const today = new Date();
@@ -15,7 +18,8 @@ export async function GET() {
     where: {
       userId,
       next_review_date: { lte: today },
-      repetition_count: { gt: 0 }
+      repetition_count: { gt: 0 },
+      ...(level && level !== 'all' ? { word: { level } } : {})
     },
     orderBy: { next_review_date: 'asc' },
     take: 50,
@@ -33,6 +37,9 @@ export async function GET() {
   // Fallback if no words due, just for testing/demo purposes
   if (words.length === 0) {
     const rawWords = await prisma.word.findMany({
+      where: {
+        ...(level && level !== 'all' ? { level } : {})
+      },
       take: 20,
     });
     words = rawWords.map(w => ({

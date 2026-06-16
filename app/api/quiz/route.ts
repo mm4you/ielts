@@ -1,9 +1,16 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const level = searchParams.get('level');
+
   try {
-    const words = await prisma.word.findMany();
+    const words = await prisma.word.findMany({
+      where: {
+        ...(level && level !== 'all' ? { level } : {})
+      }
+    });
 
     if (words.length < 4) {
       return NextResponse.json({ error: 'Not enough words to generate quiz' }, { status: 400 });

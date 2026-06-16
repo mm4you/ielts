@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ReviewWord, ReviewRating, RATING_LABELS } from '@/types';
+import { ReviewWord, ReviewRating, RATING_LABELS, LEVELS } from '@/types';
 import { calculateSRS } from '@/lib/srs';
 import { parseMeaning } from '@/lib/parse';
 
@@ -11,11 +11,15 @@ export default function ReviewPage() {
   const [words, setWords] = useState<ReviewWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMeaning, setShowMeaning] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [gameState, setGameState] = useState<'setup' | 'playing'>('setup');
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
 
   const fetchWords = useCallback(async () => {
+    setLoading(true);
+    setGameState('playing');
     try {
-      const res = await fetch('/api/review');
+      const res = await fetch(`/api/review?level=${selectedLevel}`);
       const data = await res.json();
       if (res.status === 401 || data.error) {
         setWords([]);
@@ -27,11 +31,7 @@ export default function ReviewPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchWords();
-  }, [fetchWords]);
+  }, [selectedLevel]);
 
   const handleRating = async (rating: ReviewRating) => {
     const word = words[currentIndex];
@@ -66,6 +66,30 @@ export default function ReviewPage() {
       router.push('/');
     }
   };
+
+  if (gameState === 'setup') {
+    return (
+      <div className="flex items-center justify-center py-20 px-4">
+        <div className="panel max-w-md w-full text-center">
+          <h2 className="text-3xl font-serif font-black uppercase mb-4">Ôn Tập Từ Vựng</h2>
+          <p className="text-[var(--muted)] font-bold mb-8">Bạn muốn ôn tập từ vựng ở mức độ nào?</p>
+          
+          <select 
+            value={selectedLevel}
+            onChange={(e) => setSelectedLevel(e.target.value)}
+            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-8 appearance-none cursor-pointer text-center text-lg"
+          >
+            <option value="all">Tất cả mức độ</option>
+            {LEVELS.map(l => <option key={l} value={l}>Mức độ {l}</option>)}
+          </select>
+
+          <button onClick={fetchWords} className="w-full btn-brutal bg-[var(--green)] text-white py-4 text-xl uppercase">
+            Bắt đầu ôn tập
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

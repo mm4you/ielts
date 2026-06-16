@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
+import { LEVELS } from '@/types';
+
 interface Question {
   id: string;
   word: string;
@@ -16,16 +18,9 @@ export default function SpeedrunPage() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [score, setScore] = useState(0);
   const [gameState, setGameState] = useState<'start' | 'countdown' | 'playing' | 'processing' | 'gameover'>('start');
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [countdownNumber, setCountdownNumber] = useState(3);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    fetch('/api/quiz')
-      .then(res => res.json())
-      .then(data => {
-        setQuestions(data);
-      });
-  }, []); // Only fetch on mount
 
   useEffect(() => {
     if (gameState === 'countdown') {
@@ -91,12 +86,23 @@ export default function SpeedrunPage() {
     }
   };
 
-  const startGame = () => {
-    setScore(0);
-    setTimeLeft(15);
-    setCurrentIndex(0);
-    setCountdownNumber(3);
-    setGameState('countdown');
+  const startGame = async () => {
+    try {
+      const res = await fetch(`/api/quiz?level=${selectedLevel}`);
+      const data = await res.json();
+      if (data.error || data.length === 0) {
+        alert(data.error || 'Không đủ từ vựng ở mức độ này!');
+        return;
+      }
+      setQuestions(data);
+      setScore(0);
+      setTimeLeft(15);
+      setCurrentIndex(0);
+      setCountdownNumber(3);
+      setGameState('countdown');
+    } catch (err) {
+      alert('Có lỗi xảy ra khi tải từ vựng!');
+    }
   };
 
   if (gameState === 'start') {
@@ -104,7 +110,17 @@ export default function SpeedrunPage() {
       <div className="panel max-w-xl mx-auto text-center py-20 mt-10">
         <h1 className="text-6xl font-serif font-black text-[var(--red)] mb-4 uppercase tracking-tighter">Tốc Chiến</h1>
         <p className="text-xl font-bold mb-8 text-[var(--muted)]">Sinh tồn 15 giây. Đúng +2s. Sai là CHẾT!</p>
-        <button onClick={startGame} className="btn-brutal bg-[var(--red)] text-white text-2xl px-12 py-6 animate-pulse">
+        
+        <select 
+          value={selectedLevel}
+          onChange={(e) => setSelectedLevel(e.target.value)}
+          className="w-full max-w-xs mx-auto block px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-8 appearance-none cursor-pointer text-center text-lg"
+        >
+          <option value="all">Tất cả mức độ</option>
+          {LEVELS.map(l => <option key={l} value={l}>Mức độ {l}</option>)}
+        </select>
+
+        <button onClick={startGame} className="btn-brutal bg-[var(--red)] text-white text-2xl px-12 py-6 animate-pulse w-full max-w-xs">
           Bắt Đầu
         </button>
       </div>
