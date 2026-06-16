@@ -188,10 +188,22 @@ export default function ReviewPage() {
 
       {showMeaning && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
-          <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white">Lại</button>
-          <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)]">Khó</button>
-          <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white">Tốt</button>
-          <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white">Dễ</button>
+          <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white flex flex-col items-center justify-center py-3">
+            <span className="text-xl md:text-2xl">Lại</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Quên sạch</span>
+          </button>
+          <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] flex flex-col items-center justify-center py-3">
+            <span className="text-xl md:text-2xl">Khó</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Nhớ mang máng</span>
+          </button>
+          <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white flex flex-col items-center justify-center py-3">
+            <span className="text-xl md:text-2xl">Tốt</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Nhớ rõ</span>
+          </button>
+          <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white flex flex-col items-center justify-center py-3">
+            <span className="text-xl md:text-2xl">Dễ</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Quá quen thuộc</span>
+          </button>
         </div>
       )}
     </div>

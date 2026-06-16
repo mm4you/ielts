@@ -132,7 +132,7 @@ export default function SwipePage() {
         <span className="text-[var(--muted)]">Vuốt để phân loại</span>
       </div>
 
-      <div className="relative w-full h-[400px]">
+      <div className="relative w-full h-[450px]">
         {/* Next Card (Background) */}
         {nextWord && (
           <div className="absolute inset-0 panel flex flex-col justify-center items-center text-center shadow-[4px_4px_0_var(--line)] scale-95 opacity-50 translate-y-4">
@@ -143,7 +143,7 @@ export default function SwipePage() {
         {/* Current Card (Foreground) */}
         <div 
           onClick={() => setShowMeaning(true)}
-          className={`absolute inset-0 panel flex flex-col justify-center items-center text-center shadow-[8px_8px_0_var(--line)] bg-[var(--paper)] z-10 transition-transform duration-300 cursor-pointer ${
+          className={`absolute inset-0 panel flex flex-col items-center text-center shadow-[8px_8px_0_var(--line)] bg-[var(--paper)] z-10 transition-transform duration-300 cursor-pointer overflow-y-auto overflow-x-hidden ${!showMeaning ? 'justify-center' : 'pt-16'} ${
             swipeDirection === 'left' ? '-translate-x-[120%] -rotate-12 opacity-0' :
             swipeDirection === 'right' ? 'translate-x-[120%] rotate-12 opacity-0' : ''
           }`}
