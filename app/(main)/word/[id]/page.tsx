@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { TOPIC_LABELS } from '@/types';
 import { auth } from '@/auth';
+import RecentWordTracker from '@/components/RecentWordTracker';
 
 async function getWordAndProgress(id: string) {
   const session = await auth();
@@ -41,6 +42,7 @@ export default async function WordDetailPage({
 
   return (
     <div>
+      <RecentWordTracker word={word} />
       <Link
         href="/library"
         className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] mb-6 inline-block"
@@ -72,13 +74,6 @@ export default async function WordDetailPage({
               );
             })()}
           </div>
-
-          {word.example && (
-            <div>
-              <p className="text-sm text-[var(--muted)] mb-1">Ví dụ</p>
-              <p className="text-gray-600 italic">"{word.example}"</p>
-            </div>
-          )}
 
           {word.synonyms && (
             <div>

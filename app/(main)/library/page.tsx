@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import Card from '@/components/Card';
+import RecentWordsList from '@/components/RecentWordsList';
 
 export default function LibraryPage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -44,6 +44,8 @@ export default function LibraryPage() {
         </div>
         <p className="text-[var(--muted)]">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
       </div>
+
+      <RecentWordsList />
 
       <div className="panel mb-8 flex flex-col md:flex-row gap-4">
         <input

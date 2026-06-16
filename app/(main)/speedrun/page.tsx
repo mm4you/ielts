@@ -25,7 +25,7 @@ export default function SpeedrunPage() {
       .then(data => {
         setQuestions(data);
       });
-  }, [gameState === 'start']); // Only fetch on start
+  }, []); // Only fetch on mount
 
   useEffect(() => {
     if (gameState === 'countdown') {
