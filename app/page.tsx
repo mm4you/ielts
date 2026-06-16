@@ -2,14 +2,23 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export default async function HomePage() {
+  const session = await auth();
   const totalWords = await prisma.word.count();
   
-  const today = new Date();
-  const dueWords = await prisma.word.count({
-    where: { next_review_date: { lte: today } }
-  });
+  let dueWords = 0;
+  if (session?.user?.id) {
+    const today = new Date();
+    dueWords = await prisma.userProgress.count({
+      where: { 
+        userId: session.user.id,
+        next_review_date: { lte: today },
+        repetition_count: { gt: 0 }
+      }
+    });
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg)] flex flex-col pb-16 md:pb-0">
@@ -40,7 +49,9 @@ export default async function HomePage() {
               Ôn tập các từ vựng đến hạn bằng flashcard. Hệ thống tự tính thời điểm lặp lại tối ưu.
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-              <span className="font-bold text-lg">{dueWords > 0 ? `${dueWords.toLocaleString('vi-VN')} thẻ cần ôn` : 'Đã ôn xong'}</span>
+              <span className="font-bold text-lg">
+                {!session ? 'Cần đăng nhập' : (dueWords > 0 ? `${dueWords.toLocaleString('vi-VN')} thẻ cần ôn` : 'Đã ôn xong')}
+              </span>
               <Link href="/review" className="btn-primary">
                 Bắt đầu
               </Link>
