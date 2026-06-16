@@ -22,14 +22,7 @@ export default function SpeedrunPage() {
     fetch('/api/quiz')
       .then(res => res.json())
       .then(data => {
-        // Reverse meaning and word for Speedrun (Find the word for the meaning)
-        const reversedQs = data.map((q: any) => ({
-          id: q.id,
-          word: q.correctAnswer, // Meaning becomes the prompt
-          correctAnswer: q.word, // Word becomes the target
-          options: [q.word, ...q.options.filter((o: string) => o !== q.correctAnswer).slice(0, 3)].sort(() => 0.5 - Math.random()) // Options are words
-        }));
-        setQuestions(reversedQs);
+        setQuestions(data);
       });
   }, [gameState]);
 
@@ -137,7 +130,7 @@ export default function SpeedrunPage() {
           <button
             key={idx}
             onClick={() => handleSelect(opt)}
-            className="btn-brutal text-center py-8 text-2xl hover:bg-[var(--line)] hover:text-white transition-colors"
+            className="btn-brutal text-left p-6 text-base hover:bg-[var(--line)] hover:text-white transition-colors whitespace-pre-line leading-relaxed"
           >
             {opt}
           </button>

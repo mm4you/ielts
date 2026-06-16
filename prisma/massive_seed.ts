@@ -13,14 +13,30 @@ async function translateText(text: string): Promise<string> {
   }
 }
 
-async function fetchDatamuseWords(topic: string): Promise<string[]> {
+async function fetchDatamuseWords(topic: string): Promise<{word: string, f: number}[]> {
   try {
-    const res = await fetch(`https://api.datamuse.com/words?ml=${topic}&max=1000`);
+    const res = await fetch(`https://api.datamuse.com/words?ml=${topic}&max=1000&md=f`);
     const data = await res.json();
-    return data.map((d: any) => d.word);
+    return data.map((d: any) => {
+      let f = 0;
+      if (d.tags) {
+        const fTag = d.tags.find((t: string) => t.startsWith('f:'));
+        if (fTag) f = parseFloat(fTag.split(':')[1]);
+      }
+      return { word: d.word, f };
+    });
   } catch (e) {
     return [];
   }
+}
+
+function getCEFRLevel(f: number): string {
+  if (f > 100) return 'A1';
+  if (f > 50) return 'A2';
+  if (f > 10) return 'B1';
+  if (f > 3) return 'B2';
+  if (f > 1) return 'C1';
+  return 'C2';
 }
 
 async function fetchDictionaryInfo(word: string) {
@@ -51,23 +67,37 @@ async function fetchDictionaryInfo(word: string) {
 
 async function main() {
   console.log('Fetching word lists from Datamuse...');
-  const topics = ['ielts', 'academic', 'toefl', 'university', 'science', 'literature', 'business'];
+  const topics = [
+    'ielts', 'academic', 'toefl', 'university', 'science', 'literature', 'business',
+    'technology', 'environment', 'society', 'culture', 'history', 'art', 'music',
+    'education', 'economy', 'politics', 'health', 'medicine', 'psychology',
+    'philosophy', 'geography', 'biology', 'chemistry', 'physics', 'mathematics',
+    'law', 'media', 'journalism', 'architecture', 'engineering', 'agriculture'
+  ];
   
-  let allWords: string[] = [];
+  let allWords: {word: string, f: number}[] = [];
   for (const topic of topics) {
     const words = await fetchDatamuseWords(topic);
     allWords = [...allWords, ...words];
   }
 
   // Remove duplicates
-  const uniqueWords = [...new Set(allWords)].filter(w => w.length > 3 && !w.includes(' '));
+  const uniqueMap = new Map<string, number>();
+  for (const item of allWords) {
+    if (item.word.length > 3 && !item.word.includes(' ')) {
+      uniqueMap.set(item.word, item.f);
+    }
+  }
+  
+  const uniqueWords = Array.from(uniqueMap.entries()).map(([word, f]) => ({word, f}));
   console.log(`Found ${uniqueWords.length} unique words. Starting massive seed...`);
 
   let count = 0;
   let inserted = 0;
 
-  for (const word of uniqueWords) {
+  for (const item of uniqueWords) {
     count++;
+    const { word, f } = item;
     
     // Check if already exists
     const exists = await prisma.word.findFirst({ where: { word } });
@@ -75,7 +105,7 @@ async function main() {
       continue;
     }
 
-    process.stdout.write(`[${count}/${uniqueWords.length}] Fetching "${word}"... `);
+    process.stdout.write(`[${count}/${uniqueWords.length}] Fetching "${word}" (Level ${getCEFRLevel(f)})... `);
 
     const dictInfo = await fetchDictionaryInfo(word);
     if (!dictInfo) {
@@ -98,7 +128,7 @@ async function main() {
         example: finalExample,
         synonyms: dictInfo.synonyms,
         topic: 'Academic',
-        level: 'B2', // Default level for these academic words
+        level: getCEFRLevel(f),
       }
     });
 
@@ -108,8 +138,8 @@ async function main() {
     // Prevent IP ban from dictionaryAPI and Google Translate
     await new Promise(r => setTimeout(r, 600));
 
-    // Limit to 2000 new words
-    if (inserted >= 2000) {
+    // Limit to 4000 new words
+    if (inserted >= 4000) {
         break;
     }
   }
