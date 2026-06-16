@@ -1,57 +1,141 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #f5f7fa;
-  --foreground: #222222;
-  --primary: #4f7cff;
-  --primary-hover: #3d66e6;
-  --border: #e5e7eb;
-  --card: #ffffff;
-  --muted: #6b7280;
+  --bg: #fffdf8;
+  --paper: #fffaf0;
+  --ink: #111827;
+  --muted: #5b6474;
+  --line: #1f2937;
+  --blue: #0ea5e9;
+  --green: #16a34a;
+  --red: #dc2626;
+  --yellow: #f59e0b;
 }
 
 .dark {
-  --background: #111827;
-  --foreground: #f9fafb;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --border: #374151;
-  --card: #1f2937;
-  --muted: #9ca3af;
+  --bg: #0f172a;
+  --paper: #1e293b;
+  --ink: #f8fafc;
+  --muted: #94a3b8;
+  --line: #334155;
+  /* Dark mode accent colors remain mostly the same for contrast */
 }
 
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-border: var(--border);
-  --color-card: var(--card);
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-paper: var(--paper);
+  --color-line: var(--line);
   --color-muted: var(--muted);
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --color-brand-blue: var(--blue);
+  --color-brand-green: var(--green);
+  --color-brand-red: var(--red);
+  --color-brand-yellow: var(--yellow);
+  --font-sans: var(--font-space-grotesk), "Segoe UI", sans-serif;
+  --font-serif: var(--font-fraunces), "Times New Roman", serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(17, 24, 39, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(17, 24, 39, 0.03) 1px, transparent 1px),
+    var(--bg);
+  background-size: 28px 28px;
   font-family: var(--font-sans);
 }
 
+.dark body {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    var(--bg);
+  background-size: 28px 28px;
+}
+
+/* Background orbs for neo-brutalism */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: -1;
+  opacity: 0.6;
+}
+
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--blue);
+  top: -100px;
+  left: -100px;
+  opacity: 0.15;
+}
+
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: var(--yellow);
+  bottom: -200px;
+  right: -100px;
+  opacity: 0.1;
+}
+
+.dark .orb-1 { opacity: 0.08; }
+.dark .orb-2 { opacity: 0.05; }
+
 @layer components {
+  .panel {
+    @apply border-[3px] border-[var(--line)] rounded-[24px] p-6 bg-[var(--paper)];
+    box-shadow: 8px 8px 0 var(--line);
+  }
+  
+  .btn-brutal {
+    @apply border-[3px] border-[var(--line)] rounded-xl font-bold px-6 py-3 transition-transform bg-white text-[var(--line)] cursor-pointer;
+    box-shadow: 4px 4px 0 var(--line);
+  }
+  
+  .btn-brutal:hover {
+    @apply -translate-y-1;
+    box-shadow: 6px 6px 0 var(--line);
+  }
+  
+  .btn-brutal:active {
+    @apply translate-y-1;
+    box-shadow: 2px 2px 0 var(--line);
+  }
+
   .btn-primary {
-    @apply bg-[var(--primary)] text-white px-6 py-3 rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors;
+    @apply border-[3px] border-[var(--line)] rounded-xl font-bold px-6 py-3 transition-transform cursor-pointer bg-[var(--blue)] text-white;
+    box-shadow: 4px 4px 0 var(--line);
   }
-  .btn-secondary {
-    @apply bg-white text-[var(--foreground)] px-4 py-2 rounded-lg font-medium border border-[var(--border)] hover:bg-gray-50 transition-colors;
+  
+  .btn-primary:hover {
+    @apply -translate-y-1;
+    box-shadow: 6px 6px 0 var(--line);
   }
-  .card {
-    @apply bg-[var(--card)] rounded-xl border border-[var(--border)] p-6;
+  
+  .btn-primary:active {
+    @apply translate-y-1;
+    box-shadow: 2px 2px 0 var(--line);
   }
-  .stat-value {
-    @apply text-3xl font-bold text-[var(--foreground)];
+  
+  .chip {
+    @apply border-[2px] border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap;
   }
-  .stat-label {
-    @apply text-sm text-[var(--muted)] mt-1;
-  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }

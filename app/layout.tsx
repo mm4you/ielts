@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+const fraunces = Fraunces({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-fraunces",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-space-grotesk",
 });
 
 export const metadata: Metadata = {
@@ -18,8 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi">
-      <body className={`${inter.variable} font-sans`}>{children}</body>
+    <html lang="vi" suppressHydrationWarning>
+      <body className={`${spaceGrotesk.variable} ${fraunces.variable} font-sans`}>
+        {children}
+      </body>
     </html>
   );
 }

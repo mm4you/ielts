@@ -35,21 +35,24 @@ export default function LibraryPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Thư viện từ vựng</h1>
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold font-serif mb-2">Thư viện từ vựng</h1>
+        <p className="text-[var(--muted)]">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
+      </div>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
+      <div className="panel mb-8 flex flex-col md:flex-row gap-4">
         <input
           type="text"
           placeholder="Tìm kiếm từ..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+          className="flex-1 px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold"
         />
 
         <select
           value={selectedTopic}
           onChange={(e) => setSelectedTopic(e.target.value)}
-          className="px-4 py-2 border border-[var(--border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+          className="px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold appearance-none cursor-pointer"
         >
           <option value="">Tất cả chủ đề</option>
           {TOPICS.map((topic) => (
@@ -62,7 +65,7 @@ export default function LibraryPage() {
         <select
           value={selectedLevel}
           onChange={(e) => setSelectedLevel(e.target.value)}
-          className="px-4 py-2 border border-[var(--border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+          className="px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold appearance-none cursor-pointer"
         >
           <option value="">Tất cả mức</option>
           {LEVELS.map((level) => (
@@ -75,14 +78,14 @@ export default function LibraryPage() {
 
       {loading ? (
         <div className="text-center py-20">
-          <p className="text-[var(--muted)]">Đang tải...</p>
+          <p className="text-[var(--muted)] font-bold animate-pulse">Đang tải dữ liệu...</p>
         </div>
       ) : words.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-[var(--muted)]">Không tìm thấy từ nào</p>
+        <div className="panel text-center py-20">
+          <p className="text-[var(--muted)] font-bold text-lg">Không tìm thấy từ nào phù hợp!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {words.map((word) => (
             <Card key={word.id} word={word} />
           ))}

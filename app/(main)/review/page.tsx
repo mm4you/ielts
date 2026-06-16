@@ -41,7 +41,8 @@ export default function ReviewPage() {
     nextDate.setDate(nextDate.getDate() + srsData.interval_days);
 
     try {
-      await fetch(`/api/words/${word.id}`, {
+      // Background update
+      fetch(`/api/words/${word.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,25 +58,24 @@ export default function ReviewPage() {
       setCurrentIndex(currentIndex + 1);
       setShowMeaning(false);
     } else {
-      router.refresh();
-      setCurrentIndex(0);
-      setShowMeaning(false);
+      router.push('/');
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-[var(--muted)]">Đang tải...</p>
+        <p className="text-[var(--muted)] font-bold text-xl animate-pulse">Đang tải thẻ học...</p>
       </div>
     );
   }
 
   if (words.length === 0) {
     return (
-      <div className="text-center py-20">
-        <p className="text-[var(--muted)] mb-4">Không có từ nào cần ôn tập!</p>
-        <button onClick={() => router.push('/library')} className="btn-secondary">
+      <div className="panel text-center py-20 max-w-2xl mx-auto mt-10">
+        <h2 className="text-3xl font-serif mb-4">Hoàn thành!</h2>
+        <p className="text-[var(--muted)] mb-8 font-bold">Bạn đã học xong tất cả các từ cần ôn tập hôm nay.</p>
+        <button onClick={() => router.push('/library')} className="btn-brutal bg-[var(--yellow)]">
           Khám phá thư viện
         </button>
       </div>
@@ -86,73 +86,67 @@ export default function ReviewPage() {
   const progress = ((currentIndex + 1) / words.length) * 100;
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <span className="text-sm text-[var(--muted)]">
-          {currentIndex + 1} / {words.length}
-        </span>
-        <span className="text-sm text-[var(--muted)]">{Math.round(progress)}%</span>
+    <div className="max-w-3xl mx-auto w-full px-4">
+      <div className="flex items-center justify-between mb-4 font-bold text-[var(--ink)]">
+        <span>Thẻ {currentIndex + 1} / {words.length}</span>
+        <span>{Math.round(progress)}%</span>
       </div>
 
-      <div className="w-full h-1 bg-[var(--border)] rounded-full mb-8">
+      <div className="w-full h-4 bg-[var(--paper)] border-[3px] border-[var(--line)] rounded-full mb-10 overflow-hidden shadow-[2px_2px_0_var(--line)]">
         <div
-          className="h-full bg-[var(--primary)] rounded-full transition-all"
+          className="h-full bg-[var(--green)] border-r-[3px] border-[var(--line)] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <div className="card text-center py-12 mb-6">
-        <p className="text-4xl font-bold mb-2">{currentWord.word}</p>
+      <div className="panel min-h-[400px] flex flex-col justify-center items-center text-center mb-8 relative">
+        <div className="absolute top-4 left-4 flex gap-2">
+          <span className="chip bg-[var(--yellow)]">{currentWord.level}</span>
+          <span className="chip">{currentWord.topic}</span>
+        </div>
+        
+        <h2 className="text-5xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 mt-8">
+          {currentWord.word}
+        </h2>
+        
         {currentWord.ipa && (
-          <p className="text-lg text-[var(--muted)] mb-4">{currentWord.ipa}</p>
+          <p className="text-xl text-[var(--muted)] mb-8 font-mono bg-gray-100 px-4 py-1 rounded-md border-2 border-[var(--line)]">
+            {currentWord.ipa}
+          </p>
         )}
 
         {showMeaning ? (
-          <div className="mt-6 text-left">
-            <p className="text-lg mb-4">{currentWord.meaning_vi}</p>
+          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-8 mt-4 animate-fade-in">
+            <h3 className="text-xl font-bold mb-2 text-[var(--blue)]">Định nghĩa:</h3>
+            <p className="text-2xl mb-6 font-bold text-[var(--ink)] leading-snug">{currentWord.meaning_vi}</p>
+            
             {currentWord.example && (
-              <p className="text-[var(--muted)] italic mb-2">Ví dụ:</p>
-            )}
-            {currentWord.example && (
-              <p className="text-sm text-[var(--muted)]">"{currentWord.example}"</p>
+              <>
+                <h3 className="text-lg font-bold mb-2 text-[var(--green)]">Ví dụ:</h3>
+                <p className="text-lg text-[var(--muted)] font-serif italic border-l-4 border-[var(--yellow)] pl-4">
+                  "{currentWord.example}"
+                </p>
+              </>
             )}
           </div>
         ) : (
           <button
             onClick={() => setShowMeaning(true)}
-            className="btn-secondary mt-4"
+            className="btn-brutal bg-[var(--ink)] text-white text-xl px-10 py-4 mt-10"
           >
-            Hiện nghĩa
+            Hiện đáp án
           </button>
         )}
       </div>
 
       {showMeaning && (
-        <div className="grid grid-cols-4 gap-3">
-          {(['forgot', 'hard', 'good', 'easy'] as ReviewRating[]).map((rating) => (
-            <button
-              key={rating}
-              onClick={() => handleRating(rating)}
-              className={`py-3 px-4 rounded-lg font-medium transition-colors ${
-                rating === 'forgot'
-                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                  : rating === 'hard'
-                  ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                  : rating === 'good'
-                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-              }`}
-            >
-              {RATING_LABELS[rating]}
-            </button>
-          ))}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
+          <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white">Lại</button>
+          <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)]">Khó</button>
+          <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white">Tốt</button>
+          <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white">Dễ</button>
         </div>
       )}
-
-      <div className="mt-6 flex justify-center gap-4 text-xs text-[var(--muted)]">
-        <span className="px-2 py-1 bg-gray-100 rounded">{currentWord.topic}</span>
-        <span className="px-2 py-1 bg-gray-100 rounded">{currentWord.level}</span>
-      </div>
     </div>
   );
 }
