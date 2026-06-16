@@ -18,22 +18,17 @@ export default async function HomePage() {
       <Header />
       
       <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-10">
-        <section className="flex flex-col md:flex-row gap-6 justify-between items-start mb-12">
+        <section className="flex flex-col gap-6 justify-between items-start mb-12">
           <div className="max-w-2xl">
-            <div className="inline-block mb-4 px-3 py-1 border-2 border-[var(--line)] rounded-full bg-white font-bold text-xs">
+            <div className="inline-block mb-4 px-3 py-1 border-2 border-[var(--line)] rounded-full bg-[var(--paper)] font-bold text-xs shadow-[2px_2px_0_var(--line)]">
               IELTS Vocabulary Studio
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[var(--ink)] mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif text-[var(--ink)] mb-4">
               Ôn trắc nghiệm Từ vựng
             </h1>
             <p className="text-[var(--muted)] text-lg max-w-[700px]">
               Ứng dụng học từ vựng IELTS. Giao diện gọn, tập trung. Luyện từ với hệ thống lặp lại ngắt quãng thông minh.
             </p>
-          </div>
-          <div className="flex flex-wrap gap-2 md:justify-end max-w-[320px]">
-            <span className="chip">~{totalWords} từ vựng</span>
-            <span className="chip">Học lặp lại ngắt quãng</span>
-            <span className="chip">{dueWords} từ đến hạn ôn</span>
           </div>
         </section>
 
