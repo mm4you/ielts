@@ -14,5 +14,14 @@ export default async function AdminPage() {
     orderBy: { created_at: 'desc' },
   });
 
-  return <AdminClient initialWords={words} />;
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      _count: {
+        select: { progress: true }
+      }
+    }
+  });
+
+  return <AdminClient initialWords={words} initialUsers={users as any} />;
 }

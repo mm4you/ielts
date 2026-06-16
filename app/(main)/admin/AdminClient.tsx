@@ -5,8 +5,22 @@ import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import { createWord, updateWord, deleteWord } from './actions';
 import { parseMeaning } from '@/lib/parse';
 
-export default function AdminClient({ initialWords }: { initialWords: Word[] }) {
+interface UserData {
+  id: string;
+  name: string | null;
+  email: string;
+  image: string | null;
+  role: string;
+  createdAt: Date;
+  _count: {
+    progress: number;
+  }
+}
+
+export default function AdminClient({ initialWords, initialUsers }: { initialWords: Word[], initialUsers: UserData[] }) {
+  const [activeTab, setActiveTab] = useState<'words' | 'users'>('words');
   const [words, setWords] = useState<Word[]>(initialWords);
+  const [users] = useState<UserData[]>(initialUsers);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<Word | null>(null);
@@ -103,30 +117,48 @@ export default function AdminClient({ initialWords }: { initialWords: Word[] }) 
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h1 className="text-4xl font-black font-serif text-[var(--ink)] uppercase">Quản Trị Hệ Thống</h1>
-          <p className="text-[var(--muted)] font-bold mt-2">Tổng số: {words.length} từ vựng</p>
         </div>
+        {activeTab === 'words' && (
+          <button 
+            onClick={() => handleOpenModal()} 
+            className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-6 py-3 uppercase"
+          >
+            + Thêm Từ Mới
+          </button>
+        )}
+      </div>
+
+      <div className="flex gap-4 mb-8 border-b-4 border-[var(--line)]">
         <button 
-          onClick={() => handleOpenModal()} 
-          className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-6 py-3 uppercase"
+          onClick={() => setActiveTab('words')}
+          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'words' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
         >
-          + Thêm Từ Mới
+          Quản Lý Từ Vựng ({words.length})
+        </button>
+        <button 
+          onClick={() => setActiveTab('users')}
+          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'users' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
+        >
+          Học Viên ({users.length})
         </button>
       </div>
 
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Tìm kiếm từ vựng..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-white font-bold shadow-[4px_4px_0_var(--line)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)]"
-        />
-      </div>
+      {activeTab === 'words' && (
+        <>
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Tìm kiếm từ vựng..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full max-w-md px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] font-bold shadow-[4px_4px_0_var(--line)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)]"
+            />
+          </div>
 
-      <div className="panel overflow-hidden p-0 rounded-xl border-[3px] border-[var(--line)]">
+          <div className="panel overflow-hidden p-0 rounded-xl border-[3px] border-[var(--line)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -168,6 +200,54 @@ export default function AdminClient({ initialWords }: { initialWords: Word[] }) 
           </table>
         </div>
       </div>
+      </>
+      )}
+
+      {activeTab === 'users' && (
+        <div className="panel overflow-hidden p-0 rounded-xl border-[3px] border-[var(--line)]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[var(--line)] text-white text-sm uppercase">
+                  <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Học Viên</th>
+                  <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Email</th>
+                  <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Từ đang học</th>
+                  <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Quyền</th>
+                  <th className="px-4 py-3 font-bold">Ngày tham gia</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="border-b border-[var(--line)] last:border-b-0 hover:bg-gray-50">
+                    <td className="px-4 py-3 border-r border-[var(--line)]">
+                      <div className="flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-[var(--ink)] text-xs shadow-[2px_2px_0_var(--line)]">
+                          {user.name?.charAt(0).toUpperCase() || 'U'}
+                        </span>
+                        <span className="font-bold text-[var(--ink)]">{user.name || 'Người dùng ẩn danh'}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-sm border-r border-[var(--line)]">{user.email}</td>
+                    <td className="px-4 py-3 text-center border-r border-[var(--line)]">
+                      <span className="font-black text-[var(--blue)] text-lg">{user._count.progress}</span>
+                    </td>
+                    <td className="px-4 py-3 border-r border-[var(--line)]">
+                      {user.email === 'ungnhutkhang53@gmail.com' ? (
+                        <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] px-2 py-0.5 rounded-full font-bold border border-[var(--line)]">ADMIN</span>
+                      ) : (
+                        <span className="text-xs font-bold text-[var(--muted)]">Học viên</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[var(--muted)]">
+                      {new Date(user.createdAt).toLocaleDateString('vi-VN')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-[var(--bg)]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
