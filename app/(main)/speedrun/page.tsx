@@ -15,7 +15,8 @@ export default function SpeedrunPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
   const [score, setScore] = useState(0);
-  const [gameState, setGameState] = useState<'start' | 'playing' | 'processing' | 'gameover'>('start');
+  const [gameState, setGameState] = useState<'start' | 'countdown' | 'playing' | 'processing' | 'gameover'>('start');
+  const [countdownNumber, setCountdownNumber] = useState(3);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -27,6 +28,19 @@ export default function SpeedrunPage() {
   }, [gameState === 'start']); // Only fetch on start
 
   useEffect(() => {
+    if (gameState === 'countdown') {
+      timerRef.current = setInterval(() => {
+        setCountdownNumber(n => {
+          if (n <= 1) {
+            clearInterval(timerRef.current as NodeJS.Timeout);
+            setGameState('playing');
+            return 3; // reset
+          }
+          return n - 1;
+        });
+      }, 1000);
+    }
+
     if (gameState === 'playing') {
       timerRef.current = setInterval(() => {
         setTimeLeft(t => {
@@ -81,7 +95,8 @@ export default function SpeedrunPage() {
     setScore(0);
     setTimeLeft(15);
     setCurrentIndex(0);
-    setGameState('playing');
+    setCountdownNumber(3);
+    setGameState('countdown');
   };
 
   if (gameState === 'start') {
@@ -92,6 +107,15 @@ export default function SpeedrunPage() {
         <button onClick={startGame} className="btn-brutal bg-[var(--red)] text-white text-2xl px-12 py-6 animate-pulse">
           Bắt Đầu
         </button>
+      </div>
+    );
+  }
+
+  if (gameState === 'countdown') {
+    return (
+      <div className="panel max-w-xl mx-auto text-center py-32 mt-10 shadow-[12px_12px_0_var(--blue)] border-[var(--blue)]">
+        <h1 className="text-9xl font-serif font-black text-[var(--blue)] animate-bounce mb-4">{countdownNumber}</h1>
+        <p className="text-3xl font-bold text-[var(--muted)] animate-pulse">Chuẩn bị...</p>
       </div>
     );
   }
