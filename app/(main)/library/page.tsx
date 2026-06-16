@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
+import Card from '@/components/Card';
 
 export default function LibraryPage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -81,32 +82,9 @@ export default function LibraryPage() {
           <p className="text-[var(--muted)]">Không tìm thấy từ nào</p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {words.map((word) => (
-            <Link
-              key={word.id}
-              href={`/word/${word.id}`}
-              className="card hover:border-[var(--primary)] transition-colors"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl font-semibold">{word.word}</span>
-                    {word.ipa && (
-                      <span className="text-sm text-[var(--muted)]">{word.ipa}</span>
-                    )}
-                  </div>
-                  <p className="text-sm text-[var(--muted)] mt-1 line-clamp-1">
-                    {word.meaning_vi}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="px-2 py-1 bg-gray-100 rounded text-xs">
-                    {word.level}
-                  </span>
-                </div>
-              </div>
-            </Link>
+            <Card key={word.id} word={word} />
           ))}
         </div>
       )}
