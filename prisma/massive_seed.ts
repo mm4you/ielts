@@ -2,6 +2,21 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Robust DB wrapper to handle Neon serverless cold starts
+async function withRetry<T>(operation: () => Promise<T>, maxRetries = 10, delayMs = 5000): Promise<T> {
+  let lastError;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (error: any) {
+      lastError = error;
+      console.log(`\n[DB] Connection failed. Retrying in ${delayMs/1000}s... (${i+1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
+  throw lastError;
+}
+
 async function translateText(text: string): Promise<string> {
   if (!text) return text;
   try {
@@ -100,7 +115,7 @@ async function main() {
     const { word, f } = item;
     
     // Check if already exists
-    const exists = await prisma.word.findFirst({ where: { word } });
+    const exists = await withRetry(() => prisma.word.findFirst({ where: { word } }));
     if (exists) {
       continue;
     }
@@ -120,7 +135,7 @@ async function main() {
     const finalMeaning = `${dictInfo.definition} ||| ${translatedMeaning}`;
     const finalExample = dictInfo.example || ''; // Keep example purely in English
 
-    await prisma.word.create({
+    await withRetry(() => prisma.word.create({
       data: {
         word,
         ipa: dictInfo.ipa,
@@ -130,7 +145,7 @@ async function main() {
         topic: 'Academic',
         level: getCEFRLevel(f),
       }
-    });
+    }));
 
     console.log('✓');
     inserted++;

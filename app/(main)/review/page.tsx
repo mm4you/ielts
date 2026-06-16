@@ -99,13 +99,16 @@ export default function ReviewPage() {
         />
       </div>
 
-      <div className="panel min-h-[400px] flex flex-col justify-center items-center text-center mb-8 relative">
+      <div 
+        className={`panel min-h-[400px] flex flex-col justify-center items-center text-center mb-8 relative transition-all duration-300 ${!showMeaning ? 'cursor-pointer hover:-translate-y-2 hover:shadow-[12px_12px_0_var(--line)]' : ''}`}
+        onClick={() => { if (!showMeaning) setShowMeaning(true); }}
+      >
         <div className="absolute top-4 left-4 flex gap-2">
           <span className="chip bg-[var(--yellow)]">{currentWord.level}</span>
           <span className="chip">{currentWord.topic}</span>
         </div>
         
-        <h2 className="text-5xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 mt-8">
+        <h2 className={`text-5xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 ${showMeaning ? 'mt-8' : ''}`}>
           {currentWord.word}
         </h2>
         
@@ -116,7 +119,7 @@ export default function ReviewPage() {
         )}
 
         {showMeaning ? (
-          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-4 mb-4">
+          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-6 mt-2 animate-fade-in">
             {(() => {
               const [en, vi] = (currentWord.meaning_vi || '').split('|||');
               return (
@@ -129,7 +132,7 @@ export default function ReviewPage() {
             
             {currentWord.example && (
               <>
-                <h3 className="text-lg font-bold mb-2 text-[var(--green)] mt-2">Ví dụ:</h3>
+                <h3 className="text-lg font-bold mb-2 text-[var(--green)] mt-4">Ví dụ:</h3>
                 <p className="text-lg text-[var(--ink)] font-serif italic border-l-4 border-[var(--yellow)] pl-4">
                   "{currentWord.example}"
                 </p>
@@ -137,12 +140,9 @@ export default function ReviewPage() {
             )}
           </div>
         ) : (
-          <button
-            onClick={() => setShowMeaning(true)}
-            className="btn-brutal bg-[var(--ink)] text-white text-xl px-10 py-4 mt-10"
-          >
-            Hiện đáp án
-          </button>
+          <div className="absolute bottom-8 text-[var(--muted)] font-bold text-lg animate-pulse flex items-center gap-2">
+            <span>👆</span> Bấm vào thẻ để xem đáp án
+          </div>
         )}
       </div>
 

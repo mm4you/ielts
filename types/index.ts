@@ -18,6 +18,8 @@ export interface Word {
 export type ReviewRating = 'forgot' | 'hard' | 'good' | 'easy';
 
 export const TOPICS = [
+  'Academic',
+  'Daily Update',
   'Education',
   'Environment',
   'Technology',
@@ -32,6 +34,8 @@ export const TOPICS = [
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 
 export const TOPIC_LABELS: Record<string, string> = {
+  Academic: 'Học thuật chung',
+  'Daily Update': 'Từ vựng mới (Hằng ngày)',
   Education: 'Giáo dục',
   Environment: 'Môi trường',
   Technology: 'Công nghệ',
