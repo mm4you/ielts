@@ -3,17 +3,9 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Attempt to add the pos column if it doesn't exist
-    await prisma.$executeRawUnsafe(`ALTER TABLE "Word" ADD COLUMN IF NOT EXISTS "pos" TEXT;`);
-    
-    return NextResponse.json({
-      success: true,
-      message: 'Migration successful! Column "pos" added.'
-    });
+    const words = await prisma.word.findMany({ take: 5 });
+    return NextResponse.json(words);
   } catch (error: any) {
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
