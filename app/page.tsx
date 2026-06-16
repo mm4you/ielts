@@ -1,11 +1,16 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import LoginWall from '@/components/LoginWall';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
 export default async function HomePage() {
   const session = await auth();
+  if (!session) {
+    return <LoginWall />;
+  }
+
   const totalWords = await prisma.word.count();
   
   let dueWords = 0;

@@ -55,7 +55,20 @@ export default function Header() {
           </div>
 
           {/* Mobile Theme Toggle (Nav is at bottom) */}
-          <div className="md:hidden">
+          {/* Mobile Auth & Theme Toggle */}
+          <div className="md:hidden flex items-center gap-3">
+            {session ? (
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-xs shadow-[2px_2px_0_var(--line)]">
+                  {session.user?.name?.charAt(0).toUpperCase() || 'U'}
+                </span>
+                <button onClick={() => signOut()} className="text-xs font-bold underline text-[var(--red)]">Thoát</button>
+              </div>
+            ) : (
+              <button onClick={() => signIn('google')} className="btn-brutal bg-[var(--blue)] text-white text-[10px] px-2 py-1 uppercase shadow-[2px_2px_0_var(--blue)]">
+                Đăng nhập
+              </button>
+            )}
             <ThemeToggle />
           </div>
         </nav>
