@@ -32,9 +32,9 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   }, []);
 
   const speakRoast = (text: string) => {
-    // Dùng Google Translate TTS để đảm bảo 100% ra giọng tiếng Việt chuẩn, không bị lỗi giọng Tây lơ lớ
-    // Do AI đã được giới hạn cực ngắn nên không sợ bị quá limit ký tự của Google
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(text)}`;
+    // Dùng endpoint chính thức của Google Dictionary để bắt buộc đọc giọng tiếng Việt
+    // client=dict-chrome-ex sẽ ưu tiên language flag tl=vi thay vì tự động đoán ngôn ngữ
+    const url = `https://translate.googleapis.com/translate_tts?client=dict-chrome-ex&tl=vi&q=${encodeURIComponent(text)}`;
     const audio = new Audio(url);
     
     setIsPlaying(true);
@@ -44,6 +44,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     audio.play().catch(e => {
       console.error("Lỗi phát âm thanh:", e);
       setIsPlaying(false);
+      alert("Trình duyệt chặn phát âm thanh tự động. Hãy bấm nút 'Nghe lại' nha!");
     });
   };
 
