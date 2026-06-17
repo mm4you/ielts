@@ -26,37 +26,101 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const [isTranscribing, setIsTranscribing] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const isUnmountedRef = useRef(false);
 
-  // Load voices early
+  // Load voices early and add cleanup for unmount
   useEffect(() => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.getVoices();
     }
+    
+    return () => {
+      isUnmountedRef.current = true;
+      // Dọn dẹp Mic nếu đang thu
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      }
+      // Dừng âm thanh đang phát
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.src = '';
+      }
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, []);
 
   const speakRoast = (text: string) => {
-    // Gọi qua Next.js API Proxy để tránh bị Google chặn CORS hoặc Referer
-    const url = `/api/tts?text=${encodeURIComponent(text)}`;
-    const audio = new Audio(url);
-    // Tăng tốc độ giọng nói lên 1.35x cho có vẻ Gen Z nói nhanh, xéo xắt
-    audio.playbackRate = 1.35;
-    
     setIsPlaying(true);
-    audio.onended = () => setIsPlaying(false);
-    audio.onerror = () => setIsPlaying(false);
     
-    audio.play().catch(e => {
-      console.error("Audio proxy failed, falling back to Web Speech API:", e);
-      if (window.speechSynthesis) {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'vi-VN';
-        utter.onend = () => setIsPlaying(false);
-        utter.onerror = () => setIsPlaying(false);
-        window.speechSynthesis.speak(utter);
-      } else {
+    // Tách câu để lách luật 200 ký tự của Google TTS
+    // Tách dựa trên dấu câu (. ! ?)
+    let sentences = text.match(/[^.!?]+[.!?]+/g);
+    
+    // Nếu AI không dùng dấu câu, cắt cứng theo 150 ký tự
+    if (!sentences) {
+      sentences = text.match(/.{1,150}(\s|$)/g) || [text];
+    }
+
+    let currentSentence = 0;
+
+    const playNext = () => {
+      if (!sentences || currentSentence >= sentences.length) {
         setIsPlaying(false);
+        return;
       }
-    });
+
+      const chunk = sentences[currentSentence].trim();
+      if (!chunk) {
+        currentSentence++;
+        playNext();
+        return;
+      }
+
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+      const audio = new Audio(url);
+      currentAudioRef.current = audio;
+      audio.playbackRate = 1.35;
+      
+      audio.onended = () => {
+        if (isUnmountedRef.current) return;
+        currentSentence++;
+        playNext(); // Phát câu tiếp theo
+      };
+
+      audio.onerror = (e) => {
+        console.error("Google TTS failed chunk:", chunk, e);
+        // Fallback Web Speech API cho đoạn này
+        if (window.speechSynthesis) {
+          const utter = new SpeechSynthesisUtterance(chunk);
+          utter.lang = 'vi-VN';
+          utter.onend = () => {
+            if (isUnmountedRef.current) return;
+            currentSentence++;
+            playNext();
+          };
+          utter.onerror = () => {
+            if (isUnmountedRef.current) return;
+            currentSentence++;
+            playNext();
+          };
+          window.speechSynthesis.speak(utter);
+        } else {
+          currentSentence++;
+          playNext();
+        }
+      };
+      
+      audio.play().catch(e => {
+        console.error("Audio blocked:", e);
+        audio.onerror(e as any);
+      });
+    };
+
+    playNext();
   };
 
   const startRecording = async () => {
@@ -79,6 +143,21 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
+      // THUẬT TOÁN TỰ ĐỘNG NGẮT KHI IM LẶNG (VAD)
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextClass();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 512;
+      source.connect(analyser);
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      let silenceStart = Date.now();
+      let hasSpoken = false;
+      let checkAudioInterval: NodeJS.Timeout;
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
@@ -87,10 +166,32 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
       mediaRecorder.onstart = () => {
         setIsRecording(true);
+        silenceStart = Date.now();
+        
+        checkAudioInterval = setInterval(() => {
+          analyser.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
+          const average = sum / bufferLength;
+
+          // Nếu âm lượng đủ lớn (ngưỡng 10)
+          if (average > 10) { 
+            hasSpoken = true;
+            silenceStart = Date.now(); // Reset bộ đếm im lặng
+          } else {
+            // Nếu đã nói xong và im lặng kéo dài 1.5 giây -> TỰ ĐỘNG NGẮT!
+            if (hasSpoken && Date.now() - silenceStart > 1500) {
+              if (mediaRecorder.state === 'recording') mediaRecorder.stop();
+            }
+          }
+        }, 100);
       };
 
       mediaRecorder.onstop = async () => {
         setIsRecording(false);
+        clearInterval(checkAudioInterval);
+        audioContext.close();
+        
         // Tắt đèn đỏ trên tab trình duyệt
         stream.getTracks().forEach(track => track.stop());
 
@@ -105,12 +206,12 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
       mediaRecorder.start();
 
-      // Tự động ngắt sau 7 giây nếu người dùng quên tắt
+      // Hỗ trợ ngắt dự phòng sau 10 giây nếu xung quanh quá ồn không nhận diện được im lặng
       setTimeout(() => {
         if (mediaRecorder.state === 'recording') {
           mediaRecorder.stop();
         }
-      }, 7000);
+      }, 10000);
 
     } catch (err: any) {
       console.error('Lỗi truy cập Mic:', err);
@@ -215,17 +316,20 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       <div className="flex justify-center mb-6">
         <button
           onClick={isRecording ? stopRecording : startRecording}
-          disabled={loading}
+          disabled={loading || isTranscribing}
           className={`btn-brutal w-24 h-24 rounded-full flex items-center justify-center text-4xl shadow-[6px_6px_0_var(--line)] transition-transform ${
-            isRecording ? 'bg-[var(--red)] animate-pulse scale-110 border-[var(--line)] shadow-[2px_2px_0_var(--line)]' : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] hover:-translate-y-1'
-          } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            isRecording ? 'bg-[#34C759] animate-pulse scale-110 border-[var(--line)] shadow-[2px_2px_0_var(--line)]' : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] hover:-translate-y-1'
+          } ${loading || isTranscribing ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          {isRecording ? '🔴' : '🎤'}
+          {isRecording ? '🟢' : '🎤'}
         </button>
       </div>
 
       {isRecording && (
-        <p className="text-center font-bold text-red-600 animate-pulse">Đang nghe... Đọc lẹ lên má!</p>
+        <div className="text-center animate-pulse">
+          <p className="font-black text-[#34C759] text-xl uppercase">Đang nghe...</p>
+          <p className="font-bold text-[var(--ink)] mt-2">Đọc xong cứ im lặng 1 giây, máy sẽ tự nộp bài!</p>
+        </div>
       )}
 
       {isTranscribing && (
