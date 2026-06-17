@@ -169,14 +169,53 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
 
       {activeTab === 'words' && (
         <>
-          <div className="mb-6">
+          <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
             <input
               type="text"
               placeholder="Tìm kiếm từ vựng..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full max-w-md px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] font-bold shadow-[4px_4px_0_var(--line)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)]"
+              className="w-full md:max-w-md px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] font-bold shadow-[4px_4px_0_var(--line)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)]"
             />
+            <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/seed-basic');
+                    const data = await res.json();
+                    alert(data.message);
+                    if (data.success) window.location.reload();
+                  } catch (e) {
+                    alert('Lỗi nạp từ cơ bản');
+                  }
+                }}
+                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-sm py-2 px-4"
+              >
+                + Nạp 50 từ cơ bản (A1)
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/admin/improve-meanings', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ limit: 50 })
+                    });
+                    const data = await res.json();
+                    if (data.error) alert('Lỗi: ' + data.error);
+                    else {
+                      alert(data.message);
+                      window.location.reload();
+                    }
+                  } catch (e) {
+                    alert('Lỗi kết nối AI');
+                  }
+                }}
+                className="btn-brutal bg-[#a855f7] text-white text-sm py-2 px-4 shadow-[4px_4px_0_#7e22ce] hover:shadow-[6px_6px_0_#7e22ce] border-[#7e22ce]"
+              >
+                ✨ AI Sửa Nghĩa Tự Động (50 từ)
+              </button>
+            </div>
           </div>
 
           <div className="panel overflow-hidden p-0 rounded-xl border-[3px] border-[var(--line)]">
