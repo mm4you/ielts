@@ -58,14 +58,32 @@ async function main() {
   console.log('Bắt đầu quét từ vựng cần sửa nghĩa (chứa "|||")...');
   
   // Find all words that have the '|||' pattern (meaning they were auto-translated)
-  const wordsToImprove = await prisma.word.findMany({
-    where: {
-      meaning_vi: {
-        contains: '|||'
-      }
-    },
-    orderBy: { id: 'asc' }
-  });
+  let wordsToImprove: any[] = [];
+  let connected = false;
+  let retries = 0;
+  
+  while (!connected && retries < 5) {
+    try {
+      wordsToImprove = await prisma.word.findMany({
+        where: {
+          meaning_vi: {
+            contains: '|||'
+          }
+        },
+        orderBy: { id: 'asc' }
+      });
+      connected = true;
+    } catch (e: any) {
+      console.log(`Lỗi kết nối DB (thử lại sau 5s)... (${retries + 1}/5)`);
+      retries++;
+      await new Promise(r => setTimeout(r, 5000));
+    }
+  }
+
+  if (!connected) {
+    console.error('Không thể kết nối đến Database sau 5 lần thử. Vui lòng kiểm tra mạng hoặc DB Neon.');
+    process.exit(1);
+  }
 
   console.log(`Tìm thấy ${wordsToImprove.length} từ vựng cần cải thiện.`);
 
