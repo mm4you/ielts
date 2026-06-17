@@ -136,7 +136,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         utter.voice = selectedVoice;
         utter.lang = selectedVoice.lang;
         const isSouth = isSouthernVoice(selectedVoice.name);
-        utter.rate = isSouth ? 1.25 : 1.2; // Giọng Nam thì để 1.25, giọng Bắc thì để 1.2 cho cân đối
+        utter.rate = isSouth ? 1.05 : 1.0; // Giọng tự nhiên, hơi nhanh nhẹ xíu xiu cho có năng lượng
         utter.onend = () => {
           handleNext();
         };
@@ -156,7 +156,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       currentAudioRef.current = audio;
       
       audio.src = url;
-      audio.playbackRate = 1.4; // Tốc độ 1.4 lý tưởng
+      audio.playbackRate = 1.05; // Đọc tự nhiên, không bị líu lưỡi
       
       let localHandled = false;
       const localCallback = () => {
@@ -173,7 +173,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           const utter = new SpeechSynthesisUtterance(chunk);
           utter.lang = 'vi-VN';
-          utter.rate = 1.2; // Giọng chuẩn fallback chạy vừa phải 1.2
+          utter.rate = 1.05; // Giọng chuẩn fallback chạy mượt mà
           
           // Gán giọng Tiếng Việt từ hệ thống để tránh bị giọng Anh đọc đè tiếng Việt
           const systemVoices = window.speechSynthesis.getVoices();
