@@ -93,7 +93,7 @@ export default function SniperClient() {
       id: `${currentQIndex}-${idx}`,
       text: choice,
       isCorrect: idx === currentQ.correctIndex,
-      top: 10 + Math.random() * 45, // 10% to 55% top to avoid mission panel
+      top: 12 + Math.random() * 33, // 12% to 45% top to ensure they stay in the top half and don't overlap the bottom panel
       duration: baseDuration + (Math.random() * 2), // random variance
       delay: Math.random() * 1.5,
       direction: Math.random() > 0.5 ? 'ltr' : 'rtl',
@@ -247,7 +247,7 @@ export default function SniperClient() {
               e.preventDefault(); // Prevent text selection/drag
               handleShoot(target);
             }}
-            className="absolute whitespace-nowrap bg-[var(--ink)] text-white font-black text-xl md:text-3xl px-6 py-3 border-[3px] border-[var(--line)] shadow-[6px_6px_0_rgba(0,0,0,0.5)] cursor-crosshair hover:scale-110 active:scale-95 transition-transform"
+            className="absolute whitespace-nowrap bg-[var(--ink)] text-white font-black text-lg md:text-3xl px-4 py-2 md:px-6 md:py-3 border-[3px] border-[var(--line)] shadow-[4px_4px_0_rgba(0,0,0,0.5)] md:shadow-[6px_6px_0_rgba(0,0,0,0.5)] cursor-crosshair hover:scale-110 active:scale-95 transition-transform"
             style={{
               top: `${target.top}%`,
               animation: `fly-${target.direction} ${target.duration}s linear ${target.delay}s forwards`,
@@ -260,24 +260,26 @@ export default function SniperClient() {
       </div>
 
       {/* Bottom Mission Panel */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-10 pointer-events-none">
-        <div className="panel bg-[var(--paper)] border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] p-4 md:p-6 text-center">
-          <span className="text-sm font-black text-[var(--red)] uppercase tracking-widest mb-2 block animate-pulse">
+      <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 w-[95%] md:w-[90%] max-w-2xl z-10 pointer-events-none">
+        <div className="panel bg-[var(--paper)] border-[3px] md:border-[4px] border-[var(--ink)] shadow-[6px_6px_0_var(--yellow)] p-3 md:p-6 text-center max-h-[40vh] flex flex-col pointer-events-auto">
+          <span className="text-xs md:text-sm font-black text-[var(--red)] uppercase tracking-widest mb-1 block animate-pulse shrink-0">
             Mục tiêu cần diệt:
           </span>
-          <h2 className="text-2xl md:text-4xl font-serif font-black text-[var(--ink)]">
-            {currentQ ? (
-              (() => {
-                const { en, vi } = parseMeaning(currentQ.targetMeaning, currentQ.pos || '');
-                return (
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="mb-1">{en}</span>
-                    {vi && <span className="text-lg md:text-xl font-bold text-[var(--muted)]">{vi}</span>}
-                  </div>
-                );
+          <div className="overflow-y-auto">
+            <h2 className="text-base md:text-3xl font-serif font-black text-[var(--ink)]">
+              {currentQ ? (
+                (() => {
+                  const { en, vi } = parseMeaning(currentQ.targetMeaning, currentQ.pos || '');
+                  return (
+                    <div className="flex flex-col items-center justify-center gap-1">
+                      <span className="leading-tight">{en}</span>
+                      {vi && <span className="text-sm md:text-xl font-bold text-[var(--muted)]">{vi}</span>}
+                    </div>
+                  );
               })()
             ) : 'Đang nạp đạn...'}
           </h2>
+          </div>
         </div>
       </div>
 
