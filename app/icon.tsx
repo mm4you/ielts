@@ -14,19 +14,45 @@ export default function Icon() {
     (
       <div
         style={{
-          fontSize: 320,
-          background: '#ef4444',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'white',
-          borderRadius: '120px',
-          border: '32px solid #111111',
+          background: '#fffaf0',
         }}
       >
-        V
+        <div style={{ position: 'relative', width: 360, height: 360, display: 'flex' }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: 240,
+              height: 240,
+              background: '#0ea5e9',
+              border: '32px solid #111827',
+              borderRadius: '64px',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: 240,
+              height: 240,
+              background: '#f59e0b',
+              border: '32px solid #111827',
+              borderRadius: '64px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+             <span style={{ fontSize: 120, fontWeight: 900, color: '#111827', fontFamily: 'serif', marginTop: -10 }}>V</span>
+          </div>
+        </div>
       </div>
     ),
     { ...size }
