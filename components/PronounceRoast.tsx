@@ -157,6 +157,18 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       window.speechSynthesis.speak(dummy);
     }
 
+    // Reset trạng thái phát âm thanh & xóa listener của lượt phát cũ tránh bị kết hoạt lại khi chạy silent unlock
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.onended = null;
+      currentAudioRef.current.onerror = null;
+      currentAudioRef.current.src = "";
+    }
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsPlaying(false);
+
     // Unlock HTML5 Audio bằng cách phát tiếng tĩnh rất ngắn ngay khi người dùng click
     if (!currentAudioRef.current) {
       currentAudioRef.current = new Audio();
