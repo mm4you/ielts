@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 
 const basicWords = [
+
   // Food & Drink
   { word: "apple", pos: "Danh từ", ipa: "/ˈæp.əl/", meaning_vi: "a round fruit with red or green skin ||| Quả táo", topic: "Food", level: "A1" },
   { word: "water", pos: "Danh từ", ipa: "/ˈwɔː.tər/", meaning_vi: "a clear liquid, without colour or taste ||| Nước uống", topic: "Food", level: "A1" },
@@ -63,6 +65,11 @@ const basicWords = [
 
 export async function GET(request: Request) {
   try {
+    const session = await auth();
+    if (!session || (session.user as any)?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const existingWords = await prisma.word.findMany({
       select: { word: true, pos: true }
     });

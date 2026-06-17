@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 
 const cambridgeWords = [
   // C1 / C2 Academic
@@ -32,6 +33,11 @@ const cambridgeWords = [
 
 export async function GET(request: Request) {
   try {
+    const session = await auth();
+    if (!session || (session.user as any)?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const existingWords = await prisma.word.findMany({
       select: { word: true, pos: true }
     });

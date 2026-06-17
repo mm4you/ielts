@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 
 const newTopics = [
   // Basic & Everyday (A1-B1)
@@ -34,6 +35,11 @@ function getCEFRLevel(f: number): string {
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session || (session.user as any)?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // 1. Pick a random topic
     const topic = newTopics[Math.floor(Math.random() * newTopics.length)];
     

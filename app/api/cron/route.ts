@@ -72,9 +72,10 @@ async function fetchDictionaryInfo(word: string) {
 }
 
 export async function GET(request: Request) {
-  // Check authorization header to secure the cron job (Optional for Vercel Cron, but good practice)
+  // Check authorization header to secure the cron job (Required for Vercel Cron)
   const authHeader = request.headers.get('authorization');
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
