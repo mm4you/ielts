@@ -1,17 +1,24 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const count = await prisma.word.count();
+    const { searchParams } = new URL(request.url);
+    const level = searchParams.get('level');
+
+    // Nếu có truyền level, lọc theo level. Nếu không (hoặc level là "ALL"), lấy tất cả
+    const whereClause = level && level !== 'ALL' ? { level: level.toUpperCase() } : {};
+
+    const count = await prisma.word.count({ where: whereClause });
     
     if (count === 0) {
-      return NextResponse.json({ error: 'Database is empty' }, { status: 404 });
+      return NextResponse.json({ error: 'Không tìm thấy từ vựng nào ở cấp độ này!' }, { status: 404 });
     }
 
     const skip = Math.floor(Math.random() * count);
     
     const randomWord = await prisma.word.findFirst({
+      where: whereClause,
       skip: skip
     });
 

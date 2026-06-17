@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import Card from '@/components/Card';
 import RecentWordsList from '@/components/RecentWordsList';
+import Link from 'next/link';
 
 export default function LibraryPage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -35,14 +36,23 @@ export default function LibraryPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <div className="flex items-baseline gap-4 mb-2">
-          <h1 className="text-4xl font-bold font-serif">Thư viện từ vựng</h1>
-          <span className="text-xl text-[var(--ink)] font-bold bg-[var(--paper)] px-3 py-1 rounded-full border-2 border-[var(--line)]">
-            {words.length} từ
-          </span>
+      <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-baseline gap-4 mb-2">
+            <h1 className="text-4xl font-bold font-serif">Thư viện từ vựng</h1>
+            <span className="text-xl text-[var(--ink)] font-bold bg-[var(--paper)] px-3 py-1 rounded-full border-2 border-[var(--line)]">
+              {words.length} từ
+            </span>
+          </div>
+          <p className="text-[var(--muted)]">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
         </div>
-        <p className="text-[var(--muted)]">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
+
+        <Link 
+          href="/pronounce-challenge" 
+          className="btn-brutal bg-[#ff3b30] text-white px-6 py-3 shadow-[4px_4px_0_#8b0000] hover:shadow-[6px_6px_0_#8b0000] border-[#8b0000] flex items-center gap-2 font-black text-lg animate-pulse"
+        >
+          🎙️ THỬ THÁCH PHÁT ÂM AI
+        </Link>
       </div>
 
       <RecentWordsList />

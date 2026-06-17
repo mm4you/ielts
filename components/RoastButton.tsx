@@ -86,47 +86,47 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
       )}
 
       {loading && (
-        <div className="panel bg-[#fff3cd] border-[#ffc107] shadow-[4px_4px_0_#ffc107] animate-pulse">
-          <p className="font-bold text-[#856404] flex items-center gap-2">
+        <div className="panel bg-[#fff3cd] dark:bg-yellow-900 border-[#ffc107] dark:border-yellow-500 shadow-[4px_4px_0_#ffc107] dark:shadow-[4px_4px_0_#e0a800] animate-pulse">
+          <p className="font-bold text-[#856404] dark:text-yellow-200 flex items-center gap-2">
             <span className="animate-spin text-xl">⏳</span> AI đang xắn tay áo lên gõ phím chửi... chờ xíu má!
           </p>
         </div>
       )}
 
       {error && (
-        <div className="panel bg-[#f8d7da] border-[#dc3545] shadow-[4px_4px_0_#dc3545]">
-          <p className="font-bold text-[#721c24]">Ối dồi ôi lỗi cmnr: {error}</p>
+        <div className="panel bg-[#f8d7da] dark:bg-red-900 border-[#dc3545] dark:border-red-500 shadow-[4px_4px_0_#dc3545] dark:shadow-[4px_4px_0_#c82333]">
+          <p className="font-bold text-[#721c24] dark:text-red-200">Ối dồi ôi lỗi cmnr: {error}</p>
         </div>
       )}
 
       {roastData && (
-        <div className="panel bg-[#f8d7da] border-[#dc3545] shadow-[6px_6px_0_#dc3545] space-y-4 relative">
-          <div className="absolute -top-4 -left-4 bg-[#dc3545] text-white px-3 py-1 font-black border-2 border-black rotate-[-5deg]">
+        <div className="panel bg-[#f8d7da] dark:bg-red-900 border-[#dc3545] dark:border-red-500 shadow-[6px_6px_0_#dc3545] dark:shadow-[6px_6px_0_#c82333] space-y-4 relative">
+          <div className="absolute -top-4 -left-4 bg-[#dc3545] dark:bg-red-600 text-white px-3 py-1 font-black border-2 border-black dark:border-white rotate-[-5deg]">
             ⚠️ AI MỎ HỖN
           </div>
           
           <div className="pt-2">
-            <h4 className="font-black text-xl mb-2 text-[#721c24] flex items-center justify-between">
+            <h4 className="font-black text-xl mb-2 text-[#721c24] dark:text-red-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <span>Lời sấm truyền:</span>
               <button 
                 onClick={() => speakRoast(roastData.roast)}
-                className={`text-sm px-2 py-1 rounded border-2 border-[#721c24] ${isPlaying ? 'bg-[#721c24] text-white animate-pulse' : 'bg-transparent text-[#721c24] hover:bg-[#721c24] hover:text-white'}`}
+                className={`text-sm px-2 py-1 rounded border-2 border-[#721c24] dark:border-red-300 w-full sm:w-auto ${isPlaying ? 'bg-[#721c24] dark:bg-red-300 text-white dark:text-red-900 animate-pulse' : 'bg-transparent text-[#721c24] dark:text-red-300 hover:bg-[#721c24] dark:hover:bg-red-300 hover:text-white dark:hover:text-red-900'}`}
               >
                 {isPlaying ? '🔊 Đang chửi...' : '🔊 Nghe lại'}
               </button>
             </h4>
-            <p className="text-[#721c24] leading-relaxed whitespace-pre-wrap">{roastData.roast}</p>
+            <p className="text-[#721c24] dark:text-red-100 leading-relaxed whitespace-pre-wrap">{roastData.roast}</p>
           </div>
 
-          <div className="bg-white/50 p-4 border-2 border-[#dc3545] border-dashed">
-            <h4 className="font-black text-sm mb-1 text-[#dc3545]">VÍ DỤ DRAMA:</h4>
-            <p className="font-bold text-black mb-1">{roastData.example}</p>
-            <p className="text-sm text-[#721c24] italic">👉 {roastData.example_vi}</p>
+          <div className="bg-white/50 dark:bg-black/20 p-4 border-2 border-[#dc3545] dark:border-red-500 border-dashed">
+            <h4 className="font-black text-sm mb-1 text-[#dc3545] dark:text-red-400">VÍ DỤ DRAMA:</h4>
+            <p className="font-bold text-black dark:text-white mb-1">{roastData.example}</p>
+            <p className="text-sm text-[#721c24] dark:text-red-300 italic">👉 {roastData.example_vi}</p>
           </div>
           
           <button 
             onClick={handleRoast}
-            className="text-xs font-bold underline text-[#dc3545] hover:text-black mt-2"
+            className="text-xs font-bold underline text-[#dc3545] dark:text-red-400 hover:text-black dark:hover:text-white mt-2"
           >
             Chửi chưa đã? Khịa lại câu khác xem!
           </button>
