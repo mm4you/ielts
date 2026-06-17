@@ -23,6 +23,13 @@ interface Target {
   direction: 'ltr' | 'rtl';
 }
 
+interface Explosion {
+  id: string;
+  x: number;
+  y: number;
+  color: string;
+}
+
 export default function SniperClient() {
   const router = useRouter();
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
@@ -37,6 +44,7 @@ export default function SniperClient() {
   const [targets, setTargets] = useState<Target[]>([]);
   const [flash, setFlash] = useState<'green' | 'red' | null>(null);
   const [loading, setLoading] = useState(false);
+  const [explosions, setExplosions] = useState<Explosion[]>([]);
 
   const fetchQuestions = async () => {
     try {
@@ -109,23 +117,26 @@ export default function SniperClient() {
     setTargets(newTargets);
   };
 
-  const handleShoot = (target: Target) => {
+  const handleShoot = (target: Target, x: number, y: number) => {
     if (gameState !== 'playing') return;
 
+    const explosionId = Date.now().toString();
+    setExplosions(prev => [...prev, { id: explosionId, x, y, color: target.isCorrect ? '#10b981' : '#ef4444' }]);
+    setTimeout(() => {
+      setExplosions(prev => prev.filter(e => e.id !== explosionId));
+    }, 600);
+
     if (target.isCorrect) {
-      // Correct hit!
       setFlash('green');
       setScore(s => s + 100);
-      setTargets([]); // Clear current targets
+      setTargets([]);
       setTimeout(() => {
         setFlash(null);
         setCurrentQIndex(c => c + 1);
       }, 300);
     } else {
-      // Wrong hit
       setFlash('red');
       setLives(l => l - 1);
-      // Remove this wrong target so they can't shoot it again
       setTargets(prev => prev.filter(t => t.id !== target.id));
       setTimeout(() => setFlash(null), 300);
     }
@@ -251,10 +262,10 @@ export default function SniperClient() {
             key={target.id}
             onAnimationEnd={() => handleTargetMiss(target)}
             onPointerDown={(e) => {
-              e.preventDefault(); // Prevent text selection/drag
-              handleShoot(target);
+              e.preventDefault();
+              handleShoot(target, e.clientX, e.clientY);
             }}
-            className="absolute whitespace-nowrap bg-[var(--ink)] text-white font-black text-lg md:text-3xl px-4 py-2 md:px-6 md:py-3 border-[3px] border-[var(--line)] shadow-[4px_4px_0_rgba(0,0,0,0.5)] md:shadow-[6px_6px_0_rgba(0,0,0,0.5)] cursor-crosshair hover:scale-110 active:scale-95 transition-transform"
+            className="absolute whitespace-nowrap bg-[var(--paper)] text-[var(--ink)] font-black text-lg md:text-3xl px-4 py-2 md:px-6 md:py-3 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--ink)] md:shadow-[6px_6px_0_var(--ink)] cursor-crosshair hover:scale-110 active:scale-95 transition-transform"
             style={{
               top: `${target.top}%`,
               animation: `fly-${target.direction} ${target.duration}s linear ${target.delay}s forwards`,
@@ -262,6 +273,29 @@ export default function SniperClient() {
             }}
           >
             {target.text}
+          </div>
+        ))}
+        
+        {explosions.map(exp => (
+          <div key={exp.id} className="absolute pointer-events-none" style={{ left: exp.x, top: exp.y, zIndex: 50 }}>
+            {Array.from({ length: 8 }).map((_, i) => {
+              const angle = (i * Math.PI * 2) / 8;
+              const distance = 40 + Math.random() * 40;
+              const tx = Math.cos(angle) * distance;
+              const ty = Math.sin(angle) * distance;
+              return (
+                <div
+                  key={i}
+                  className="absolute w-3 h-3 md:w-4 md:h-4 border-[2px] border-[var(--line)]"
+                  style={{
+                    backgroundColor: exp.color,
+                    '--tx': `${tx}px`,
+                    '--ty': `${ty}px`,
+                    animation: `particle-explode 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`
+                  } as any}
+                />
+              );
+            })}
           </div>
         ))}
       </div>
@@ -302,6 +336,10 @@ export default function SniperClient() {
         /* Make cursor a large crosshair */
         .cursor-crosshair, .cursor-crosshair * {
           cursor: crosshair !important;
+        }
+        @keyframes particle-explode {
+          0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+          100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(360deg); opacity: 0; }
         }
       `}</style>
     </div>
