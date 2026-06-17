@@ -50,14 +50,33 @@ export async function GET() {
           const fTag = d.tags.find((t: string) => t.startsWith('f:'));
           if (fTag) f = parseFloat(fTag.split(':')[1]);
         }
-        return { word: d.word, f };
+        return { word: d.word, f, level: getCEFRLevel(f) };
       })
       .sort(() => 0.5 - Math.random()); // Shuffle
-      
-    // 4. Find 5 words that don't exist in DB
-    const wordsToInsert = [];
+
+    // Group by level to ensure even distribution
+    const grouped: Record<string, any[]> = { 'A1': [], 'A2': [], 'B1': [], 'B2': [], 'C1': [], 'C2': [] };
     for (const cand of candidates) {
-      if (wordsToInsert.length >= 5) break;
+      grouped[cand.level].push(cand);
+    }
+
+    // 4. Find 5 words that don't exist in DB (Round Robin across levels)
+    const wordsToInsert = [];
+    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    let levelIdx = 0;
+    
+    // Safety break in case all words exist in DB
+    let attempts = 0;
+    while (wordsToInsert.length < 5 && attempts < candidates.length) {
+      const currentLevel = levels[levelIdx % levels.length];
+      levelIdx++;
+      attempts++;
+
+      const candList = grouped[currentLevel];
+      if (!candList || candList.length === 0) continue;
+
+      const cand = candList.pop(); // Take one from this level
+
       
       const exists = await prisma.word.findFirst({ where: { word: cand.word } });
       if (!exists) {
@@ -94,7 +113,7 @@ export async function GET() {
               example: definition.example || '',
               synonyms: meaning.synonyms ? meaning.synonyms.slice(0, 5).join(', ') : '',
               topic: topic.charAt(0).toUpperCase() + topic.slice(1),
-              level: getCEFRLevel(cand.f),
+              level: cand.level,
               pos: finalPos
             });
           }
