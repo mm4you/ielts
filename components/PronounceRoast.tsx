@@ -33,9 +33,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   }, []);
 
   const speakRoast = (text: string) => {
-    // Dùng endpoint chính thức của Google Dictionary để bắt buộc đọc giọng tiếng Việt
-    // client=dict-chrome-ex sẽ ưu tiên language flag tl=vi thay vì tự động đoán ngôn ngữ
-    const url = `https://translate.googleapis.com/translate_tts?client=dict-chrome-ex&tl=vi&q=${encodeURIComponent(text)}`;
+    // Dùng Google Translate TTS
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(text)}`;
     const audio = new Audio(url);
     
     setIsPlaying(true);
@@ -43,9 +42,17 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     audio.onerror = () => setIsPlaying(false);
     
     audio.play().catch(e => {
-      console.error("Lỗi phát âm thanh:", e);
-      setIsPlaying(false);
-      alert("Trình duyệt chặn phát âm thanh tự động. Hãy bấm nút 'Nghe lại' nha!");
+      console.error("Google TTS failed, falling back to Web Speech API:", e);
+      // Fallback: Nếu Google TTS bị lỗi (do CORS, text quá dài, block autoplay...), dùng giọng đọc mặc định của trình duyệt
+      if (window.speechSynthesis) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'vi-VN';
+        utter.onend = () => setIsPlaying(false);
+        utter.onerror = () => setIsPlaying(false);
+        window.speechSynthesis.speak(utter);
+      } else {
+        setIsPlaying(false);
+      }
     });
   };
 
@@ -82,10 +89,10 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       setTranscribed('');
       setResult(null);
       
-      // Tự động ngắt sau 4 giây để tránh bị treo chờ (vì chỉ đọc 1 từ)
+      // Tự động ngắt sau 7 giây để tránh cắt ngang nếu người dùng đọc chậm
       autoStopTimeout = setTimeout(() => {
         if (recognitionRef.current) recognitionRef.current.stop();
-      }, 4000);
+      }, 7000);
     };
 
     recognition.onresult = async (event: any) => {
