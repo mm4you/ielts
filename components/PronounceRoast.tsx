@@ -16,6 +16,17 @@ interface PronounceRoastProps {
   onFinish?: () => void;
 }
 
+const isSouthernVoice = (name: string) => {
+  const lower = name.toLowerCase();
+  // Khớp các giọng miền Nam nổi tiếng của Microsoft và Apple
+  if (lower.includes('hoaimy') || lower.includes('hoài my') || lower.includes('tuong') || lower.includes('tương') || lower.includes('dung') || lower.includes('dũng') || lower.includes('kiet') || lower.includes('kiệt')) {
+    return true;
+  }
+  // Tách chữ để kiểm tra từ "nam" độc lập, tránh bị khớp nhầm với "vietnam" hay "vietnamese"
+  const words = lower.split(/[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/u);
+  return words.includes('nam') && !words.includes('vietnam') && !words.includes('vietnamese');
+};
+
 export default function PronounceRoast({ wordId, wordText, onFinish }: PronounceRoastProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [transcribed, setTranscribed] = useState('');
@@ -24,6 +35,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const [error, setError] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [viVoices, setViVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('google-tts');
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -31,8 +44,28 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
   // Load voices early and add cleanup for unmount
   useEffect(() => {
+    const loadVoices = () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        const list = window.speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').startsWith('vi'));
+        setViVoices(list);
+        
+        if (list.length > 0) {
+          // Tự động tìm giọng miền Nam làm mặc định nếu có sẵn
+          const southern = list.find(v => isSouthernVoice(v.name));
+          if (southern) {
+            setSelectedVoiceName(southern.name);
+          } else {
+            setSelectedVoiceName('google-tts');
+          }
+        } else {
+          setSelectedVoiceName('google-tts');
+        }
+      }
+    };
+
+    loadVoices();
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
     }
     
     return () => {
@@ -47,7 +80,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         currentAudioRef.current.pause();
         currentAudioRef.current.src = '';
       }
-      if (window.speechSynthesis) {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
     };
@@ -77,24 +110,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
     let currentSentence = 0;
 
-    // Lấy danh sách giọng đọc vi-VN hỗ trợ giọng miền Nam (Hoài My trên Edge, Tương/Dũng/Kiệt trên iOS/macOS)
-    const voices = typeof window !== 'undefined' && window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-    
-    const isSouthernVoice = (name: string) => {
-      const lower = name.toLowerCase();
-      // Khớp các giọng miền Nam nổi tiếng của Microsoft và Apple
-      if (lower.includes('hoaimy') || lower.includes('hoài my') || lower.includes('tuong') || lower.includes('tương') || lower.includes('dung') || lower.includes('dũng') || lower.includes('kiet') || lower.includes('kiệt')) {
-        return true;
-      }
-      // Tách chữ để kiểm tra từ "nam" độc lập, tránh bị khớp nhầm với "vietnam" hay "vietnamese"
-      const words = lower.split(/[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/u);
-      return words.includes('nam') && !words.includes('vietnam') && !words.includes('vietnamese');
-    };
-
-    const southernVoice = voices.find(v => 
-      v.lang.replace('_', '-').startsWith('vi') && isSouthernVoice(v.name)
-    );
-
     const playSentence = (index: number) => {
       // Ngăn chặn việc chạy đè nhiều nhánh callback trùng lặp
       if (index !== currentSentence) return;
@@ -121,22 +136,25 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         playSentence(currentSentence);
       };
 
-      // Phương án 1: Dùng Web Speech API nếu máy hỗ trợ giọng Miền Nam (như iOS/macOS có giọng Linh)
-      if (southernVoice && typeof window !== 'undefined' && window.speechSynthesis) {
+      const selectedVoice = viVoices.find(v => v.name === selectedVoiceName);
+
+      // Nếu sếp chọn một giọng nói cụ thể của hệ thống:
+      if (selectedVoiceName !== 'google-tts' && selectedVoice && typeof window !== 'undefined' && window.speechSynthesis) {
         const utter = new SpeechSynthesisUtterance(chunk);
-        utter.voice = southernVoice;
-        utter.lang = southernVoice.lang;
-        utter.rate = 1.25; // Điều chỉnh tốc độ 1.25 cho cân đối
+        utter.voice = selectedVoice;
+        utter.lang = selectedVoice.lang;
+        const isSouth = isSouthernVoice(selectedVoice.name);
+        utter.rate = isSouth ? 1.25 : 1.2; // Giọng Nam thì để 1.25, giọng Bắc thì để 1.2 cho cân đối
         utter.onend = () => {
           handleNext();
         };
         utter.onerror = (e) => {
-          console.warn("Southern Web Speech failed, falling back to Google TTS:", e);
+          console.warn("System voice failed, falling back to Google TTS:", e);
           playGoogleTTS(chunk, handleNext);
         };
         window.speechSynthesis.speak(utter);
       } else {
-        // Phương án 2: Dùng Google TTS mặc định
+        // Mặc định hoặc do sếp chọn Google Cloud (Google TTS)
         playGoogleTTS(chunk, handleNext);
       }
     };
@@ -147,7 +165,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       currentAudioRef.current = audio;
       
       audio.src = url;
-      audio.playbackRate = 1.4; // Điều chỉnh tốc độ 1.4 cho cân đối
+      audio.playbackRate = 1.4; // Tốc độ 1.4 lý tưởng
       
       let localHandled = false;
       const localCallback = () => {
@@ -179,7 +197,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
       audio.onerror = (e) => {
         console.warn("Google TTS failed chunk, using standard Web Speech fallback:", chunk, e);
-        // Dừng và giải phóng các sự kiện trên HTML5 Audio để tránh kích hoạt sự kiện song song
         if (currentAudioRef.current) {
           currentAudioRef.current.pause();
           currentAudioRef.current.onended = null;
@@ -190,7 +207,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       
       audio.play().catch(e => {
         console.warn("Audio play blocked by browser, using standard Web Speech fallback:", e);
-        // Dừng và giải phóng các sự kiện trên HTML5 Audio để tránh kích hoạt sự kiện song song
         if (currentAudioRef.current) {
           currentAudioRef.current.pause();
           currentAudioRef.current.onended = null;
@@ -488,12 +504,32 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
             <h4 className="font-black text-2xl">
               ĐIỂM: <span className={result.score >= 80 ? 'text-[var(--green)]' : 'text-[var(--red)]'}>{result.score}/100</span>
             </h4>
-            <button 
-              onClick={() => speakRoast(result.roast)}
-              className={`text-sm px-3 py-1 rounded border-2 border-[var(--line)] font-bold w-full sm:w-auto ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
-            >
-              {isPlaying ? '🔊 Đang la...' : '🔊 Nghe la'}
-            </button>
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              {viVoices.length > 0 && (
+                <select
+                  value={selectedVoiceName}
+                  onChange={(e) => setSelectedVoiceName(e.target.value)}
+                  className="text-xs p-1 border-2 border-[var(--line)] font-bold bg-[var(--bg)] text-[var(--ink)] rounded cursor-pointer max-w-[200px]"
+                  title="Chọn giọng đọc AI"
+                >
+                  <option value="google-tts">🔊 Google Cloud (Giọng Bắc)</option>
+                  {viVoices.map(v => {
+                    const isSouth = isSouthernVoice(v.name);
+                    return (
+                      <option key={v.name} value={v.name}>
+                        🗣️ {v.name.replace('Microsoft', 'MS').replace('Online (Natural)', '')} {isSouth ? '(Giọng Nam)' : '(Giọng Bắc)'}
+                      </option>
+                    );
+                  })}
+                </select>
+              )}
+              <button 
+                onClick={() => speakRoast(result.roast)}
+                className={`text-sm px-3 py-1 rounded border-2 border-[var(--line)] font-bold shrink-0 ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
+              >
+                {isPlaying ? '🔊 Đang la...' : '🔊 Nghe la'}
+              </button>
+            </div>
           </div>
           <p className="font-bold text-lg leading-relaxed whitespace-pre-wrap text-[var(--ink)]">{result.roast}</p>
         </div>
