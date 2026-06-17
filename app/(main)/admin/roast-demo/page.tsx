@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import RoastButton from '@/components/RoastButton';
+import PronounceRoast from '@/components/PronounceRoast';
 
 export default function RoastDemoPage() {
   const [wordId, setWordId] = useState<number>(743); // Default ID to test
@@ -54,9 +55,16 @@ export default function RoastDemoPage() {
       </div>
 
       {showRoast && (
-        <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0_rgba(0,0,0,1)]">
-          <h2 className="text-2xl font-black mb-4">Mô phỏng Giao diện App:</h2>
-          <RoastButton wordId={wordId} wordText={wordText} />
+        <div className="space-y-8">
+          <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0_rgba(0,0,0,1)]">
+            <h2 className="text-2xl font-black mb-4">1. Nút chửi tự động:</h2>
+            <RoastButton wordId={wordId} wordText={wordText} />
+          </div>
+
+          <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0_rgba(0,0,0,1)]">
+            <h2 className="text-2xl font-black mb-4">2. Tính năng chấm điểm phát âm (Mới):</h2>
+            <PronounceRoast wordId={wordId} wordText={wordText} />
+          </div>
         </div>
       )}
     </div>
