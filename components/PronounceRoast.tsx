@@ -123,9 +123,13 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         playSentence(currentSentence);
       };
 
-      const southernVoice = viVoices.find(v => isSouthernVoice(v.name));
-      const fallbackVoice = viVoices[0];
-      const selectedVoice = southernVoice || fallbackVoice;
+      let freshVoices: SpeechSynthesisVoice[] = [];
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        freshVoices = window.speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').startsWith('vi'));
+      }
+
+      // Chỉ chọn giọng native nếu đó là giọng miền Nam. Nếu không có giọng Nam, để selectedVoice = undefined để nó rớt xuống nhánh Proxy (Edge TTS Nam)
+      const selectedVoice = freshVoices.find(v => isSouthernVoice(v.name));
 
       if (selectedVoice && typeof window !== 'undefined' && window.speechSynthesis) {
         const utter = new SpeechSynthesisUtterance(chunk);
