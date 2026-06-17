@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { LEVELS } from '@/types';
+import { parseMeaning } from '@/lib/parse';
 
 interface Question {
   id: number;
@@ -252,7 +253,17 @@ export default function SniperClient() {
             Mục tiêu cần diệt:
           </span>
           <h2 className="text-2xl md:text-4xl font-serif font-black text-[var(--ink)]">
-            {currentQ ? currentQ.targetMeaning : 'Đang nạp đạn...'}
+            {currentQ ? (
+              (() => {
+                const { en, vi } = parseMeaning(currentQ.targetMeaning, currentQ.pos || '');
+                return (
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="mb-1">{en}</span>
+                    {vi && <span className="text-lg md:text-xl font-bold text-[var(--muted)]">{vi}</span>}
+                  </div>
+                );
+              })()
+            ) : 'Đang nạp đạn...'}
           </h2>
         </div>
       </div>
