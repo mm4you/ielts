@@ -27,6 +27,7 @@ export default function SpeedrunPage() {
   const [isShaking, setIsShaking] = useState(false);
   const [flashColor, setFlashColor] = useState<'green' | 'red' | null>(null);
   const [answerStatus, setAnswerStatus] = useState<{ selectedIdx: number, isCorrect: boolean } | null>(null);
+  const [explosions, setExplosions] = useState<{id: string, x: number, y: number}[]>([]);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -80,6 +81,18 @@ export default function SpeedrunPage() {
     setAnswerStatus({ selectedIdx: choiceIdx, isCorrect });
 
     if (isCorrect) {
+      const targetEl = document.getElementById('speedrun-target-word');
+      if (targetEl) {
+        const rect = targetEl.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        const explosionId = Date.now().toString();
+        setExplosions(prev => [...prev, { id: explosionId, x, y }]);
+        setTimeout(() => {
+          setExplosions(prev => prev.filter(e => e.id !== explosionId));
+        }, 600);
+      }
+
       setScore(s => s + 10 + (streak * 2));
       setTimeLeft(t => t + 2);
       setStreak(s => s + 1);
@@ -134,7 +147,7 @@ export default function SpeedrunPage() {
             {LEVELS.map(l => <option key={l} value={l}>Mức độ {l}</option>)}
           </select>
 
-          <button onClick={startGame} className="w-full btn-brutal bg-[var(--red)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
+          <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
             CHIẾN NGAY 🔥
           </button>
           <button onClick={() => router.push('/')} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
@@ -201,7 +214,9 @@ export default function SpeedrunPage() {
         <div className="absolute top-4 left-4">
           <span className="chip bg-[var(--blue)] text-white">{currentIndex + 1} / {questions.length}</span>
         </div>
-        <h2 className="text-4xl md:text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full">{currentQ.word}</h2>
+        <h2 id="speedrun-target-word" className={`text-4xl md:text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full transition-all duration-200 ${
+          explosions.length > 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100'
+        }`}>{currentQ.word}</h2>
         {currentQ.pos && <span className="text-lg font-bold text-[var(--muted)] border-2 border-[var(--line)] px-3 py-1 rounded-full">{currentQ.pos}</span>}
       </div>
 
@@ -241,7 +256,37 @@ export default function SpeedrunPage() {
           75% { transform: translateX(-10px) rotate(-2deg); }
           100% { transform: translateX(0); }
         }
+        @keyframes text-explode {
+          0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+          100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(720deg); opacity: 0; }
+        }
       `}</style>
+      
+      {/* Explosions layer */}
+      {explosions.map(exp => (
+        <div key={exp.id} className="fixed pointer-events-none" style={{ left: exp.x, top: exp.y, zIndex: 100 }}>
+          {Array.from({ length: Math.min(12, currentQ.word.length * 2) }).map((_, i) => {
+            const angle = (i * Math.PI * 2) / Math.min(12, currentQ.word.length * 2);
+            const distance = 40 + Math.random() * 80;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            const letter = currentQ.word[i % currentQ.word.length];
+            return (
+              <div
+                key={i}
+                className="absolute font-serif font-black text-2xl md:text-4xl text-[var(--ink)]"
+                style={{
+                  '--tx': `${tx}px`,
+                  '--ty': `${ty}px`,
+                  animation: `text-explode 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`
+                } as any}
+              >
+                {letter}
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
