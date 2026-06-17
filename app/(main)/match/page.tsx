@@ -181,7 +181,7 @@ export default function MatchPage() {
           return (
             <div 
               key={idx}
-              className={`relative h-24 md:h-40 cursor-pointer transform-style-3d transition-transform duration-500 ${isFlipped ? 'rotate-y-180' : ''} ${isMatched ? 'opacity-80 scale-95' : 'hover:-translate-y-2'}`}
+              className={`relative h-24 md:h-40 cursor-pointer transform-style-3d transition-transform duration-500 ${isFlipped ? 'rotate-y-180' : ''} ${isMatched ? 'scale-95' : 'hover:-translate-y-2'}`}
               onClick={() => handleCardClick(idx)}
             >
               {/* Back of card (Face down) */}
@@ -190,8 +190,8 @@ export default function MatchPage() {
               </div>
 
               {/* Front of card (Face up) */}
-              <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-1 md:p-2 text-center rotate-y-180 leading-tight ${isMatched ? 'bg-[var(--green)] border-[var(--line)]' : 'bg-[var(--paper)] border-[var(--line)]'}`}>
-                <span className={`font-black ${isMatched ? 'text-white' : (card.type === 'en' ? 'text-base md:text-3xl text-[var(--ink)]' : 'text-sm md:text-xl text-[var(--muted)]')}`}>
+              <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-1 md:p-2 text-center rotate-y-180 leading-tight ${isMatched ? 'bg-[var(--ink)] border-[var(--ink)] shadow-none' : 'bg-[var(--paper)] border-[var(--line)]'}`}>
+                <span className={`font-black ${isMatched ? 'text-[var(--yellow)]' : (card.type === 'en' ? 'text-base md:text-3xl text-[var(--ink)]' : 'text-sm md:text-xl text-[var(--muted)]')}`}>
                   {card.content}
                 </span>
               </div>
