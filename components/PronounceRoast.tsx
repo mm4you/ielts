@@ -23,7 +23,9 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const [result, setResult] = useState<{ score: number; roast: string } | null>(null);
   const [error, setError] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Load voices early
   useEffect(() => {
@@ -57,7 +59,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     });
   };
 
-  const startRecording = () => {
+  const startRecording = async () => {
     if (typeof window === 'undefined') return;
     
     // Unlock audio
@@ -67,101 +69,87 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       window.speechSynthesis.speak(dummy);
     }
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setError('Trình duyệt của bạn không hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome!');
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
-    recognition.lang = 'en-US';
-    // Bật interimResults để máy quét liên tục từng âm tiết, giúp cực kỳ nhạy!
-    recognition.interimResults = true; 
-    recognition.maxAlternatives = 5;
-
-    let hasEvaluated = false;
-    let currentTranscript = '';
-
-    recognition.onstart = () => {
-      setIsRecording(true);
+    try {
       setError('');
       setTranscribed('');
       setResult(null);
-    };
 
-    recognition.onresult = async (event: any) => {
-      if (hasEvaluated) return;
-      
-      const target = wordText.toLowerCase();
-      let bestTranscript = '';
-      let isFinal = false;
-      let isPerfectMatch = false;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
 
-      // Gom toàn bộ transcript từ các event results lại thành 1 chuỗi dài
-      // Vì khi nói dài, event.results sẽ chia thành nhiều phần: result[0], result[1]...
-      let fullTranscript = '';
-
-      for (let i = 0; i < event.results.length; i++) {
-        const resultItem = event.results[i];
-        if (resultItem.isFinal) isFinal = true;
-        
-        fullTranscript += resultItem[0].transcript + ' ';
-
-        // Quét 5 phương án dự đoán của mỗi phần
-        for (let j = 0; j < resultItem.length; j++) {
-          const rawText = resultItem[j].transcript.toLowerCase().trim();
-          const cleanText = rawText.replace(/[^a-z0-9\s]/g, '');
-          const cleanTarget = target.replace(/[^a-z0-9\s]/g, '');
-          
-          if (cleanText === cleanTarget || rawText.includes(target)) {
-            isPerfectMatch = true;
-            break;
-          }
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
-      }
+      };
 
-      fullTranscript = fullTranscript.trim();
-      bestTranscript = fullTranscript;
+      mediaRecorder.onstart = () => {
+        setIsRecording(true);
+      };
 
-      currentTranscript = bestTranscript;
-      setTranscribed(bestTranscript);
+      mediaRecorder.onstop = async () => {
+        setIsRecording(false);
+        // Tắt đèn đỏ trên tab trình duyệt
+        stream.getTracks().forEach(track => track.stop());
 
-      // NẾU BẮT ĐƯỢC CHỮ CHUẨN 100% -> DỪNG NGAY LẬP TỨC! Cảm giác cực kỳ nhạy!
-      // Hoặc nếu người dùng dừng nói (isFinal)
-      if (isPerfectMatch || isFinal) {
-        hasEvaluated = true;
-        recognition.stop();
-        await evaluatePronunciation(bestTranscript);
-      }
-    };
+        if (audioChunksRef.current.length === 0) {
+          setError('Không có âm thanh được ghi lại.');
+          return;
+        }
 
-    recognition.onerror = (event: any) => {
-      // Bỏ qua lỗi no-speech nếu nó tự động ngắt
-      if (event.error !== 'no-speech') {
-        setError(`Lỗi Mic: ${event.error}`);
-      }
-      setIsRecording(false);
-    };
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        await processAudioWithWhisper(audioBlob);
+      };
 
-    recognition.onend = () => {
-      setIsRecording(false);
-      
-      // Nếu ngắt mà chưa chấm điểm (do bấm ngắt tay), thì lấy kết quả cuối cùng để chấm
-      if (!hasEvaluated && currentTranscript) {
-        hasEvaluated = true;
-        evaluatePronunciation(currentTranscript);
-      } else if (!hasEvaluated && !currentTranscript) {
-        setError('Không nghe thấy gì. Bấm nút Mic nói to lên nha!');
-      }
-    };
+      mediaRecorder.start();
 
-    recognition.start();
+      // Tự động ngắt sau 7 giây nếu người dùng quên tắt
+      setTimeout(() => {
+        if (mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+        }
+      }, 7000);
+
+    } catch (err: any) {
+      console.error('Lỗi truy cập Mic:', err);
+      setError('Không thể truy cập Micro. Vui lòng cấp quyền trong trình duyệt nha sếp!');
+    }
   };
 
   const stopRecording = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+  };
+
+  const processAudioWithWhisper = async (blob: Blob) => {
+    setIsTranscribing(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', blob, 'audio.webm');
+
+      const res = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi bóc băng Whisper');
+      
+      const text = data.text.trim();
+      setTranscribed(text);
+      
+      if (!text) {
+        throw new Error('Bạn chưa nói gì cả, nói to lên sếp ơi!');
+      }
+
+      await evaluatePronunciation(text);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -240,7 +228,11 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         <p className="text-center font-bold text-red-600 animate-pulse">Đang nghe... Đọc lẹ lên má!</p>
       )}
 
-      {transcribed && !isRecording && (
+      {isTranscribing && (
+        <p className="text-center font-bold text-[var(--blue)] animate-pulse">Đang dùng siêu AI Whisper để bóc băng...</p>
+      )}
+
+      {transcribed && !isRecording && !isTranscribing && (
         <div className="bg-[var(--bg)] border-2 border-dashed border-[var(--muted)] p-3 text-center mb-4">
           <p className="text-sm text-[var(--muted)] font-bold">Máy nghe ra chữ:</p>
           <p className="text-2xl font-black text-[var(--ink)]">{transcribed}</p>
