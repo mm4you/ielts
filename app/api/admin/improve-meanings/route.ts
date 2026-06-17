@@ -46,9 +46,9 @@ export async function POST(req: Request) {
         Ngữ cảnh/Nghĩa tiếng Anh gốc: "${enMeaning}"
         
         Yêu cầu Format bắt buộc (Chỉ trả về đúng format này, không giải thích gì thêm):
-        [Nghĩa Tiếng Anh gốc] ||| [Nghĩa Tiếng Việt tự nhiên]
+        [Nghĩa Tiếng Anh gốc] /// [Nghĩa Tiếng Việt tự nhiên]
         
-        Ví dụ: a system of wires or radio waves ||| một hệ thống sử dụng sóng vô tuyến hoặc dây cáp
+        Ví dụ: a system of wires or radio waves /// một hệ thống sử dụng sóng vô tuyến hoặc dây cáp
       `;
 
       try {
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
           const data = await response.json();
           const aiText = data.choices?.[0]?.message?.content;
           
-          if (aiText && aiText.includes('|||')) {
+          if (aiText && aiText.includes('///')) {
             const cleanText = aiText.trim();
             
             // Update the word in database

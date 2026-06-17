@@ -3,7 +3,8 @@ export function parseMeaning(rawMeaning: string | null, dbPos?: string | null) {
     return { pos: dbPos || null, en: '', vi: '' };
   }
 
-  const [enPart, viPart] = rawMeaning.split('|||');
+  const separator = rawMeaning.includes('///') ? '///' : '|||';
+  const [enPart, viPart] = rawMeaning.split(separator);
   let en = enPart?.trim() || '';
   const vi = viPart?.trim() || '';
 
