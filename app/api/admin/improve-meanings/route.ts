@@ -56,7 +56,7 @@ export async function POST(req: Request) {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': \`Bearer \${apiKey}\`
+            'Authorization': `Bearer ${apiKey}`
           },
           body: JSON.stringify({
             model: "meta/llama-3.1-8b-instruct", // You can change this to llama3-70b-instruct if you want
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: \`Đã cải thiện thành công \${successCount}/\${wordsToImprove.length} từ vựng.\` 
+      message: `Đã cải thiện thành công ${successCount}/${wordsToImprove.length} từ vựng.` 
     });
 
   } catch (error: any) {
