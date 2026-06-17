@@ -64,21 +64,22 @@ Hệ thống tự động chấm điểm: ${calculatedScore}/100 điểm.
 Nhiệm vụ: Viết đúng 1 câu nhận xét ngắn (tối đa 15 từ) khịa thâm thúy, dí dỏm.
 Yêu cầu văn phong:
 - CẤM TUYỆT ĐỐI sử dụng các từ lóng rẻ tiền, sáo rỗng hoặc cố tỏ ra trẻ trung của robot (như: xịt keo, kiếp nạn, cảm lạnh, chê, cứu tui, over hợp, keo lỳ, mận vải, ét ô ét).
+- CẤM TUYỆT ĐỐI sử dụng bất kỳ từ tiếng Anh hay chữ viết tắt tiếng Anh nào (như: IELTS, Oxford, Flex, Over,...) trong câu nhận xét. Toàn bộ câu chửi phải sử dụng 100% tiếng Việt thuần túy để tránh giọng đọc AI bị lỗi phát âm pha trộn tiếng Anh.
 - Không dùng từ cảm thán thừa thãi ở đầu câu (Ủa, Ôi, Wow...).
 - Sử dụng phép so sánh, châm biếm gián tiếp lạnh lùng (nói kháy điềm tĩnh). Hãy dùng những câu đùa khô khan (dry humor) mang tính sát thương cao nhưng tinh tế.
 - Tham khảo các ví dụ mẫu sau để bắt chước văn phong thâm thúy:
   * Điểm dưới 50 (Phát âm rất tệ):
     - "Không nói tiếng Anh thì không ai biết mình không biết nói đâu bạn ơi."
-    - "Nghe xong tôi tự tin đi thi IELTS hẳn, vì biết chắc có người đứng bét bảng thay mình."
+    - "Nghe xong tôi tự tin đi thi nói tiếng Anh hẳn, vì biết chắc có người đứng bét bảng thay mình."
     - "Khuyên thật lòng lần sau phát âm tiếng Anh thì nên nói thầm, nói nhỏ thôi."
     - "Đọc đúng từ này rồi đó, nhưng mà là tiếng gì chứ không phải tiếng Anh."
     - "Nghe xong tôi ngỡ ngàng đến mức phải đi khám tai gấp."
     - "Phát âm thế này thì người bản xứ nghe xong cũng phải xin lỗi vì họ không hiểu tiếng Anh."
   * Điểm từ 50-79 (Tạm được nhưng vẫn sai):
     - "Ý là cũng có âm có điệu đó, nhưng điệu bộ này nghe lạ lắm."
-    - "Cứ đà này thì IELTS 8.0 kiếp sau chắc chắn sẽ vẫy chào bạn."
+    - "Cứ đà này thì trình độ ngoại ngữ thượng thừa kiếp sau chắc chắn sẽ vẫy chào bạn."
     - "Cảm ơn bạn đã đọc, nhưng lần sau nếu được thì xin đừng đọc nữa nha."
-    - "Đọc chuẩn ghê, chuẩn đến mức từ điển Oxford phải tự nghi ngờ chính mình."
+    - "Đọc chuẩn ghê, chuẩn đến mức người bản xứ nghe xong cũng phải tự nghi ngờ chính mình."
     - "Tốc độ nói rất nhanh và tự tin, tiếc là không có chữ nào đúng."
   * Điểm 100 (Xuất sắc):
     - "Đọc chuẩn thế này thì ai làm lại bạn nữa."
