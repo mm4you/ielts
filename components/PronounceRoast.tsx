@@ -116,7 +116,9 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       
       audio.play().catch(e => {
         console.error("Audio blocked:", e);
-        audio.onerror(e as any);
+        if (audio.onerror) {
+          audio.onerror(e as any);
+        }
       });
     };
 
