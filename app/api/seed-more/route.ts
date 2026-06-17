@@ -2,10 +2,14 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 const newTopics = [
-  'gre', 'sat', 'gmat', 'idioms', 'phrasal verbs', 'slang', 'colloquial', 
-  'sports', 'entertainment', 'travel', 'food', 'cooking', 'fashion',
-  'fitness', 'hobby', 'gaming', 'internet', 'marketing', 'finance', 'real estate',
-  'astronomy', 'geology', 'meteorology', 'anthropology', 'archaeology'
+  // Basic & Everyday (A1-B1)
+  'family', 'house', 'school', 'animals', 'clothes', 'colors', 'feelings', 
+  'weather', 'body', 'health', 'jobs', 'shopping', 'transport', 'city',
+  'nature', 'music', 'art', 'hobbies', 'food', 'cooking', 'sports',
+  
+  // Advanced & Academic (B2-C2)
+  'business', 'technology', 'science', 'environment', 'politics', 'society',
+  'psychology', 'history', 'literature', 'gre', 'idioms', 'phrasal verbs'
 ];
 
 async function translateText(text: string): Promise<string> {
