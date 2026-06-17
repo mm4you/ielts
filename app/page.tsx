@@ -71,7 +71,7 @@ export default async function HomePage() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--red)] rounded-bl-full opacity-10"></div>
             <h2 className="text-2xl font-serif font-bold mb-2 text-[var(--red)]">Sinh Tồn Tốc Chiến</h2>
             <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
-              15 giây sinh tồn. Trả lời đúng +2s. Sai là GAME OVER ngay lập tức!
+              60 giây sinh tồn đếm ngược. Trả lời đúng +2s. Sai bị trừ 3s. Hết giờ là GAME OVER!
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
               <span className="font-bold text-lg text-[var(--red)]">Ép nhịp tim</span>
