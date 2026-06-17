@@ -126,7 +126,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       if (!res.ok) throw new Error(data.error || 'Lỗi AI');
       
       setResult(data);
-      setTimeout(() => speakRoast(data.roast), 100);
+      // Đã tắt tự động phát âm thanh vì trình duyệt hay chặn
+      // setTimeout(() => speakRoast(data.roast), 100);
       if (onFinish) onFinish();
     } catch (err: any) {
       setError(err.message);
@@ -204,7 +205,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
               onClick={() => speakRoast(result.roast)}
               className={`text-sm px-3 py-1 rounded border-2 border-[var(--line)] font-bold w-full sm:w-auto ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
             >
-              {isPlaying ? '🔊 Đang chửi...' : '🔊 Nghe lại'}
+              {isPlaying ? '🔊 Đang phát...' : '🔊 Nghe AI chửi'}
             </button>
           </div>
           <p className="font-bold text-lg leading-relaxed whitespace-pre-wrap text-[var(--ink)]">{result.roast}</p>
