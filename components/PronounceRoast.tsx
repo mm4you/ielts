@@ -47,6 +47,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         const list = window.speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').startsWith('vi'));
         setViVoices(list);
+      }
+    };
 
     loadVoices();
     if (typeof window !== 'undefined' && window.speechSynthesis) {
