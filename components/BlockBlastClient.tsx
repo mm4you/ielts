@@ -380,10 +380,10 @@ export default function BlockBlastClient() {
                     <div 
                       key={idx}
                       onClick={() => handleVocabAnswer(idx)}
-                      className="btn-brutal py-3 px-4 text-sm bg-white hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px] cursor-pointer"
+                      className="btn-brutal py-3 px-4 text-sm bg-[var(--paper)] hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px] cursor-pointer group"
                     >
-                      <span className="font-black text-[var(--ink)] text-base leading-tight mb-1">{en}</span>
-                      {vi && <span className="font-bold text-[var(--muted)] text-xs">{vi}</span>}
+                      <span className="font-black text-[var(--ink)] group-hover:text-black text-base leading-tight mb-1">{en}</span>
+                      {vi && <span className="font-bold text-[var(--muted)] group-hover:text-black/80 text-xs">{vi}</span>}
                     </div>
                   );
                 })}
@@ -409,7 +409,7 @@ export default function BlockBlastClient() {
             >
               Chơi Lại
             </button>
-            <button onClick={() => router.push('/')} className="btn-brutal bg-white w-full text-[var(--ink)]">Về Trang Chủ</button>
+            <button onClick={() => router.push('/')} className="btn-brutal bg-[var(--paper)] w-full text-[var(--ink)]">Về Trang Chủ</button>
           </div>
         )}
       </div>

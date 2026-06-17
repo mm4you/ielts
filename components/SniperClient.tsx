@@ -201,7 +201,7 @@ export default function SniperClient() {
           <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4 shadow-[4px_4px_0_var(--ink)] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
             {loading ? 'ĐANG TẢI...' : 'CHƠI LẠI'}
           </button>
-          <button onClick={() => router.push('/')} className="w-full btn-brutal bg-white text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
+          <button onClick={() => router.push('/')} className="w-full btn-brutal bg-[var(--paper)] text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
             Về trang chủ
           </button>
         </div>
