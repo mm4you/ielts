@@ -36,23 +36,23 @@ export default function RoastDemoPage() {
   const CEFR_LEVELS = ['ALL', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
   return (
-    <div className="container mx-auto p-4 sm:p-8 max-w-2xl text-black dark:text-white">
-      <h1 className="text-2xl sm:text-3xl font-black mb-6 uppercase border-b-4 border-black dark:border-white pb-2 flex items-center gap-3">
+    <div className="container mx-auto p-4 sm:p-8 max-w-2xl text-[var(--ink)]">
+      <h1 className="text-2xl sm:text-3xl font-black mb-6 uppercase border-b-4 border-[var(--line)] pb-2 flex items-center gap-3">
         🎙️ THỬ THÁCH PHÁT ÂM
-        <span className="bg-yellow-400 text-black text-sm px-2 py-1 border-2 border-black rotate-[-5deg]">BETA</span>
+        <span className="bg-[var(--yellow)] text-[var(--ink)] text-sm px-2 py-1 border-2 border-[var(--line)] rotate-[-5deg]">BETA</span>
       </h1>
       
-      <p className="mb-6 text-base sm:text-lg font-bold text-gray-700 dark:text-gray-300">
+      <p className="mb-6 text-base sm:text-lg font-bold text-[var(--muted)]">
         AI "Mỏ Hỗn" sẽ chấm điểm và nhận xét trình độ phát âm tiếng Anh của bạn!
       </p>
 
-      <div className="panel bg-[#f0f0f0] dark:bg-gray-800 border-4 border-black dark:border-white shadow-[6px_6px_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_rgba(255,255,255,1)] mb-8 p-4 sm:p-6 text-center">
+      <div className="panel bg-[var(--paper)] border-4 border-[var(--line)] shadow-[6px_6px_0_var(--line)] mb-8 p-4 sm:p-6 text-center">
         <div className="mb-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <label className="font-bold text-lg">Chọn Độ Khó:</label>
+          <label className="font-bold text-lg text-[var(--ink)]">Chọn Độ Khó:</label>
           <select 
             value={level} 
             onChange={(e) => setLevel(e.target.value)}
-            className="input-brutal w-full sm:w-auto text-center font-bold dark:bg-gray-700 dark:text-white"
+            className="input-brutal w-full sm:w-auto text-center font-bold bg-[var(--bg)] text-[var(--ink)] border-[var(--line)]"
           >
             {CEFR_LEVELS.map(l => (
               <option key={l} value={l}>{l === 'ALL' ? 'Tất cả (Trộn lộn xộn)' : `Level ${l}`}</option>
@@ -63,7 +63,7 @@ export default function RoastDemoPage() {
         <button 
           onClick={fetchRandomWord}
           disabled={loading}
-          className={`btn-brutal w-full sm:w-auto px-8 py-3 text-xl font-black ${loading ? 'bg-gray-400 dark:bg-gray-600' : 'bg-[#007bff] text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500'}`}
+          className={`btn-brutal w-full sm:w-auto px-8 py-3 text-xl font-black ${loading ? 'bg-[var(--muted)] text-[var(--paper)]' : 'bg-[var(--blue)] text-[var(--bg)] hover:brightness-110'}`}
         >
           {loading ? '⏳ Đang xoay ru-lét...' : '🎲 ĐỔI TỪ KHÁC'}
         </button>
@@ -72,7 +72,7 @@ export default function RoastDemoPage() {
 
       {!loading && wordData && (
         <div className="space-y-8">
-          <div className="border-4 border-black dark:border-white p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-[8px_8px_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_rgba(255,255,255,1)]">
+          <div className="border-4 border-[var(--line)] p-4 sm:p-6 bg-[var(--paper)] shadow-[8px_8px_0_var(--line)]">
             <PronounceRoast 
               key={`pronounce-${wordData.id}`} 
               wordId={wordData.id} 
