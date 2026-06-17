@@ -187,7 +187,7 @@ export default function SpeedrunPage() {
         <div className="absolute top-4 left-4">
           <span className="chip bg-[var(--blue)] text-white">{currentIndex + 1} / {questions.length}</span>
         </div>
-        <h2 className="text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6">{currentQ.word}</h2>
+        <h2 className="text-4xl md:text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full">{currentQ.word}</h2>
         {currentQ.pos && <span className="text-lg font-bold text-[var(--muted)] border-2 border-[var(--line)] px-3 py-1 rounded-full">{currentQ.pos}</span>}
       </div>
 

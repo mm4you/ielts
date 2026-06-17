@@ -53,12 +53,12 @@ export default function Header() {
     <>
       <header className="fixed top-0 left-0 right-0 bg-[var(--paper)] border-b-[3px] border-[var(--line)] z-20 shadow-[0_4px_0_var(--line)]">
         <nav className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="text-2xl font-bold font-serif tracking-tight text-[var(--ink)] flex items-center gap-2 group">
-            <div className="relative w-8 h-8">
-              <div className="absolute top-0 left-0 w-6 h-6 bg-[var(--blue)] border-2 border-[var(--line)] rounded-md transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1"></div>
-              <div className="absolute bottom-0 right-0 w-6 h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-md"></div>
+          <Link href="/" className="text-xl md:text-2xl font-bold font-serif tracking-tight text-[var(--ink)] flex items-center gap-2 group shrink-0">
+            <div className="relative w-6 h-6 md:w-8 md:h-8">
+              <div className="absolute top-0 left-0 w-4 h-4 md:w-6 md:h-6 bg-[var(--blue)] border-2 border-[var(--line)] rounded-sm md:rounded-md transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-4 md:w-6 md:h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-sm md:rounded-md"></div>
             </div>
-            <span className="group-hover:text-[var(--blue)] transition-colors">IELTS Vocab</span>
+            <span className="group-hover:text-[var(--blue)] transition-colors whitespace-nowrap">IELTS Vocab</span>
           </Link>
           
           {/* Desktop Navigation */}
@@ -92,24 +92,8 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile Theme Toggle (Nav is at bottom) */}
-          {/* Mobile Auth & Theme Toggle */}
-          <div className="md:hidden flex items-center gap-3">
-            {session ? (
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-[var(--ink)] text-xs shadow-[2px_2px_0_var(--line)]">
-                  {session.user?.name?.charAt(0).toUpperCase() || 'U'}
-                </span>
-                {(session.user as any)?.role === 'admin' && (
-                  <Link href="/admin" className="text-xs font-bold text-[var(--blue)] underline">Admin</Link>
-                )}
-                <button onClick={() => signOut()} className="text-xs font-bold underline text-[var(--red)]">Thoát</button>
-              </div>
-            ) : (
-              <button onClick={() => signIn('google')} className="btn-brutal bg-[var(--blue)] text-white text-[10px] px-2 py-1 uppercase shadow-[2px_2px_0_var(--blue)]">
-                Đăng nhập
-              </button>
-            )}
+          {/* Mobile Theme Toggle & Menu Button */}
+          <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -129,6 +113,34 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden fixed inset-0 top-[64px] bg-[var(--bg)] z-30 overflow-y-auto pb-safe">
           <div className="p-4 flex flex-col gap-4">
+            
+            {/* Mobile Auth inside Menu */}
+            <div className="panel bg-[var(--paper)] p-4 flex items-center justify-between shadow-[4px_4px_0_var(--line)] mb-2">
+              {session ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <span className="w-10 h-10 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-[var(--ink)] text-lg shadow-[2px_2px_0_var(--line)]">
+                      {session.user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-sm truncate max-w-[120px]">{session.user?.name || 'User'}</span>
+                      {(session.user as any)?.role === 'admin' && (
+                        <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="text-xs font-bold text-[var(--blue)] underline">Trang Quản Trị</Link>
+                      )}
+                    </div>
+                  </div>
+                  <button onClick={() => { setIsMenuOpen(false); signOut(); }} className="btn-brutal bg-[var(--red)] text-white text-xs px-3 py-2 uppercase">Thoát</button>
+                </>
+              ) : (
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-bold text-[var(--muted)] text-sm">Chưa đăng nhập</span>
+                  <button onClick={() => { setIsMenuOpen(false); signIn('google'); }} className="btn-brutal bg-[var(--blue)] text-white text-xs px-4 py-2 uppercase shadow-[2px_2px_0_var(--blue)]">
+                    Đăng nhập
+                  </button>
+                </div>
+              )}
+            </div>
+
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
               return (
