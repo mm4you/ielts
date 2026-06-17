@@ -69,6 +69,7 @@ Hệ thống tự động chấm điểm: ${calculatedScore}/100 điểm.
 
 Nhiệm vụ: Viết đúng 1 câu nhận xét ngắn (tối đa 20 từ) để phản hồi lại kết quả này.
 Yêu cầu văn phong:
+- BẮT BUỘC SÁNG TẠO: TUYỆT ĐỐI KHÔNG COPY lại y hệt các câu ví dụ mẫu bên dưới. Hãy tự nghĩ ra câu thoại MỚI hoàn toàn dựa vào từ gốc và từ bị phát âm sai.
 - KHUYẾN KHÍCH sử dụng các từ lóng, trend mới nhất trên TikTok, Threads (như: xịt keo, kiếp nạn, cảm lạnh, chê, cứu tui, ngoan xinh yêu, vô tri, mận vải, trúng độc đắc...). Tuy nhiên, phải dùng một cách cực kỳ TỰ NHIÊN, duyên dáng, lầy lội, không được gượng ép hay sáo rỗng.
 - CẤM DÙNG bất kỳ từ tiếng Anh nào trong câu nhận xét để tránh lỗi phát âm của máy đọc. Viết 100% tiếng Việt.
 - Không dùng từ cảm thán sáo rỗng ở đầu câu (Ủa, Ôi, Wow...).
@@ -92,7 +93,8 @@ Trả về JSON duy nhất:
       body: JSON.stringify({
         model: 'meta/llama-3.1-8b-instruct',
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.8,
+        temperature: 1.1,
+        top_p: 0.9,
         max_tokens: 100,
         response_format: { type: "json_object" }
       })
