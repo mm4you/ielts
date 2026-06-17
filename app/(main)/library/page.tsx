@@ -38,7 +38,7 @@ export default function LibraryPage() {
       <div className="mb-8">
         <div className="flex items-baseline gap-4 mb-2">
           <h1 className="text-4xl font-bold font-serif">Thư viện từ vựng</h1>
-          <span className="text-xl text-[var(--muted)] font-bold bg-gray-100 px-3 py-1 rounded-full border-2 border-[var(--line)]">
+          <span className="text-xl text-[var(--ink)] font-bold bg-[var(--paper)] px-3 py-1 rounded-full border-2 border-[var(--line)]">
             {words.length} từ
           </span>
         </div>

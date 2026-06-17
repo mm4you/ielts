@@ -36,7 +36,7 @@ export default function Card({ word }: { word: Word }) {
       })()}
       
       <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-        <span className="chip bg-[var(--yellow)]">{word.level}</span>
+        <span className="chip bg-[var(--yellow)] text-[#111827]">{word.level}</span>
         <span className="chip">{word.topic}</span>
       </div>
     </Link>
