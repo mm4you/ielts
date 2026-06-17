@@ -94,8 +94,11 @@ export default function SwipePage() {
             <option value="200">200 từ</option>
           </select>
 
-          <button onClick={fetchWords} className="w-full btn-brutal bg-[var(--blue)] text-white py-4 text-xl uppercase">
+          <button onClick={fetchWords} className="w-full btn-brutal bg-[var(--blue)] text-white py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
             Bắt đầu học
+          </button>
+          <button onClick={() => router.push('/')} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm">
+            ← Về Trang Chủ
           </button>
         </div>
       </div>
