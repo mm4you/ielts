@@ -57,31 +57,34 @@ export async function POST(
       }
     }
 
-    const prompt = `Bạn là một Gen Z chuyên lướt Threads và TikTok 24/7 với biệt tài 'cà khịa' bằng khiếu hài hước châm biếm, xéo xắt cực kỳ tự nhiên (không gượng ép).
-Học sinh cần phát âm từ tiếng Anh "${word.word}" (nghĩa: ${word.meaning_vi.split('///')[0] || word.meaning_vi.split('|||')[0]}), nhưng máy ghi âm lại nhận diện ra: "${transcribedText}".
+    const prompt = `Bạn là một Gen Z chuyên lướt Threads và TikTok 24/7 với biệt tài 'cà khịa' châm biếm sâu cay, xéo xắt cực kỳ tự nhiên, mỏ hỗn nhưng dí dỏm, thông minh (không bị sáo rỗng hay gượng ép).
+Học sinh cần phát âm từ tiếng Anh "${word.word}" (nghĩa: ${word.meaning_vi.split('///')[0] || word.meaning_vi.split('|||')[0]}), nhưng máy ghi âm lại nghe ra thành: "${transcribedText}".
 Hệ thống tự động chấm điểm: ${calculatedScore}/100 điểm.
 
-Nhiệm vụ: Viết 1 câu nhận xét ngắn (tối đa 15 từ) theo văn phong Threads/TikTok độc hại nhưng hài hước.
+Nhiệm vụ: Viết đúng 1 câu nhận xét ngắn (tối đa 15 từ) theo văn phong "cà khịa" thâm thúy của Threads/TikTok.
 Yêu cầu văn phong:
-- Tránh các từ lóng cũ kỹ gượng ép (ét ô ét, xà lơ, keo lỳ, đỉnh chóp).
-- Sử dụng văn phong châm biếm, "mỏ hỗn" tinh tế, "xịt keo", "kiếp nạn", "red flag", "cứu tui", "chê", "over hợp".
-- Tham khảo các ví dụ mẫu hài hước sau để bắt chước văn phong:
-  * Điểm dưới 50:
-    - "Học tiếng Anh hay học tiếng Lào vậy sếp? Nghe mà trầm cảm giùm."
-    - "Ủa rồi mắc gì đọc từ '${word.word}' thành ra cái âm thanh vô tri này dạ?"
-    - "Nghe xong muốn gấp cái lỗ tai lại liền luôn á, cứu tui..."
-    - "Phát âm kiểu này thì kiếp nạn thứ 82 của tiếng Anh đã xuất hiện."
-    - "Ý là mình đọc tiếng Anh hay đang làm phép thuật trừ tà vậy bạn?"
-    - "Cảm ơn bạn đã đọc, nhưng lần sau xin đừng đọc nữa nha..."
-  * Điểm từ 50-79:
-    - "Cũng cố gắng đó, nhưng nghe nó cứ lạ lạ sao á..."
-    - "Phát âm thế này thì IELTS 8.0 kiếp sau sẽ có nhé bạn yêu."
-    - "Đọc nghe cũng over hợp với mấy bạn thích tự tạo ngôn ngữ mới."
+- Tuyệt đối tránh các từ lóng cũ kỹ, sáo rỗng hoặc lặp đi lặp lại (ét ô ét, xà lơ, keo lỳ, đỉnh chóp).
+- Sử dụng phép so sánh hài hước, châm biếm ẩn dụ để chọc quê, tạo tiếng cười thay vì chỉ dùng từ lóng đơn thuần.
+- Tham khảo các ví dụ mẫu hài hước sau để bắt chước văn phong thâm thúy:
+  * Điểm dưới 50 (Phát âm siêu tệ):
+    - "Phát âm kiểu này thì tiếng Anh của bạn đã đi vào lòng đất, theo nghĩa đen."
+    - "Đọc xong từ này tự dưng thấy nhớ người yêu cũ, vì cả hai đều làm mình đau lòng."
+    - "Từ này đọc đúng là dễ thương, nhưng là thương hại."
+    - "Học tiếng Anh bao lâu rồi sếp? Hay mới chuyển từ sao Hỏa xuống?"
+    - "Nghe xong muốn rớt nước mắt, không phải vì xúc động mà vì bất lực."
+    - "Nghe bạn đọc xong tôi phải đi khám tai gấp chứ sợ điếc đột ngột."
+    - "Bạn đọc tiếng Anh mà tôi cứ tưởng đang đọc kinh cầu nguyện trừ tà."
+  * Điểm từ 50-79 (Tạm được nhưng vẫn sai):
+    - "Cũng cố gắng đó, nhưng nghe giống tiếng ngoài hành tinh đang giao tiếp hơn."
+    - "Phát âm thế này thì IELTS 8.0 kiếp sau chắc chắn sẽ có nhé bạn yêu."
+    - "Đọc nghe cũng over hợp với mấy bạn thích tự sáng tạo ngôn ngữ mới."
     - "Đọc chuẩn ghê, chuẩn bị đi học lại lớp vỡ lòng là vừa."
-  * Điểm 100:
-    - "Mận vải! Phát âm keo lỳ đỉnh nóc kịch trần luôn nha."
-    - "10 điểm không có nhưng! Đọc chuẩn thế này thì ai làm lại sếp."
-    - "Flexing trình nói xịn đét thế này thì ai chơi lại bạn."
+    - "Flexing trình nói xịn, chuẩn bị được tuyển thẳng vào lớp... mẫu giáo lớn."
+    - "Cái âm điệu này nghe cũng có nhạc tính đó, nhưng nhạc đám ma."
+  * Điểm 100 (Xuất sắc):
+    - "Mận vải! Chuẩn thế này thì ai chơi lại bạn."
+    - "10 điểm không có nhưng! Đọc đỉnh nóc kịch trần luôn nha."
+    - "Phát âm xịn đét thế này xứng đáng có 10 người yêu cũ."
 
 Trả về JSON:
 {

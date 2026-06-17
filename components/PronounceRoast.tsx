@@ -115,7 +115,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         const utter = new SpeechSynthesisUtterance(chunk);
         utter.voice = southernVoice;
         utter.lang = southernVoice.lang;
-        utter.rate = 1.5; // Tăng tốc độ lên 1.5 theo yêu cầu sếp
+        utter.rate = 1.25; // Điều chỉnh tốc độ 1.25 cho cân đối
         utter.onend = () => {
           handleNext();
         };
@@ -136,7 +136,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       currentAudioRef.current = audio;
       
       audio.src = url;
-      audio.playbackRate = 1.5; // Tăng tốc độ lên 1.5 theo yêu cầu sếp
+      audio.playbackRate = 1.4; // Điều chỉnh tốc độ 1.4 cho cân đối
       
       let localHandled = false;
       const localCallback = () => {
@@ -153,7 +153,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           const utter = new SpeechSynthesisUtterance(chunk);
           utter.lang = 'vi-VN';
-          utter.rate = 1.3; // Giọng chuẩn fallback chạy nhanh 1.3
+          utter.rate = 1.2; // Giọng chuẩn fallback chạy vừa phải 1.2
           utter.onend = () => {
             localCallback();
           };
