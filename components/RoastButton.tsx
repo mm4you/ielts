@@ -11,6 +11,31 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
   const [loading, setLoading] = useState(false);
   const [roastData, setRoastData] = useState<{ roast: string; example: string; example_vi: string } | null>(null);
   const [error, setError] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const speakRoast = (text: string) => {
+    if (!window.speechSynthesis) return;
+    
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'vi-VN';
+    utterance.pitch = 0.6; // Giọng trầm xuống nghe nam tính/khịa hơn
+    utterance.rate = 1.1; // Hơi nhanh xíu cho giống Gen Z
+
+    const voices = window.speechSynthesis.getVoices();
+    const viVoices = voices.filter(v => v.lang.includes('vi'));
+    if (viVoices.length > 0) {
+      // Ưu tiên chọn giọng nam nếu có (thường giọng Google Nam hoặc cứ lấy giọng vi đầu tiên)
+      utterance.voice = viVoices[0]; 
+    }
+
+    utterance.onstart = () => setIsPlaying(true);
+    utterance.onend = () => setIsPlaying(false);
+    utterance.onerror = () => setIsPlaying(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   const handleRoast = async () => {
     setLoading(true);
@@ -24,6 +49,8 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
         throw new Error(data.error || 'Lỗi kết nối AI');
       }
       setRoastData(data);
+      // Đọc lên ngay sau khi có kết quả
+      speakRoast(data.roast);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -63,7 +90,15 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
           </div>
           
           <div className="pt-2">
-            <h4 className="font-black text-xl mb-2 text-[#721c24]">Lời sấm truyền:</h4>
+            <h4 className="font-black text-xl mb-2 text-[#721c24] flex items-center justify-between">
+              <span>Lời sấm truyền:</span>
+              <button 
+                onClick={() => speakRoast(roastData.roast)}
+                className={`text-sm px-2 py-1 rounded border-2 border-[#721c24] ${isPlaying ? 'bg-[#721c24] text-white animate-pulse' : 'bg-transparent text-[#721c24] hover:bg-[#721c24] hover:text-white'}`}
+              >
+                {isPlaying ? '🔊 Đang chửi...' : '🔊 Nghe lại'}
+              </button>
+            </h4>
             <p className="text-[#721c24] leading-relaxed whitespace-pre-wrap">{roastData.roast}</p>
           </div>
 
