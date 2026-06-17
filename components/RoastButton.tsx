@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface RoastButtonProps {
   wordId: number;
@@ -13,6 +13,13 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
   const [error, setError] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Load voices ngay khi component render để tránh bị rỗng ở lần click đầu tiên
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+    }
+  }, []);
+
   const speakRoast = (text: string) => {
     if (!window.speechSynthesis) return;
     
@@ -24,10 +31,12 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
     utterance.rate = 1.1; // Hơi nhanh xíu cho giống Gen Z
 
     const voices = window.speechSynthesis.getVoices();
-    const viVoices = voices.filter(v => v.lang.includes('vi'));
+    const viVoices = voices.filter(v => v.lang.toLowerCase().includes('vi'));
+    
     if (viVoices.length > 0) {
-      // Ưu tiên chọn giọng nam nếu có (thường giọng Google Nam hoặc cứ lấy giọng vi đầu tiên)
-      utterance.voice = viVoices[0]; 
+      // Nếu có nhiều giọng tiếng Việt, thử ưu tiên giọng Nam (Male) nếu tên có chữ 'male', nếu không lấy giọng đầu tiên
+      const maleVoice = viVoices.find(v => v.name.toLowerCase().includes('male'));
+      utterance.voice = maleVoice || viVoices[0]; 
     }
 
     utterance.onstart = () => setIsPlaying(true);
