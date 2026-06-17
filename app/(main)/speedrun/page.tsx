@@ -130,8 +130,8 @@ export default function SpeedrunPage() {
           <button onClick={startGame} className="w-full btn-brutal bg-[var(--red)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
             CHIẾN NGAY 🔥
           </button>
-          <button onClick={() => router.push('/')} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm">
-            ← Về Trang Chủ
+          <button onClick={() => router.push('/')} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
+            Về Trang Chủ
           </button>
         </div>
       </div>

@@ -294,8 +294,8 @@ export default function BlockBlastClient() {
           <button onClick={startGame} className="w-full btn-brutal bg-[#8b5cf6] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4">
             VÀO XẾP HÌNH
           </button>
-          <button onClick={() => router.push('/')} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm">
-            ← Về Trang Chủ
+          <button onClick={() => router.push('/')} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
+            Về Trang Chủ
           </button>
         </div>
       </div>
