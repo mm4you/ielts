@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { parseMeaning } from '@/lib/parse';
 
 type Board = number[][]; // 0=empty, 1=filled, 2=dead
 type Shape = { id: string; grid: number[][]; color: string };
@@ -287,15 +288,19 @@ export default function BlockBlastClient() {
               <span className="text-[var(--red)] font-black uppercase text-sm mb-2 block animate-pulse">Hết Gạch! Hãy trả lời:</span>
               <h2 className="text-3xl font-serif font-black mb-4 text-[var(--ink)]">{questions[currentQIndex].word}</h2>
               <div className="grid grid-cols-1 gap-2">
-                {questions[currentQIndex].choices.map((choice, idx) => (
-                  <button 
-                    key={idx}
-                    onClick={() => handleVocabAnswer(idx)}
-                    className="btn-brutal py-2 px-3 text-sm bg-white hover:bg-[var(--yellow)] text-left text-[var(--ink)]"
-                  >
-                    {choice.split(' | ')[0]}
-                  </button>
-                ))}
+                {questions[currentQIndex].choices.map((choice, idx) => {
+                  const { en, vi } = parseMeaning(choice, questions[currentQIndex].pos || '');
+                  return (
+                    <button 
+                      key={idx}
+                      onClick={() => handleVocabAnswer(idx)}
+                      className="btn-brutal py-2 px-3 text-sm bg-white hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px]"
+                    >
+                      <span className="font-black text-[var(--ink)] text-base leading-tight mb-0.5">{en}</span>
+                      {vi && <span className="font-bold text-[var(--muted)] text-xs">{vi}</span>}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
