@@ -126,13 +126,13 @@ export default function SwipePage() {
   const nextWord = words[currentIndex + 1];
 
   return (
-    <div className="max-w-md mx-auto w-full relative min-h-[500px]">
+    <div className="max-w-md mx-auto w-full relative min-h-[calc(100vh-80px)] py-4 md:py-8 flex flex-col">
       <div className="flex justify-between font-bold mb-4">
         <span>Thẻ {currentIndex + 1} / {words.length}</span>
         <span className="text-[var(--muted)]">Vuốt để phân loại</span>
       </div>
 
-      <div className="relative w-full h-[450px]">
+      <div className="relative w-full flex-1 min-h-[300px] md:min-h-[450px]">
         {/* Next Card (Background) */}
         {nextWord && (
           <div className="absolute inset-0 panel flex flex-col justify-center items-center text-center shadow-[4px_4px_0_var(--line)] scale-95 opacity-50 translate-y-4">
@@ -184,17 +184,17 @@ export default function SwipePage() {
         </div>
       </div>
 
-      <div className="flex justify-center gap-12 mt-12 relative z-20">
+      <div className="flex justify-center gap-8 md:gap-12 mt-6 md:mt-12 relative z-20 shrink-0">
         <button 
           onClick={() => handleSwipe('left')}
-          className="w-24 h-24 rounded-full border-[4px] border-[var(--red)] flex items-center justify-center text-5xl text-[var(--red)] bg-[var(--paper)] shadow-[6px_6px_0_var(--red)] hover:translate-y-1 hover:shadow-[2px_2px_0_var(--red)] transition-all active:scale-95"
+          className="w-20 h-20 md:w-24 md:h-24 rounded-full border-[4px] border-[var(--red)] flex items-center justify-center text-4xl md:text-5xl text-[var(--red)] bg-[var(--paper)] shadow-[6px_6px_0_var(--red)] hover:translate-y-1 hover:shadow-[2px_2px_0_var(--red)] transition-all active:scale-95"
           aria-label="Học lại"
         >
           <span className="-mt-1">✖</span>
         </button>
         <button 
           onClick={() => handleSwipe('right')}
-          className="w-24 h-24 rounded-full border-[4px] border-[var(--green)] flex items-center justify-center text-6xl text-[var(--green)] bg-[var(--paper)] shadow-[6px_6px_0_var(--green)] hover:translate-y-1 hover:shadow-[2px_2px_0_var(--green)] transition-all active:scale-95"
+          className="w-20 h-20 md:w-24 md:h-24 rounded-full border-[4px] border-[var(--green)] flex items-center justify-center text-5xl md:text-6xl text-[var(--green)] bg-[var(--paper)] shadow-[6px_6px_0_var(--green)] hover:translate-y-1 hover:shadow-[2px_2px_0_var(--green)] transition-all active:scale-95"
           aria-label="Đã biết"
         >
           <span className="mt-2">♥</span>

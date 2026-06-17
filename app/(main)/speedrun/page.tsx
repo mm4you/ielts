@@ -161,11 +161,11 @@ export default function SpeedrunPage() {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className={`max-w-2xl mx-auto py-10 px-4 transition-colors duration-200 ${
+    <div className={`max-w-2xl mx-auto py-4 md:py-10 px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center transition-colors duration-200 ${
       flashColor === 'green' ? 'bg-green-100' : flashColor === 'red' ? 'bg-red-100' : ''
     }`}>
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-8 bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl relative">
+      <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl relative shrink-0">
         <div className="text-2xl font-black text-[var(--ink)]">
           Điểm: <span className="text-[var(--blue)]">{score}</span>
         </div>
@@ -180,7 +180,7 @@ export default function SpeedrunPage() {
       </div>
 
       {/* Question Card */}
-      <div className={`panel text-center mb-8 min-h-[250px] flex flex-col justify-center items-center relative ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
+      <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
         <div className="absolute top-4 left-4">
           <span className="chip bg-[var(--blue)] text-white">{currentIndex + 1} / {questions.length}</span>
         </div>
@@ -196,9 +196,9 @@ export default function SpeedrunPage() {
             <button 
               key={idx}
               onClick={() => handleAnswer(idx)}
-              className="btn-brutal bg-[var(--paper)] text-left flex flex-col items-center justify-center py-6 px-4 hover:bg-[var(--yellow)] transition-colors active:scale-95"
+              className="btn-brutal bg-[var(--paper)] text-left flex flex-col items-center justify-center py-3 px-2 md:py-6 md:px-4 hover:bg-[var(--yellow)] transition-colors active:scale-95 min-h-[60px]"
             >
-              <span className="text-xl font-bold text-[var(--ink)] mb-1 text-center">{en}</span>
+              <span className="text-lg md:text-xl font-bold text-[var(--ink)] mb-1 text-center">{en}</span>
               {vi && <span className="text-sm font-bold text-[var(--muted)] text-center">{vi}</span>}
             </button>
           );

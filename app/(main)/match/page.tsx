@@ -161,9 +161,9 @@ export default function MatchPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
+    <div className="max-w-4xl mx-auto py-4 md:py-10 px-2 md:px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center">
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-8 bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl">
+      <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl shrink-0">
         <div className="text-2xl font-black text-[var(--ink)]">
           Lượt (Moves): <span className="text-[var(--blue)]">{moves}</span>
         </div>
@@ -181,7 +181,7 @@ export default function MatchPage() {
           return (
             <div 
               key={idx}
-              className={`relative h-32 md:h-40 cursor-pointer transform-style-3d transition-transform duration-500 ${isFlipped ? 'rotate-y-180' : ''} ${isMatched ? 'opacity-80 scale-95' : 'hover:-translate-y-2'}`}
+              className={`relative h-24 md:h-40 cursor-pointer transform-style-3d transition-transform duration-500 ${isFlipped ? 'rotate-y-180' : ''} ${isMatched ? 'opacity-80 scale-95' : 'hover:-translate-y-2'}`}
               onClick={() => handleCardClick(idx)}
             >
               {/* Back of card (Face down) */}
@@ -190,8 +190,8 @@ export default function MatchPage() {
               </div>
 
               {/* Front of card (Face up) */}
-              <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-2 text-center rotate-y-180 ${isMatched ? 'bg-[var(--green)] border-[var(--line)]' : 'bg-[var(--paper)] border-[var(--line)]'}`}>
-                <span className={`font-black ${isMatched ? 'text-white' : (card.type === 'en' ? 'text-2xl md:text-3xl text-[var(--ink)]' : 'text-lg md:text-xl text-[var(--muted)]')}`}>
+              <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-1 md:p-2 text-center rotate-y-180 leading-tight ${isMatched ? 'bg-[var(--green)] border-[var(--line)]' : 'bg-[var(--paper)] border-[var(--line)]'}`}>
+                <span className={`font-black ${isMatched ? 'text-white' : (card.type === 'en' ? 'text-base md:text-3xl text-[var(--ink)]' : 'text-sm md:text-xl text-[var(--muted)]')}`}>
                   {card.content}
                 </span>
               </div>

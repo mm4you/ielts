@@ -133,13 +133,13 @@ export default function ReviewPage() {
   const progress = ((currentIndex + 1) / words.length) * 100;
 
   return (
-    <div className="max-w-3xl mx-auto w-full px-4">
-      <div className="flex items-center justify-between mb-4 font-bold text-[var(--ink)]">
+    <div className="max-w-3xl mx-auto w-full px-2 md:px-4 py-4 md:py-8 min-h-[calc(100vh-80px)] flex flex-col">
+      <div className="flex items-center justify-between mb-2 md:mb-4 font-bold text-[var(--ink)] shrink-0">
         <span>Thẻ {currentIndex + 1} / {words.length}</span>
         <span>{Math.round(progress)}%</span>
       </div>
 
-      <div className="w-full h-4 bg-[var(--paper)] border-[3px] border-[var(--line)] rounded-full mb-10 overflow-hidden shadow-[2px_2px_0_var(--line)]">
+      <div className="w-full h-3 md:h-4 bg-[var(--paper)] border-[3px] border-[var(--line)] rounded-full mb-4 md:mb-10 overflow-hidden shadow-[2px_2px_0_var(--line)] shrink-0">
         <div
           className="h-full bg-[var(--green)] border-r-[3px] border-[var(--line)] transition-all duration-300"
           style={{ width: `${progress}%` }}
@@ -147,7 +147,7 @@ export default function ReviewPage() {
       </div>
 
       <div 
-        className={`panel min-h-[400px] flex flex-col justify-center items-center text-center mb-8 relative transition-all duration-300 ${!showMeaning ? 'cursor-pointer hover:-translate-y-2 hover:shadow-[12px_12px_0_var(--line)]' : ''}`}
+        className={`panel flex-1 min-h-[250px] md:min-h-[400px] flex flex-col justify-center items-center text-center mb-4 md:mb-8 relative transition-all duration-300 ${!showMeaning ? 'cursor-pointer hover:-translate-y-2 hover:shadow-[12px_12px_0_var(--line)]' : ''}`}
         onClick={() => { if (!showMeaning) setShowMeaning(true); }}
       >
         <div className="absolute top-4 left-4 flex gap-2">
@@ -155,18 +155,18 @@ export default function ReviewPage() {
           <span className="chip">{currentWord.topic}</span>
         </div>
         
-        <h2 className={`text-5xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 ${showMeaning ? 'mt-8' : ''}`}>
+        <h2 className={`text-4xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 ${showMeaning ? 'mt-8' : ''}`}>
           {currentWord.word}
         </h2>
         
         {currentWord.ipa && (
-          <p className="text-xl text-[var(--muted)] mb-8 font-mono bg-gray-100 px-4 py-1 rounded-md border-2 border-[var(--line)]">
+          <p className="text-lg md:text-xl text-[var(--muted)] mb-4 md:mb-8 font-mono bg-gray-100 px-4 py-1 rounded-md border-2 border-[var(--line)]">
             {currentWord.ipa}
           </p>
         )}
 
         {showMeaning ? (
-          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-6 mt-2 animate-fade-in flex flex-col items-center">
+          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-4 md:pt-6 mt-2 animate-fade-in flex flex-col items-center">
             {(() => {
               const { pos, en, vi } = parseMeaning(currentWord.meaning_vi, currentWord.pos);
               return (
@@ -190,22 +190,22 @@ export default function ReviewPage() {
       </div>
 
       {showMeaning && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
-          <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white flex flex-col items-center justify-center py-3">
-            <span className="text-xl md:text-2xl">Lại</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Quên sạch</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 animate-fade-in shrink-0">
+          <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white flex flex-col items-center justify-center py-2 md:py-3">
+            <span className="text-lg md:text-2xl">Lại</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quên sạch</span>
           </button>
-          <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] flex flex-col items-center justify-center py-3">
-            <span className="text-xl md:text-2xl">Khó</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Nhớ mang máng</span>
+          <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] flex flex-col items-center justify-center py-2 md:py-3">
+            <span className="text-lg md:text-2xl">Khó</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ mang máng</span>
           </button>
-          <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white flex flex-col items-center justify-center py-3">
-            <span className="text-xl md:text-2xl">Tốt</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Nhớ rõ</span>
+          <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white flex flex-col items-center justify-center py-2 md:py-3">
+            <span className="text-lg md:text-2xl">Tốt</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ rõ</span>
           </button>
-          <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white flex flex-col items-center justify-center py-3">
-            <span className="text-xl md:text-2xl">Dễ</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase">Quá quen thuộc</span>
+          <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white flex flex-col items-center justify-center py-2 md:py-3">
+            <span className="text-lg md:text-2xl">Dễ</span>
+            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quá quen thuộc</span>
           </button>
         </div>
       )}
