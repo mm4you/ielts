@@ -183,6 +183,14 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           const utter = new SpeechSynthesisUtterance(chunk);
           utter.lang = 'vi-VN';
           utter.rate = 1.2; // Giọng chuẩn fallback chạy vừa phải 1.2
+          
+          // Gán giọng Tiếng Việt từ hệ thống để tránh bị giọng Anh đọc đè tiếng Việt
+          const systemVoices = window.speechSynthesis.getVoices();
+          const viVoice = systemVoices.find(v => v.lang.replace('_', '-').startsWith('vi'));
+          if (viVoice) {
+            utter.voice = viVoice;
+          }
+
           utter.onend = () => {
             localCallback();
           };
@@ -433,6 +441,14 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
               if (typeof window !== 'undefined' && window.speechSynthesis) {
                 const utter = new SpeechSynthesisUtterance(wordText);
                 utter.lang = 'en-US';
+                
+                // Gán giọng tiếng Anh cụ thể để tránh trình duyệt lấy nhầm giọng tiếng Việt đọc tiếng Anh
+                const systemVoices = window.speechSynthesis.getVoices();
+                const enVoice = systemVoices.find(v => v.lang.replace('_', '-').startsWith('en'));
+                if (enVoice) {
+                  utter.voice = enVoice;
+                }
+                
                 window.speechSynthesis.speak(utter);
               }
             }}
