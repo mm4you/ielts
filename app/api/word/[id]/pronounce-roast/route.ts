@@ -79,10 +79,18 @@ Yêu cầu trả về định dạng JSON bắt buộc gồm:
     }
 
     const data = await response.json();
-    const aiText = data.choices[0].message.content;
-    const parsed = JSON.parse(aiText);
+    let aiText = data.choices[0].message.content;
 
-    return NextResponse.json(parsed);
+    // Xóa định dạng markdown ```json nếu AI có chèn vào
+    aiText = aiText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    try {
+      const parsed = JSON.parse(aiText);
+      return NextResponse.json(parsed);
+    } catch (parseError) {
+      console.error('JSON Parse Error:', aiText);
+      throw new Error('AI trả về kết quả không chuẩn định dạng. Thử lại nha!');
+    }
   } catch (error: any) {
     console.error('Pronounce Roast API Error:', error);
     return NextResponse.json({ error: error.message || 'Lỗi khi gọi AI' }, { status: 500 });
