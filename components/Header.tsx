@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useSession, signIn, signOut } from "next-auth/react";
+import Image from 'next/image';
 
 export default function Header() {
   const { data: session } = useSession();
@@ -41,12 +42,15 @@ export default function Header() {
     <>
       <header className="fixed top-0 left-0 right-0 bg-[var(--paper)] border-b-[3px] border-[var(--line)] z-20 shadow-[0_4px_0_var(--line)]">
         <nav className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="text-2xl font-bold font-serif tracking-tight text-[var(--ink)] flex items-center gap-2 group">
-            <div className="relative w-8 h-8">
-              <div className="absolute top-0 left-0 w-6 h-6 bg-[var(--blue)] border-2 border-[var(--line)] rounded-md transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1"></div>
-              <div className="absolute bottom-0 right-0 w-6 h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-md"></div>
-            </div>
-            <span className="group-hover:text-[var(--blue)] transition-colors">IELTS Vocab</span>
+          <Link href="/" className="flex items-center group transition-transform hover:-translate-y-0.5">
+            <Image 
+              src="/logo.png" 
+              alt="IELTS Vocab Logo" 
+              width={140} 
+              height={40} 
+              className="object-contain h-10 w-auto" 
+              priority 
+            />
           </Link>
           
           {/* Desktop Navigation */}
