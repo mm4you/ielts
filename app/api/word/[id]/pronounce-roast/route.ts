@@ -63,36 +63,20 @@ export async function POST(
       }
     }
 
-    const prompt = `Bạn là một người bình luận dạo trên Threads/TikTok với khiếu hài hước trào phúng, châm biếm sâu cay và lạnh lùng (deadpan sarcasm). Lời lẽ của bạn khô khan, thâm thúy, điềm tĩnh nhưng sát thương cực kỳ cao, tự nhiên như lời nói thường ngày của một người thích nói kháy.
+    const prompt = `Bạn là một người bình luận dạo trên mạng với khiếu hài hước duyên dáng, lầy lội và tỉnh bơ. Lời lẽ của bạn tự nhiên như người Việt hay nói giỡn với nhau hàng ngày.
 Học sinh cần phát âm từ tiếng Anh "${word.word}" (nghĩa: ${word.meaning_vi.split('///')[0] || word.meaning_vi.split('|||')[0]}), nhưng máy ghi âm lại nghe ra thành: "${transcribedText}".
 Hệ thống tự động chấm điểm: ${calculatedScore}/100 điểm.
 
-Nhiệm vụ: Viết đúng 1 câu nhận xét ngắn (tối đa 15 từ) khịa thâm thúy, dí dỏm.
+Nhiệm vụ: Viết đúng 1 câu nhận xét ngắn (tối đa 20 từ) để phản hồi lại kết quả này.
 Yêu cầu văn phong:
-- CẤM TUYỆT ĐỐI sử dụng các từ lóng rẻ tiền, sáo rỗng hoặc cố tỏ ra trẻ trung của robot (như: xịt keo, kiếp nạn, cảm lạnh, chê, cứu tui, over hợp, keo lỳ, mận vải, ét ô ét).
-- CẤM TUYỆT ĐỐI sử dụng bất kỳ từ tiếng Anh hay chữ viết tắt tiếng Anh nào (như: IELTS, Oxford, Flex, Over,...) trong câu nhận xét. Toàn bộ câu chửi phải sử dụng 100% tiếng Việt thuần túy để tránh giọng đọc AI bị lỗi phát âm pha trộn tiếng Anh.
-- Không dùng từ cảm thán thừa thãi ở đầu câu (Ủa, Ôi, Wow...).
-- Sử dụng phép so sánh, châm biếm gián tiếp lạnh lùng (nói kháy điềm tĩnh). Hãy dùng những câu đùa khô khan (dry humor) mang tính sát thương cao nhưng tinh tế.
-- Tham khảo các ví dụ mẫu sau để bắt chước văn phong thâm thúy:
-  * Điểm dưới 50 (Phát âm rất tệ):
-    - "Không nói tiếng Anh thì không ai biết mình không biết nói đâu bạn ơi."
-    - "Nghe xong tôi tự tin đi thi nói tiếng Anh hẳn, vì biết chắc có người đứng bét bảng thay mình."
-    - "Khuyên thật lòng lần sau phát âm tiếng Anh thì nên nói thầm, nói nhỏ thôi."
-    - "Đọc đúng từ này rồi đó, nhưng mà là tiếng gì chứ không phải tiếng Anh."
-    - "Nghe xong tôi ngỡ ngàng đến mức phải đi khám tai gấp."
-    - "Phát âm thế này thì người bản xứ nghe xong cũng phải xin lỗi vì họ không hiểu tiếng Anh."
-  * Điểm từ 50-79 (Tạm được nhưng vẫn sai):
-    - "Ý là cũng có âm có điệu đó, nhưng điệu bộ này nghe lạ lắm."
-    - "Cứ đà này thì trình độ ngoại ngữ thượng thừa kiếp sau chắc chắn sẽ vẫy chào bạn."
-    - "Cảm ơn bạn đã đọc, nhưng lần sau nếu được thì xin đừng đọc nữa nha."
-    - "Đọc chuẩn ghê, chuẩn đến mức người bản xứ nghe xong cũng phải tự nghi ngờ chính mình."
-    - "Tốc độ nói rất nhanh và tự tin, tiếc là không có chữ nào đúng."
-  * Điểm 100 (Xuất sắc):
-    - "Đọc chuẩn thế này thì ai làm lại bạn nữa."
-    - "10 điểm không có nhưng. Nói xịn thế này xứng đáng được khen cả ngày."
-    - "Phát âm chuẩn đét, nghe cứ như người bản xứ gốc... Việt Nam."
+- CẤM DÙNG các từ lóng mạng gượng ép (như: xịt keo, kiếp nạn, cảm lạnh, chê, cứu tui, ét ô ét). Hãy nói chuyện một cách tự nhiên, tếu táo.
+- CẤM DÙNG bất kỳ từ tiếng Anh nào trong câu nhận xét để tránh lỗi phát âm của máy đọc. Viết 100% tiếng Việt.
+- Không dùng từ cảm thán sáo rỗng ở đầu câu (Ủa, Ôi, Wow...).
+- Tùy vào số điểm mà có thái độ khác nhau:
+  * Nếu điểm >= 80 (Phát âm đúng hoặc xuất sắc): Khen ngợi một cách dí dỏm, hề hước, tâng bốc người đọc lên tận mây xanh nhưng vẫn tếu táo (ví dụ: "Đọc chuẩn thế này thì Tây nghe xong cũng phải xin lại quốc tịch.", "Mười điểm không có nhưng, phát âm mượt như nhung luôn."). Tuyệt đối KHÔNG được chê bai hay khịa.
+  * Nếu điểm < 80 (Phát âm sai): Trêu đùa nhẹ nhàng, duyên dáng, không sỉ nhục người khác. Cà khịa một cách mặn mà, tự nhiên (ví dụ: "Đọc xong từ này chắc từ điển cũng tự động gập lại đi ngủ luôn.", "Có cố gắng đó, nhưng mà là cố gắng làm người nghe hoang mang.", "Nghe quen quen mà hình như không phải tiếng người trái đất.").
 
-Trả về JSON:
+Trả về JSON duy nhất:
 {
   "roast": "Lời nhận xét"
 }`;

@@ -36,7 +36,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [viVoices, setViVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('google-tts');
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -48,20 +47,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         const list = window.speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').startsWith('vi'));
         setViVoices(list);
-        
-        if (list.length > 0) {
-          // Tự động tìm giọng miền Nam làm mặc định nếu có sẵn
-          const southern = list.find(v => isSouthernVoice(v.name));
-          if (southern) {
-            setSelectedVoiceName(southern.name);
-          } else {
-            setSelectedVoiceName('google-tts');
-          }
-        } else {
-          setSelectedVoiceName('google-tts');
-        }
-      }
-    };
 
     loadVoices();
     if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -136,10 +121,11 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         playSentence(currentSentence);
       };
 
-      const selectedVoice = viVoices.find(v => v.name === selectedVoiceName);
+      const southernVoice = viVoices.find(v => isSouthernVoice(v.name));
+      const fallbackVoice = viVoices[0];
+      const selectedVoice = southernVoice || fallbackVoice;
 
-      // Nếu sếp chọn một giọng nói cụ thể của hệ thống:
-      if (selectedVoiceName !== 'google-tts' && selectedVoice && typeof window !== 'undefined' && window.speechSynthesis) {
+      if (selectedVoice && typeof window !== 'undefined' && window.speechSynthesis) {
         const utter = new SpeechSynthesisUtterance(chunk);
         utter.voice = selectedVoice;
         utter.lang = selectedVoice.lang;
@@ -148,9 +134,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         utter.onend = () => {
           handleNext();
         };
-        utter.onerror = (e) => {
-          console.warn("System voice failed, falling back to Google TTS:", e);
-          playGoogleTTS(chunk, handleNext);
+        utter.onerror = () => {
+          handleNext();
         };
         window.speechSynthesis.speak(utter);
       } else {
@@ -521,24 +506,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
               ĐIỂM: <span className={result.score >= 80 ? 'text-[var(--green)]' : 'text-[var(--red)]'}>{result.score}/100</span>
             </h4>
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              {viVoices.length > 0 && (
-                <select
-                  value={selectedVoiceName}
-                  onChange={(e) => setSelectedVoiceName(e.target.value)}
-                  className="text-xs p-1 border-2 border-[var(--line)] font-bold bg-[var(--bg)] text-[var(--ink)] rounded cursor-pointer max-w-[200px]"
-                  title="Chọn giọng đọc AI"
-                >
-                  <option value="google-tts">🔊 Google Cloud (Giọng Bắc)</option>
-                  {viVoices.map(v => {
-                    const isSouth = isSouthernVoice(v.name);
-                    return (
-                      <option key={v.name} value={v.name}>
-                        🗣️ {v.name.replace('Microsoft', 'MS').replace('Online (Natural)', '')} {isSouth ? '(Giọng Nam)' : '(Giọng Bắc)'}
-                      </option>
-                    );
-                  })}
-                </select>
-              )}
               <button 
                 onClick={() => speakRoast(result.roast)}
                 className={`text-sm px-3 py-1 rounded border-2 border-[var(--line)] font-bold shrink-0 ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
