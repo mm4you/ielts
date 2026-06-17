@@ -337,14 +337,14 @@ export default function BlockBlastClient() {
                 {questions[currentQIndex].choices.map((choice, idx) => {
                   const { en, vi } = parseMeaning(choice, questions[currentQIndex].pos || '');
                   return (
-                    <button 
+                    <div 
                       key={idx}
                       onClick={() => handleVocabAnswer(idx)}
-                      className="btn-brutal py-3 px-4 text-sm bg-white hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px]"
+                      className="btn-brutal py-3 px-4 text-sm bg-white hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px] cursor-pointer"
                     >
                       <span className="font-black text-[var(--ink)] text-base leading-tight mb-1">{en}</span>
                       {vi && <span className="font-bold text-[var(--muted)] text-xs">{vi}</span>}
-                    </button>
+                    </div>
                   );
                 })}
               </div>

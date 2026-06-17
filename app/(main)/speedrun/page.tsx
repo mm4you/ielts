@@ -196,14 +196,14 @@ export default function SpeedrunPage() {
         {currentQ.choices.map((choice, idx) => {
           const { en, vi } = parseMeaning(choice, currentQ.pos || '');
           return (
-            <button 
+            <div 
               key={idx}
               onClick={() => handleAnswer(idx)}
-              className="btn-brutal bg-[var(--paper)] text-left flex flex-col items-center justify-center py-3 px-2 md:py-6 md:px-4 hover:bg-[var(--yellow)] transition-colors active:scale-95 min-h-[60px]"
+              className="btn-brutal bg-[var(--paper)] text-left flex flex-col items-center justify-center py-3 px-2 md:py-6 md:px-4 hover:bg-[var(--yellow)] transition-colors active:scale-95 min-h-[60px] cursor-pointer"
             >
               <span className="text-lg md:text-xl font-bold text-[var(--ink)] mb-1 text-center">{en}</span>
               {vi && <span className="text-sm font-bold text-[var(--muted)] text-center">{vi}</span>}
-            </button>
+            </div>
           );
         })}
       </div>
