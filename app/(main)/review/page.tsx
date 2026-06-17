@@ -47,7 +47,7 @@ export default function ReviewPage() {
     nextDate.setDate(nextDate.getDate() + srsData.interval_days);
 
     try {
-      // Background update
+      // Background update word
       fetch(`/api/words/${word.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -56,6 +56,9 @@ export default function ReviewPage() {
           next_review_date: nextDate.toISOString(),
         }),
       });
+
+      // Background update activity
+      fetch('/api/activity', { method: 'POST' });
     } catch (error) {
       console.error('Failed to update word:', error);
     }

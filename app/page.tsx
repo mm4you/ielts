@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoginWall from '@/components/LoginWall';
 import Link from 'next/link';
+import HeatmapClient from '@/components/HeatmapClient';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
@@ -46,6 +47,8 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <HeatmapClient />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--blue)] rounded-bl-full opacity-10"></div>
@@ -63,19 +66,6 @@ export default async function HomePage() {
             </div>
           </article>
 
-          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green)] rounded-bl-full opacity-10"></div>
-            <h2 className="text-2xl font-serif font-bold mb-2">Quẹt Thẻ Tinder</h2>
-            <p className="text-[var(--muted)] mb-6 flex-1">
-              Quẹt trái/phải để lọc nhanh hàng trăm từ vựng, giúp hệ thống biết bạn đã rành từ nào.
-            </p>
-            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-              <span className="font-bold text-lg text-[var(--green)]">Lọc siêu tốc</span>
-              <Link href="/swipe" className="btn-brutal bg-[var(--green)] text-white">
-                Quẹt ngay
-              </Link>
-            </div>
-          </article>
 
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--red)] shadow-[8px_8px_0_var(--red)]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--red)] rounded-bl-full opacity-10"></div>

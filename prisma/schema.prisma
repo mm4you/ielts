@@ -96,3 +96,14 @@ model UserProgress {
 
   @@unique([userId, wordId])
 }
+
+model DailyActivity {
+  id           String   @id @default(cuid())
+  userId       String
+  date         DateTime @db.Date
+  wordsLearned Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}

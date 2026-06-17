@@ -76,6 +76,9 @@ export default function SpeedrunPage() {
       setScore(s => s + 10);
       setTimeLeft(t => t + 2); // Bonus time
       setFlashColor('green');
+      
+      // Background log activity
+      fetch('/api/activity', { method: 'POST' }).catch(() => {});
     } else {
       setTimeLeft(t => Math.max(0, t - 3)); // Penalty
       setIsShaking(true);
