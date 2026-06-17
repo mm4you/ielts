@@ -10,7 +10,7 @@ export default function Footer() {
             GitHub
           </Link>
           {' | '}
-          <Link href="#" target="_blank" rel="noopener noreferrer" className="text-[var(--ink)] hover:text-[var(--green)] underline underline-offset-2 transition-colors font-black">
+          <Link href="https://www.facebook.com/agug103" target="_blank" rel="noopener noreferrer" className="text-[var(--ink)] hover:text-[var(--green)] underline underline-offset-2 transition-colors font-black">
             Góp ý
           </Link>
         </p>
