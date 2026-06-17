@@ -36,6 +36,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     // Gọi qua Next.js API Proxy để tránh bị Google chặn CORS hoặc Referer
     const url = `/api/tts?text=${encodeURIComponent(text)}`;
     const audio = new Audio(url);
+    // Tăng tốc độ giọng nói lên 1.35x cho có vẻ Gen Z nói nhanh, xéo xắt
+    audio.playbackRate = 1.35;
     
     setIsPlaying(true);
     audio.onended = () => setIsPlaying(false);
@@ -96,27 +98,31 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       let isFinal = false;
       let isPerfectMatch = false;
 
-      // Quét toàn bộ kết quả trả về (kể cả interim đang đoán)
+      // Gom toàn bộ transcript từ các event results lại thành 1 chuỗi dài
+      // Vì khi nói dài, event.results sẽ chia thành nhiều phần: result[0], result[1]...
+      let fullTranscript = '';
+
       for (let i = 0; i < event.results.length; i++) {
         const resultItem = event.results[i];
         if (resultItem.isFinal) isFinal = true;
         
-        // Quét 5 phương án dự đoán của mỗi kết quả
+        fullTranscript += resultItem[0].transcript + ' ';
+
+        // Quét 5 phương án dự đoán của mỗi phần
         for (let j = 0; j < resultItem.length; j++) {
           const rawText = resultItem[j].transcript.toLowerCase().trim();
           const cleanText = rawText.replace(/[^a-z0-9\s]/g, '');
           const cleanTarget = target.replace(/[^a-z0-9\s]/g, '');
           
-          if (!bestTranscript) bestTranscript = resultItem[0].transcript; // Mặc định lấy cái đầu tiên
-          
           if (cleanText === cleanTarget || rawText.includes(target)) {
             isPerfectMatch = true;
-            bestTranscript = resultItem[j].transcript;
             break;
           }
         }
-        if (isPerfectMatch) break;
       }
+
+      fullTranscript = fullTranscript.trim();
+      bestTranscript = fullTranscript;
 
       currentTranscript = bestTranscript;
       setTranscribed(bestTranscript);

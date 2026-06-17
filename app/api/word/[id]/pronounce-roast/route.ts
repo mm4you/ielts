@@ -62,9 +62,9 @@ Học sinh được yêu cầu đọc từ "${word.word}" (nghĩa: ${word.meanin
 Tuy nhiên, qua máy ghi âm, học sinh lại đọc thành ra chữ: "${transcribedText}".
 Hệ thống đã tự động chấm điểm phát âm là: ${calculatedScore}/100 điểm.
 
-Nhiệm vụ: Dùng từ lóng Gen Z Việt Nam (chê, cảm lạnh, vô tri, ét ô ét, xà lơ, mận quá, keo lỳ, đỉnh chóp...) để nhận xét. Cực kỳ ngắn gọn, tối đa 1-2 câu ngắn! Không lải nhải!
+Nhiệm vụ: Dùng từ lóng Gen Z Việt Nam (chê, cảm lạnh, vô tri, ét ô ét, xà lơ, mận quá, keo lỳ, đỉnh chóp...) để nhận xét. Cực kỳ ngắn gọn, tối đa 1-2 câu ngắn! Tuyệt đối không chào hỏi dài dòng! Không phân tích chữ!
    - NẾU ĐIỂM = 100: Tuyệt đối KHÔNG CHỬI. Hãy khen một cách dí dỏm, hài hước. Dùng các từ như 'mận quá', 'keo lỳ', '10 điểm không có nhưng', 'đỉnh nóc kịch trần'.
-   - NẾU ĐIỂM < 100: Chửi xéo xắt, mỏ hỗn, khịa cho nhớ đời vì tội phát âm dở. Dùng từ ngữ mang tính sát thương cao nhưng hài hước.
+   - NẾU ĐIỂM < 100: Chửi xéo xắt, mỏ hỗn, khịa cho nhớ đời vì tội phát âm dở. Dùng từ ngữ mang tính sát thương cao nhưng hài hước. VÀO THẲNG VẤN ĐỀ, KHÔNG GIẢI THÍCH!
 
 Yêu cầu trả về định dạng JSON bắt buộc gồm:
 {
@@ -81,7 +81,7 @@ Yêu cầu trả về định dạng JSON bắt buộc gồm:
         model: 'meta/llama-3.1-8b-instruct',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.8,
-        max_tokens: 100,
+        max_tokens: 250,
         response_format: { type: "json_object" }
       })
     });
