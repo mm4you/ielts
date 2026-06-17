@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { parseMeaning } from '@/lib/parse';
+import { LEVELS } from '@/types';
 
 type Board = number[][]; // 0=empty, 1=filled, 2=dead
 type Shape = { id: string; grid: number[][]; color: string };
@@ -90,7 +91,8 @@ export default function BlockBlastClient() {
   const [shapes, setShapes] = useState<(Shape | null)[]>([]);
   
   const [score, setScore] = useState(0);
-  const [gameState, setGameState] = useState<'playing' | 'vocab' | 'gameover'>('playing');
+  const [gameState, setGameState] = useState<'setup' | 'playing' | 'vocab' | 'gameover'>('setup');
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
   
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
@@ -106,14 +108,20 @@ export default function BlockBlastClient() {
     currY: number;
   } | null>(null);
 
-  useEffect(() => {
+  const startGame = () => {
+    setGameState('playing');
+    setBoard(Array(8).fill(0).map(() => Array(8).fill(0)));
     setShapes(getRandomShapes(3));
-    fetch('/api/speedrun?level=all')
+    setScore(0);
+    setCurrentQIndex(0);
+    
+    fetch(`/api/speedrun?level=${selectedLevel}`)
       .then(res => res.json())
       .then(data => {
         if (!data.error) setQuestions(data);
-      });
-  }, []);
+      })
+      .catch(console.error);
+  };
 
   useEffect(() => {
     if (gameState === 'playing' && shapes.some(s => s !== null)) {
@@ -256,6 +264,41 @@ export default function BlockBlastClient() {
     }
   };
 
+  if (gameState === 'setup') {
+    return (
+      <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
+          <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[#8b5cf6]">Block Blast</h2>
+          <p className="text-xl font-black mb-8">Xếp Hình Sinh Tồn</p>
+          
+          <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
+            <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
+            <ul className="font-bold text-sm space-y-2">
+              <li>🧩 Kéo thả gạch vào bàn cờ để ăn điểm.</li>
+              <li>⚡ Xếp xong 3 khối gạch sẽ phải trả lời từ vựng.</li>
+              <li>✅ Trả lời đúng: Được cấp gạch mới.</li>
+              <li>❌ Trả lời sai: Bị rớt "gạch chết" không thể xóa.</li>
+              <li>💀 Không còn chỗ xếp gạch = GAME OVER.</li>
+            </ul>
+          </div>
+
+          <select 
+            value={selectedLevel}
+            onChange={(e) => setSelectedLevel(e.target.value)}
+            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_#8b5cf6] transition-shadow appearance-none cursor-pointer text-center text-lg mb-8"
+          >
+            <option value="all">Mọi từ vựng</option>
+            {LEVELS.map(l => <option key={l} value={l}>Trình độ {l}</option>)}
+          </select>
+
+          <button onClick={startGame} className="w-full btn-brutal bg-[#8b5cf6] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
+            VÀO XẾP HÌNH
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-md mx-auto py-4 md:py-8 px-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
       {/* Header */}
@@ -312,12 +355,7 @@ export default function BlockBlastClient() {
             <h2 className="text-5xl font-serif font-black text-[var(--red)] mb-4">GAME OVER</h2>
             <p className="text-white font-bold mb-6 text-xl">Điểm: {score}</p>
             <button 
-              onClick={() => {
-                setBoard(Array(8).fill(0).map(() => Array(8).fill(0)));
-                setShapes(getRandomShapes(3));
-                setScore(0);
-                setGameState('playing');
-              }}
+              onClick={() => setGameState('setup')}
               className="btn-brutal bg-[var(--yellow)] w-full mb-2"
             >
               Chơi Lại

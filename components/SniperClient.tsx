@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { LEVELS } from '@/types';
 
 interface Question {
   id: number;
@@ -29,12 +30,15 @@ export default function SniperClient() {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
+  const [difficulty, setDifficulty] = useState<'normal' | 'hardcore'>('normal');
+  
   const [targets, setTargets] = useState<Target[]>([]);
   const [flash, setFlash] = useState<'green' | 'red' | null>(null);
 
   const fetchQuestions = async () => {
     try {
-      const res = await fetch('/api/sniper');
+      const res = await fetch(`/api/sniper?level=${selectedLevel}`);
       const data = await res.json();
       if (!data.error) {
         setQuestions(data);
@@ -72,8 +76,14 @@ export default function SniperClient() {
     }
 
     const currentQ = questions[currentQIndex];
+    
     // Base duration gets faster as score increases
-    const baseDuration = Math.max(2.5, 6 - (score / 1000)); 
+    let baseDuration;
+    if (difficulty === 'hardcore') {
+      baseDuration = Math.max(1.5, 3 - (score / 1000)); 
+    } else {
+      baseDuration = Math.max(3, 6 - (score / 1000));
+    }
 
     const newTargets: Target[] = currentQ.choices.map((choice, idx) => ({
       id: `${currentQIndex}-${idx}`,
@@ -143,6 +153,26 @@ export default function SniperClient() {
               <li>⚠️ Để mục tiêu xổng mất: Mất 1 mạng.</li>
               <li>❤️ Bạn có 3 mạng. Hết mạng = GAME OVER.</li>
             </ul>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <select 
+              value={selectedLevel}
+              onChange={(e) => setSelectedLevel(e.target.value)}
+              className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--red)] transition-shadow appearance-none cursor-pointer text-center text-lg"
+            >
+              <option value="all">Mọi từ vựng</option>
+              {LEVELS.map(l => <option key={l} value={l}>Trình độ {l}</option>)}
+            </select>
+
+            <select 
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value as 'normal' | 'hardcore')}
+              className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--red)] transition-shadow appearance-none cursor-pointer text-center text-lg"
+            >
+              <option value="normal">Mức: Tà tà</option>
+              <option value="hardcore">Mức: Đột tử</option>
+            </select>
           </div>
 
           <button onClick={startGame} className="w-full btn-brutal bg-[var(--blue)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
