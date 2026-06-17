@@ -81,6 +81,7 @@ Yêu cầu trả về định dạng JSON bắt buộc gồm:
         model: 'meta/llama-3.1-8b-instruct',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.8,
+        max_tokens: 100,
         response_format: { type: "json_object" }
       })
     });

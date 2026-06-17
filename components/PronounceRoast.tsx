@@ -171,22 +171,34 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
   const evaluatePronunciation = async (speechResult: string) => {
     setLoading(true);
+    
+    // Giới hạn 6 giây cho API, nếu AI quá tải thì báo lỗi ngay thay vì treo
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
     try {
       const res = await fetch(`/api/word/${wordId}/pronounce-roast`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcribedText: speechResult })
+        body: JSON.stringify({ transcribedText: speechResult }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
+      
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Lỗi AI');
       
       setResult(data);
-      // Đã tắt tự động phát âm thanh vì trình duyệt hay chặn
-      // setTimeout(() => speakRoast(data.roast), 100);
       if (onFinish) onFinish();
     } catch (err: any) {
-      setError(err.message);
+      if (err.name === 'AbortError') {
+        setError('AI đang bận đi đẻ, sếp bấm nút Mic thử lại giùm nha!');
+      } else {
+        setError(err.message);
+      }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };
