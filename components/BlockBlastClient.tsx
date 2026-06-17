@@ -43,9 +43,71 @@ const SHAPE_DEFS: { grid: number[][] }[] = [
   { grid: [[0,1,1],[1,1,0]] },
 ];
 
-function getRandomShapes(count: number): (Shape | null)[] {
-  return Array.from({ length: count }).map(() => {
-    const def = SHAPE_DEFS[Math.floor(Math.random() * SHAPE_DEFS.length)];
+function getSmartShapes(count: number, currentBoard: Board): (Shape | null)[] {
+  const comboShapes: { grid: number[][] }[] = [];
+  const fitShapes: { grid: number[][] }[] = [];
+
+  for (const def of SHAPE_DEFS) {
+    let canFit = false;
+    let canCombo = false;
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        if (canPlace(currentBoard, def.grid, r, c)) {
+          canFit = true;
+          let clearsLine = false;
+          
+          for (let rr = 0; rr < def.grid.length; rr++) {
+            let rowFull = true;
+            for (let cc = 0; cc < 8; cc++) {
+              const isShapeBlock = (cc >= c && cc < c + def.grid[0].length) && (def.grid[rr][cc - c] === 1);
+              if (currentBoard[r + rr]?.[cc] === 0 && !isShapeBlock) {
+                rowFull = false;
+                break;
+              }
+            }
+            if (rowFull) clearsLine = true;
+          }
+          
+          for (let cc = 0; cc < def.grid[0].length; cc++) {
+            let colFull = true;
+            for (let rr = 0; rr < 8; rr++) {
+              const isShapeBlock = (rr >= r && rr < r + def.grid.length) && (def.grid[rr - r][cc] === 1);
+              if (currentBoard[rr]?.[c + cc] === 0 && !isShapeBlock) {
+                colFull = false;
+                break;
+              }
+            }
+            if (colFull) clearsLine = true;
+          }
+
+          if (clearsLine) canCombo = true;
+        }
+        if (canCombo) break;
+      }
+      if (canCombo) break;
+    }
+    
+    if (canCombo) comboShapes.push(def);
+    else if (canFit) fitShapes.push(def);
+  }
+
+  return Array.from({ length: count }).map((_, i) => {
+    let def: { grid: number[][] } | undefined;
+    
+    if (i === 0 && comboShapes.length > 0 && Math.random() < 0.6) {
+      def = comboShapes[Math.floor(Math.random() * comboShapes.length)];
+    } 
+    else if (i === 1 && fitShapes.length > 0 && Math.random() < 0.7) {
+      def = fitShapes[Math.floor(Math.random() * fitShapes.length)];
+    }
+    else if (i === 2 && comboShapes.length > 0 && Math.random() < 0.2) {
+      def = comboShapes[Math.floor(Math.random() * comboShapes.length)];
+    }
+    
+    if (!def) {
+      def = SHAPE_DEFS[Math.floor(Math.random() * SHAPE_DEFS.length)];
+    }
+
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
     return { id: Math.random().toString(), grid: def.grid, color };
   });
@@ -112,7 +174,7 @@ export default function BlockBlastClient() {
   const startGame = () => {
     setGameState('playing');
     setBoard(Array(8).fill(0).map(() => Array(8).fill(0)));
-    setShapes(getRandomShapes(3));
+    setShapes(getSmartShapes(3, Array(8).fill(0).map(() => Array(8).fill(0))));
     setScore(0);
     setCurrentQIndex(0);
     
@@ -251,7 +313,7 @@ export default function BlockBlastClient() {
 
     if (isCorrect) {
       setScore(s => s + 500);
-      setShapes(getRandomShapes(3));
+      setShapes(getSmartShapes(3, board));
       setGameState('playing');
       setCurrentQIndex(c => (c + 1) % questions.length);
       // Background activity update
@@ -275,7 +337,7 @@ export default function BlockBlastClient() {
           }
         }
         setBoard(newBoard);
-        setShapes(getRandomShapes(3));
+        setShapes(getSmartShapes(3, newBoard));
         setGameState('playing');
         setCurrentQIndex(c => (c + 1) % questions.length);
       }, 800);
