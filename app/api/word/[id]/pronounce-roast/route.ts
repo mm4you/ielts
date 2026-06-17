@@ -40,25 +40,34 @@ export async function POST(
       return NextResponse.json({ error: 'NVIDIA API Key is missing.' }, { status: 500 });
     }
 
-    // Similarity logic: basic check to inform AI
     const targetWord = word.word.toLowerCase();
     const spoken = transcribedText.toLowerCase();
     const isPerfect = targetWord === spoken;
 
-    const prompt = `Bạn là một giáo viên tiếng Anh IELTS hệ Gen Z 'mỏ hỗn', cực kỳ xéo xắt, hay ra dẻ.
+    // Tính điểm bằng Code để tránh AI bị "ngáo" (như vụ đọc đúng mà cho 0 điểm)
+    let calculatedScore = 0;
+    if (isPerfect) {
+      calculatedScore = 100;
+    } else {
+      // Đơn giản hóa: Nếu có chứa một phần của nhau thì vớt vát 50 điểm, còn không thì ngẫu nhiên 0-40 điểm
+      if (spoken.includes(targetWord) || targetWord.includes(spoken)) {
+        calculatedScore = 50;
+      } else {
+        calculatedScore = Math.floor(Math.random() * 40);
+      }
+    }
+
+    const prompt = `Bạn là một giáo viên tiếng Anh IELTS hệ Gen Z 'mỏ hỗn'.
 Học sinh được yêu cầu đọc từ "${word.word}" (nghĩa: ${word.meaning_vi.split('///')[0] || word.meaning_vi.split('|||')[0]}).
 Tuy nhiên, qua máy ghi âm, học sinh lại đọc thành ra chữ: "${transcribedText}".
-Tình trạng: ${isPerfect ? 'ĐỌC CHUẨN 100%' : 'ĐỌC SAI / PHÁT ÂM LỚ LỚ'}.
+Hệ thống đã tự động chấm điểm phát âm là: ${calculatedScore}/100 điểm.
 
-Nhiệm vụ:
-1. Chấm điểm phát âm (từ 0 đến 100).
-2. Dùng từ lóng Gen Z Việt Nam (chê, cảm lạnh, vô tri, ét ô ét, xà lơ, mận quá, keo lỳ, đỉnh chóp...) để nhận xét. Cực kỳ ngắn gọn, tối đa 1-2 câu ngắn! Không lải nhải!
-   - NẾU HỌC SINH ĐỌC ĐÚNG (điểm > 80): Tuyệt đối KHÔNG CHỬI. Hãy khen một cách dí dỏm, hài hước. Dùng các từ như 'mận quá', 'keo lỳ', '10 điểm không có nhưng', 'đỉnh nóc kịch trần', 'out trình'.
-   - NẾU HỌC SINH ĐỌC SAI: Chửi xéo xắt, mỏ hỗn, khịa cho nhớ đời vì tội phát âm dở. Dùng từ ngữ mang tính sát thương cao nhưng hài hước.
+Nhiệm vụ: Dùng từ lóng Gen Z Việt Nam (chê, cảm lạnh, vô tri, ét ô ét, xà lơ, mận quá, keo lỳ, đỉnh chóp...) để nhận xét. Cực kỳ ngắn gọn, tối đa 1-2 câu ngắn! Không lải nhải!
+   - NẾU ĐIỂM = 100: Tuyệt đối KHÔNG CHỬI. Hãy khen một cách dí dỏm, hài hước. Dùng các từ như 'mận quá', 'keo lỳ', '10 điểm không có nhưng', 'đỉnh nóc kịch trần'.
+   - NẾU ĐIỂM < 100: Chửi xéo xắt, mỏ hỗn, khịa cho nhớ đời vì tội phát âm dở. Dùng từ ngữ mang tính sát thương cao nhưng hài hước.
 
 Yêu cầu trả về định dạng JSON bắt buộc gồm:
 {
-  "score": Điểm số (kiểu số nguyên),
   "roast": "Lời nhận xét cà khịa bằng tiếng Việt pha lóng Gen Z"
 }`;
 
@@ -88,7 +97,10 @@ Yêu cầu trả về định dạng JSON bắt buộc gồm:
 
     try {
       const parsed = JSON.parse(aiText);
-      return NextResponse.json(parsed);
+      return NextResponse.json({
+        score: calculatedScore,
+        roast: parsed.roast || 'Lỗi AI mỏ hỗn'
+      });
     } catch (parseError) {
       console.error('JSON Parse Error:', aiText);
       throw new Error('AI trả về kết quả không chuẩn định dạng. Thử lại nha!');

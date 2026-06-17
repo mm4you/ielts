@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import RoastButton from '@/components/RoastButton';
 import PronounceRoast from '@/components/PronounceRoast';
 
 export default function RoastDemoPage() {
@@ -9,12 +8,10 @@ export default function RoastDemoPage() {
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState('ALL');
   const [errorMsg, setErrorMsg] = useState('');
-  const [hasPronounced, setHasPronounced] = useState(false);
 
   const fetchRandomWord = async () => {
     setLoading(true);
     setErrorMsg('');
-    setHasPronounced(false);
     try {
       const res = await fetch(`/api/word/random?level=${level}`);
       const data = await res.json();
@@ -80,16 +77,8 @@ export default function RoastDemoPage() {
               key={`pronounce-${wordData.id}`} 
               wordId={wordData.id} 
               wordText={wordData.word} 
-              onFinish={() => setHasPronounced(true)}
             />
           </div>
-
-          {hasPronounced && (
-            <div className="border-4 border-black dark:border-white p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-[8px_8px_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_rgba(255,255,255,1)] animate-bounce">
-              <h2 className="text-xl sm:text-2xl font-black mb-4">Món quà bất ngờ: Chửi tự động!</h2>
-              <RoastButton key={`roast-${wordData.id}`} wordId={wordData.id} wordText={wordData.word} />
-            </div>
-          )}
         </div>
       )}
     </div>
