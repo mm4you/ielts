@@ -131,6 +131,22 @@ export default async function HomePage() {
               </Link>
             </div>
           </article>
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[#ff3b30] shadow-[8px_8px_0_#ff3b30]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#ff3b30] rounded-bl-full opacity-10"></div>
+            <h2 className="text-2xl font-serif font-black mb-2 text-[#ff3b30] flex items-center gap-2">
+              AI Mỏ Hỗn
+              <span className="bg-yellow-400 text-black text-xs px-2 py-1 border-2 border-black rotate-[10deg] animate-bounce">BETA</span>
+            </h2>
+            <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
+              Thử thách phát âm tiếng Anh. Đọc sai bị AI chửi xéo xắt, đọc đúng được bưng bô lên mây!
+            </p>
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
+              <span className="font-bold text-lg text-[#ff3b30]">Hài hước</span>
+              <Link href="/pronounce-challenge" className="btn-brutal bg-[#ff3b30] text-white">
+                Khịa AI
+              </Link>
+            </div>
+          </article>
         </div>
       </main>
       <Footer />
