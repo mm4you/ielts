@@ -49,9 +49,12 @@ export default function LibraryPage() {
 
         <Link 
           href="/pronounce-challenge" 
-          className="btn-brutal bg-[#ff3b30] text-white px-6 py-3 shadow-[4px_4px_0_#8b0000] hover:shadow-[6px_6px_0_#8b0000] border-[#8b0000] flex items-center gap-2 font-black text-lg animate-pulse"
+          className="btn-brutal bg-[#ff3b30] text-white px-6 py-3 shadow-[4px_4px_0_#8b0000] hover:shadow-[6px_6px_0_#8b0000] border-[#8b0000] flex items-center gap-2 font-black text-lg animate-pulse relative"
         >
           🎙️ THỬ THÁCH PHÁT ÂM AI
+          <span className="absolute -top-3 -right-3 bg-black text-yellow-300 text-xs px-2 py-1 border-2 border-white rotate-[10deg] animate-bounce">
+            BETA
+          </span>
         </Link>
       </div>
 

@@ -40,8 +40,9 @@ export default function RoastDemoPage() {
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-2xl text-black dark:text-white">
-      <h1 className="text-2xl sm:text-3xl font-black mb-6 uppercase border-b-4 border-black dark:border-white pb-2">
-        🎙️ THỬ THÁCH PHÁT ÂM (MINI GAME)
+      <h1 className="text-2xl sm:text-3xl font-black mb-6 uppercase border-b-4 border-black dark:border-white pb-2 flex items-center gap-3">
+        🎙️ THỬ THÁCH PHÁT ÂM
+        <span className="bg-yellow-400 text-black text-sm px-2 py-1 border-2 border-black rotate-[-5deg]">BETA</span>
       </h1>
       
       <p className="mb-6 text-base sm:text-lg font-bold text-gray-700 dark:text-gray-300">
