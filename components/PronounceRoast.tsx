@@ -77,6 +77,13 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
     let currentSentence = 0;
 
+    // Lấy danh sách giọng đọc vi-VN hỗ trợ giọng miền Nam (Linh trên iOS/macOS hoặc giọng chứa nam/south)
+    const voices = typeof window !== 'undefined' && window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    const southernVoice = voices.find(v => 
+      v.lang.replace('_', '-').startsWith('vi') && 
+      (v.name.toLowerCase().includes('linh') || v.name.toLowerCase().includes('south') || v.name.toLowerCase().includes('nam'))
+    );
+
     const playSentence = (index: number) => {
       // Ngăn chặn việc chạy đè nhiều nhánh callback trùng lặp
       if (index !== currentSentence) return;
@@ -93,17 +100,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         return;
       }
 
-      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(chunk)}`;
-      
-      const audio = currentAudioRef.current || new Audio();
-      currentAudioRef.current = audio;
-      
-      audio.src = url;
-      audio.playbackRate = 1.3; // Tốc độ tự nhiên hơn (1.3)
-      
       let handled = false;
-      let fallbackPlayed = false;
-      
       const handleNext = () => {
         if (handled) return;
         handled = true;
@@ -113,45 +110,82 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         playSentence(currentSentence);
       };
 
-      audio.onended = () => {
-        handleNext();
+      // Phương án 1: Dùng Web Speech API nếu máy hỗ trợ giọng Miền Nam (như iOS/macOS có giọng Linh)
+      if (southernVoice && typeof window !== 'undefined' && window.speechSynthesis) {
+        const utter = new SpeechSynthesisUtterance(chunk);
+        utter.voice = southernVoice;
+        utter.lang = southernVoice.lang;
+        utter.rate = 1.5; // Tăng tốc độ lên 1.5 theo yêu cầu sếp
+        utter.onend = () => {
+          handleNext();
+        };
+        utter.onerror = (e) => {
+          console.warn("Southern Web Speech failed, falling back to Google TTS:", e);
+          playGoogleTTS(chunk, handleNext);
+        };
+        window.speechSynthesis.speak(utter);
+      } else {
+        // Phương án 2: Dùng Google TTS mặc định
+        playGoogleTTS(chunk, handleNext);
+      }
+    };
+
+    const playGoogleTTS = (chunk: string, callback: () => void) => {
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+      const audio = currentAudioRef.current || new Audio();
+      currentAudioRef.current = audio;
+      
+      audio.src = url;
+      audio.playbackRate = 1.5; // Tăng tốc độ lên 1.5 theo yêu cầu sếp
+      
+      let localHandled = false;
+      const localCallback = () => {
+        if (localHandled) return;
+        localHandled = true;
+        callback();
       };
 
-      const playFallback = () => {
-        if (handled || fallbackPlayed) return;
-        fallbackPlayed = true;
+      audio.onended = () => {
+        localCallback();
+      };
 
+      const playStandardFallback = () => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+          const utter = new SpeechSynthesisUtterance(chunk);
+          utter.lang = 'vi-VN';
+          utter.rate = 1.3; // Giọng chuẩn fallback chạy nhanh 1.3
+          utter.onend = () => {
+            localCallback();
+          };
+          utter.onerror = () => {
+            localCallback();
+          };
+          window.speechSynthesis.speak(utter);
+        } else {
+          localCallback();
+        }
+      };
+
+      audio.onerror = (e) => {
+        console.warn("Google TTS failed chunk, using standard Web Speech fallback:", chunk, e);
         // Dừng và giải phóng các sự kiện trên HTML5 Audio để tránh kích hoạt sự kiện song song
         if (currentAudioRef.current) {
           currentAudioRef.current.pause();
           currentAudioRef.current.onended = null;
           currentAudioRef.current.onerror = null;
         }
-
-        if (typeof window !== 'undefined' && window.speechSynthesis) {
-          const utter = new SpeechSynthesisUtterance(chunk);
-          utter.lang = 'vi-VN';
-          utter.rate = 1.1; // Tốc độ Web Speech tự nhiên hơn (1.1)
-          utter.onend = () => {
-            handleNext();
-          };
-          utter.onerror = () => {
-            handleNext();
-          };
-          window.speechSynthesis.speak(utter);
-        } else {
-          handleNext();
-        }
-      };
-
-      audio.onerror = (e) => {
-        console.warn("Google TTS failed chunk, using fallback:", chunk, e);
-        playFallback();
+        playStandardFallback();
       };
       
       audio.play().catch(e => {
-        console.warn("Audio play blocked by browser, using fallback:", e);
-        playFallback();
+        console.warn("Audio play blocked by browser, using standard Web Speech fallback:", e);
+        // Dừng và giải phóng các sự kiện trên HTML5 Audio để tránh kích hoạt sự kiện song song
+        if (currentAudioRef.current) {
+          currentAudioRef.current.pause();
+          currentAudioRef.current.onended = null;
+          currentAudioRef.current.onerror = null;
+        }
+        playStandardFallback();
       });
     };
 
