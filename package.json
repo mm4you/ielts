@@ -10,7 +10,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "ai:improve": "tsx scripts/improve_all_words.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
