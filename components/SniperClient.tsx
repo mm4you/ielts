@@ -1,0 +1,246 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface Question {
+  id: number;
+  targetMeaning: string;
+  pos: string | null;
+  choices: string[];
+  correctIndex: number;
+}
+
+interface Target {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+  top: number; // percentage
+  duration: number; // seconds
+  delay: number; // seconds
+  direction: 'ltr' | 'rtl';
+}
+
+export default function SniperClient() {
+  const router = useRouter();
+  const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentQIndex, setCurrentQIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [lives, setLives] = useState(3);
+  
+  const [targets, setTargets] = useState<Target[]>([]);
+  const [flash, setFlash] = useState<'green' | 'red' | null>(null);
+
+  const fetchQuestions = async () => {
+    try {
+      const res = await fetch('/api/sniper');
+      const data = await res.json();
+      if (!data.error) {
+        setQuestions(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const startGame = async () => {
+    setGameState('playing');
+    setScore(0);
+    setLives(3);
+    setCurrentQIndex(0);
+    await fetchQuestions();
+  };
+
+  useEffect(() => {
+    if (gameState === 'playing' && questions.length > 0 && lives > 0) {
+      generateTargets();
+    }
+  }, [currentQIndex, questions, gameState]);
+
+  useEffect(() => {
+    if (lives <= 0 && gameState === 'playing') {
+      setGameState('gameover');
+    }
+  }, [lives]);
+
+  const generateTargets = () => {
+    if (currentQIndex >= questions.length) {
+      // Loop back or fetch more. For now just loop back.
+      setCurrentQIndex(0);
+      return;
+    }
+
+    const currentQ = questions[currentQIndex];
+    // Base duration gets faster as score increases
+    const baseDuration = Math.max(2.5, 6 - (score / 1000)); 
+
+    const newTargets: Target[] = currentQ.choices.map((choice, idx) => ({
+      id: `${currentQIndex}-${idx}`,
+      text: choice,
+      isCorrect: idx === currentQ.correctIndex,
+      top: 10 + Math.random() * 60, // 10% to 70% top
+      duration: baseDuration + (Math.random() * 2), // random variance
+      delay: Math.random() * 1.5,
+      direction: Math.random() > 0.5 ? 'ltr' : 'rtl',
+    }));
+
+    setTargets(newTargets);
+  };
+
+  const handleShoot = (target: Target) => {
+    if (gameState !== 'playing') return;
+
+    if (target.isCorrect) {
+      // Correct hit!
+      setFlash('green');
+      setScore(s => s + 100);
+      setTargets([]); // Clear current targets
+      setTimeout(() => {
+        setFlash(null);
+        setCurrentQIndex(c => c + 1);
+      }, 300);
+    } else {
+      // Wrong hit
+      setFlash('red');
+      setLives(l => l - 1);
+      // Remove this wrong target so they can't shoot it again
+      setTargets(prev => prev.filter(t => t.id !== target.id));
+      setTimeout(() => setFlash(null), 300);
+    }
+  };
+
+  const handleTargetMiss = (target: Target) => {
+    if (gameState !== 'playing') return;
+    if (target.isCorrect) {
+      // Let the correct target escape!
+      setFlash('red');
+      setLives(l => l - 1);
+      setTargets([]);
+      setTimeout(() => {
+        setFlash(null);
+        setCurrentQIndex(c => c + 1);
+      }, 300);
+    } else {
+      // Wrong target escaped, just remove it from DOM
+      setTargets(prev => prev.filter(t => t.id !== target.id));
+    }
+  };
+
+  if (gameState === 'setup') {
+    return (
+      <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
+          <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[var(--ink)]">Thiện Xạ</h2>
+          <p className="text-xl font-black mb-8">Bắn Hạ Từ Vựng</p>
+          
+          <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
+            <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
+            <ul className="font-bold text-sm space-y-2">
+              <li>🎯 Nghĩa Tiếng Việt sẽ hiện ở dưới.</li>
+              <li>🔫 Tìm và BẮN đúng từ Tiếng Anh đang bay lượn trên màn hình.</li>
+              <li>❌ Bắn sai: Mất 1 mạng.</li>
+              <li>⚠️ Để mục tiêu xổng mất: Mất 1 mạng.</li>
+              <li>❤️ Bạn có 3 mạng. Hết mạng = GAME OVER.</li>
+            </ul>
+          </div>
+
+          <button onClick={startGame} className="w-full btn-brutal bg-[var(--blue)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
+            VÀO TRƯỜNG BẮN
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (gameState === 'gameover') {
+    return (
+      <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--red)]">
+          <h2 className="text-5xl font-serif font-black uppercase mb-4 text-[var(--red)]">TỬ TRẬN</h2>
+          <p className="text-2xl font-black mb-4">Điểm thiện xạ:</p>
+          <div className="text-7xl font-black text-[var(--ink)] mb-8">{score}</div>
+          
+          <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4 shadow-[4px_4px_0_var(--ink)]">
+            Chơi lại
+          </button>
+          <button onClick={() => router.push('/')} className="w-full btn-brutal bg-white text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
+            Về trang chủ
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentQ = questions[currentQIndex];
+
+  return (
+    <div className={`relative overflow-hidden w-full h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] cursor-crosshair transition-colors duration-200 ${
+      flash === 'green' ? 'bg-green-300' : flash === 'red' ? 'bg-red-400' : 'bg-[var(--bg)]'
+    }`}>
+      
+      {/* Top Bar (Score & Lives) */}
+      <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10 pointer-events-none">
+        <div className="panel py-2 px-4 bg-[var(--paper)] text-xl md:text-2xl font-black text-[var(--ink)]">
+          ĐIỂM: <span className="text-[var(--blue)]">{score}</span>
+        </div>
+        <div className="flex gap-2">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className={`text-3xl ${i < lives ? 'text-[var(--red)] drop-shadow-md' : 'text-gray-400 opacity-50'} transition-all`}>
+              ❤️
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Target Zone */}
+      <div className="absolute inset-0 z-0">
+        {targets.map(target => (
+          <div
+            key={target.id}
+            onAnimationEnd={() => handleTargetMiss(target)}
+            onPointerDown={(e) => {
+              e.preventDefault(); // Prevent text selection/drag
+              handleShoot(target);
+            }}
+            className="absolute whitespace-nowrap bg-[var(--ink)] text-white font-black text-xl md:text-3xl px-6 py-3 border-[3px] border-[var(--line)] shadow-[6px_6px_0_rgba(0,0,0,0.5)] cursor-crosshair hover:scale-110 active:scale-95 transition-transform"
+            style={{
+              top: `${target.top}%`,
+              animation: `fly-${target.direction} ${target.duration}s linear ${target.delay}s forwards`,
+              [target.direction === 'ltr' ? 'left' : 'right']: '-50%',
+            }}
+          >
+            {target.text}
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom Mission Panel */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-10 pointer-events-none">
+        <div className="panel bg-[var(--paper)] border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] p-4 md:p-6 text-center">
+          <span className="text-sm font-black text-[var(--red)] uppercase tracking-widest mb-2 block animate-pulse">
+            Mục tiêu cần diệt:
+          </span>
+          <h2 className="text-2xl md:text-4xl font-serif font-black text-[var(--ink)]">
+            {currentQ ? currentQ.targetMeaning : 'Đang nạp đạn...'}
+          </h2>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes fly-ltr {
+          0% { left: -30%; }
+          100% { left: 130%; }
+        }
+        @keyframes fly-rtl {
+          0% { right: -30%; }
+          100% { right: 130%; }
+        }
+        /* Make cursor a large crosshair */
+        .cursor-crosshair, .cursor-crosshair * {
+          cursor: crosshair !important;
+        }
+      `}</style>
+    </div>
+  );
+}

@@ -118,6 +118,19 @@ export default async function HomePage() {
               </Link>
             </div>
           </article>
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--ink)] rounded-bl-full opacity-10"></div>
+            <h2 className="text-2xl font-serif font-black mb-2 text-[var(--ink)]">Thiện Xạ</h2>
+            <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
+              Bắn hạ từ vựng tiếng Anh đang bay với tốc độ cao để rèn luyện phản xạ.
+            </p>
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+              <span className="font-bold text-lg text-[var(--ink)]">Căng não</span>
+              <Link href="/sniper" className="btn-brutal bg-[var(--ink)] text-white">
+                Bắn ngay
+              </Link>
+            </div>
+          </article>
         </div>
       </main>
       <Footer />
