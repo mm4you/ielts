@@ -161,14 +161,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const startRecording = async () => {
     if (typeof window === 'undefined') return;
     
-    // Unlock Web Speech API
-    if (window.speechSynthesis) {
-      const dummy = new SpeechSynthesisUtterance('');
-      dummy.volume = 0;
-      window.speechSynthesis.speak(dummy);
-    }
-
-    // Reset trạng thái phát âm thanh & xóa listener của lượt phát cũ tránh bị kết hoạt lại khi chạy silent unlock
+    // 1. Reset trạng thái phát âm thanh & dọn sạch hàng đợi nói của trình duyệt để tránh kích hoạt lại
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
       currentAudioRef.current.onended = null;
@@ -179,6 +172,13 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       window.speechSynthesis.cancel();
     }
     setIsPlaying(false);
+
+    // 2. Unlock Web Speech API bằng tiếng câm sau khi đã dọn sạch hàng đợi
+    if (window.speechSynthesis) {
+      const dummy = new SpeechSynthesisUtterance('');
+      dummy.volume = 0;
+      window.speechSynthesis.speak(dummy);
+    }
 
     // Unlock HTML5 Audio bằng cách phát tiếng tĩnh rất ngắn ngay khi người dùng click
     if (!currentAudioRef.current) {
@@ -359,10 +359,21 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           <h3 className="text-4xl font-black text-[var(--red)] uppercase tracking-widest">{wordText}</h3>
           <button 
             onClick={() => {
-              if (!window.speechSynthesis) return;
-              const utter = new SpeechSynthesisUtterance(wordText);
-              utter.lang = 'en-US';
-              window.speechSynthesis.speak(utter);
+              if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+              }
+              if (currentAudioRef.current) {
+                currentAudioRef.current.pause();
+                currentAudioRef.current.onended = null;
+                currentAudioRef.current.onerror = null;
+              }
+              setIsPlaying(false);
+
+              if (typeof window !== 'undefined' && window.speechSynthesis) {
+                const utter = new SpeechSynthesisUtterance(wordText);
+                utter.lang = 'en-US';
+                window.speechSynthesis.speak(utter);
+              }
             }}
             className="text-2xl hover:scale-125 transition-transform"
             title="Nghe cách đọc chuẩn"
