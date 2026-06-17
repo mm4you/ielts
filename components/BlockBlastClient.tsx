@@ -87,7 +87,6 @@ export default function BlockBlastClient() {
   const router = useRouter();
   const [board, setBoard] = useState<Board>(Array(8).fill(0).map(() => Array(8).fill(0)));
   const [shapes, setShapes] = useState<(Shape | null)[]>([]);
-  const [selectedShapeIdx, setSelectedShapeIdx] = useState<number | null>(null);
   
   const [score, setScore] = useState(0);
   const [gameState, setGameState] = useState<'playing' | 'vocab' | 'gameover'>('playing');
@@ -95,6 +94,16 @@ export default function BlockBlastClient() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
+
+  // Drag state
+  const [dragState, setDragState] = useState<{
+    shape: Shape;
+    trayIdx: number;
+    startX: number;
+    startY: number;
+    currX: number;
+    currY: number;
+  } | null>(null);
 
   useEffect(() => {
     setShapes(getRandomShapes(3));
@@ -113,12 +122,44 @@ export default function BlockBlastClient() {
     }
   }, [board, shapes, gameState]);
 
-  const placeShape = (boardR: number, boardC: number) => {
-    if (selectedShapeIdx === null || gameState !== 'playing') return;
-    const shape = shapes[selectedShapeIdx];
-    if (!shape) return;
+  // Handle Global Drag Events
+  useEffect(() => {
+    if (!dragState) return;
+    const onMove = (e: PointerEvent) => {
+      setDragState(prev => prev ? { ...prev, currX: e.clientX, currY: e.clientY } : null);
+    };
+    const onUp = (e: PointerEvent) => {
+      const gridEl = document.getElementById('block-blast-grid');
+      if (gridEl && dragState) {
+        const rect = gridEl.getBoundingClientRect();
+        const cellSize = rect.width / 8; 
+        const shapeRows = dragState.shape.grid.length;
+        const shapeCols = dragState.shape.grid[0].length;
+        
+        // Calculate the intended top-left cell on the grid
+        const dropX = e.clientX - rect.left - (shapeCols * cellSize) / 2;
+        const dropY = e.clientY - rect.top - (shapeRows * cellSize) / 2;
+        
+        const targetC = Math.round(dropX / cellSize);
+        const targetR = Math.round(dropY / cellSize);
+        
+        if (canPlace(board, dragState.shape.grid, targetR, targetC)) {
+          placeShape(targetR, targetC, dragState.shape, dragState.trayIdx);
+        }
+      }
+      setDragState(null);
+    };
+    
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, [dragState, board]);
 
-    if (!canPlace(board, shape.grid, boardR, boardC)) return;
+  const placeShape = (boardR: number, boardC: number, shape: Shape, trayIdx: number) => {
+    if (gameState !== 'playing') return;
 
     const newBoard = board.map(row => [...row]);
     let pointsEarned = 0;
@@ -166,9 +207,8 @@ export default function BlockBlastClient() {
     setScore(s => s + pointsEarned);
 
     const newShapes = [...shapes];
-    newShapes[selectedShapeIdx] = null;
+    newShapes[trayIdx] = null;
     setShapes(newShapes);
-    setSelectedShapeIdx(null);
 
     if (newShapes.every(s => s === null)) {
       setTimeout(() => {
@@ -224,17 +264,16 @@ export default function BlockBlastClient() {
       </div>
 
       {/* Board */}
-      <div className={`relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 ${gameState === 'gameover' ? 'opacity-50' : ''}`}>
-        <div className="grid grid-cols-8 gap-1 bg-[var(--line)]">
+      <div className={`relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 touch-none ${gameState === 'gameover' ? 'opacity-50' : ''}`}>
+        <div id="block-blast-grid" className="grid grid-cols-8 gap-1 bg-[var(--line)] w-full max-w-[320px] md:max-w-[400px] aspect-square">
           {board.map((row, r) => (
             row.map((cell, c) => (
               <div 
                 key={`${r}-${c}`}
-                onClick={() => placeShape(r, c)}
-                className={`w-8 h-8 md:w-10 md:h-10 rounded-sm border-2 transition-colors duration-200 cursor-pointer ${
+                className={`w-full h-full rounded-sm border-2 transition-colors duration-200 ${
                   cell === 1 ? 'bg-[var(--blue)] border-[rgba(0,0,0,0.2)] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]' : 
                   cell === 2 ? 'bg-[var(--ink)] border-[var(--ink)] shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center after:content-["X"] after:text-gray-500 after:font-black' : 
-                  'bg-[#2d3748] border-[#1a202c] hover:bg-[#4a5568]'
+                  'bg-[#2d3748] border-[#1a202c]'
                 }`}
               />
             ))
@@ -284,40 +323,91 @@ export default function BlockBlastClient() {
       </div>
 
       {/* Shapes tray */}
-      <div className="w-full flex justify-between items-center gap-2 h-32 shrink-0">
-        {shapes.map((shape, idx) => (
+      <div className="w-full flex justify-between items-center gap-2 h-32 shrink-0 touch-none">
+        {shapes.map((shape, idx) => {
+          const isDraggingThis = dragState?.trayIdx === idx;
+          return (
+            <div 
+              key={shape ? shape.id : `empty-${idx}`}
+              onPointerDown={(e) => {
+                if (shape && gameState === 'playing') {
+                  e.preventDefault();
+                  // Ensure we only start drag on primary button/touch
+                  setDragState({
+                    shape,
+                    trayIdx: idx,
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    currX: e.clientX,
+                    currY: e.clientY
+                  });
+                }
+              }}
+              className={`flex-1 h-full panel flex items-center justify-center p-2 transition-transform ${
+                !shape ? 'opacity-20 pointer-events-none' : 'cursor-grab active:cursor-grabbing hover:-translate-y-1'
+              } ${isDraggingThis ? 'opacity-0' : ''}`}
+            >
+              {shape && (
+                <div 
+                  className="grid gap-[2px]" 
+                  style={{
+                    gridTemplateColumns: `repeat(${shape.grid[0].length}, minmax(0, 1fr))`,
+                    gridTemplateRows: `repeat(${shape.grid.length}, minmax(0, 1fr))`
+                  }}
+                >
+                  {shape.grid.map((r, ri) => 
+                    r.map((val, ci) => (
+                      <div 
+                        key={`${ri}-${ci}`} 
+                        className="w-4 h-4 md:w-6 md:h-6 rounded-[2px]"
+                        style={{
+                          backgroundColor: val ? shape.color : 'transparent',
+                          border: val ? '1px solid rgba(0,0,0,0.3)' : 'none'
+                        }}
+                      />
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Dragging Overlay */}
+      {dragState && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: dragState.currY,
+            left: dragState.currX,
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 100
+          }}
+        >
           <div 
-            key={shape ? shape.id : `empty-${idx}`}
-            onClick={() => { if (shape) setSelectedShapeIdx(idx); }}
-            className={`flex-1 h-full panel flex items-center justify-center p-2 cursor-pointer transition-transform ${
-              selectedShapeIdx === idx ? 'scale-110 shadow-[8px_8px_0_var(--yellow)] border-[var(--yellow)]' : 'hover:-translate-y-1'
-            } ${!shape ? 'opacity-20 pointer-events-none' : ''}`}
+            className="grid gap-[4px]" 
+            style={{
+              gridTemplateColumns: `repeat(${dragState.shape.grid[0].length}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${dragState.shape.grid.length}, minmax(0, 1fr))`
+            }}
           >
-            {shape && (
-              <div 
-                className="grid gap-[2px]" 
-                style={{
-                  gridTemplateColumns: `repeat(${shape.grid[0].length}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${shape.grid.length}, minmax(0, 1fr))`
-                }}
-              >
-                {shape.grid.map((r, ri) => 
-                  r.map((val, ci) => (
-                    <div 
-                      key={`${ri}-${ci}`} 
-                      className="w-4 h-4 md:w-5 md:h-5 rounded-[2px]"
-                      style={{
-                        backgroundColor: val ? shape.color : 'transparent',
-                        border: val ? '1px solid rgba(0,0,0,0.3)' : 'none'
-                      }}
-                    />
-                  ))
-                )}
-              </div>
+            {dragState.shape.grid.map((r, ri) => 
+              r.map((val, ci) => (
+                <div 
+                  key={`${ri}-${ci}`} 
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-[2px] shadow-lg"
+                  style={{
+                    backgroundColor: val ? dragState.shape.color : 'transparent',
+                    border: val ? '2px solid rgba(0,0,0,0.5)' : 'none'
+                  }}
+                />
+              ))
             )}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
       <style jsx global>{`
         @keyframes shake {
