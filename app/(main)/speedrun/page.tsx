@@ -21,7 +21,7 @@ export default function SpeedrunPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(45);
   const [streak, setStreak] = useState(0);
   
   const [isShaking, setIsShaking] = useState(false);
@@ -45,7 +45,7 @@ export default function SpeedrunPage() {
   const startGame = async () => {
     setGameState('playing');
     setScore(0);
-    setTimeLeft(60);
+    setTimeLeft(45);
     setCurrentIndex(0);
     setStreak(0);
     await fetchQuestions();
@@ -88,12 +88,7 @@ export default function SpeedrunPage() {
       
       setTimeout(() => {
         setFlashColor(null);
-        if (currentIndex < questions.length - 1) {
-          setCurrentIndex(c => c + 1);
-        } else {
-          clearInterval(timerRef.current!);
-          setGameState('gameover');
-        }
+        setCurrentIndex(c => (c + 1) % questions.length);
         setAnswerStatus(null);
       }, 500);
 
@@ -106,12 +101,7 @@ export default function SpeedrunPage() {
       setTimeout(() => {
         setIsShaking(false);
         setFlashColor(null);
-        if (currentIndex < questions.length - 1) {
-          setCurrentIndex(c => c + 1);
-        } else {
-          clearInterval(timerRef.current!);
-          setGameState('gameover');
-        }
+        setCurrentIndex(c => (c + 1) % questions.length);
         setAnswerStatus(null);
       }, 1500);
     }
@@ -127,7 +117,8 @@ export default function SpeedrunPage() {
           <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
             <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
             <ul className="font-bold text-sm space-y-2">
-              <li>⏱️ Bạn có 60 giây.</li>
+              <li>⏱️ Khởi đầu với 45 giây.</li>
+              <li>🔥 Chế độ Sinh Tồn: Bắn không giới hạn từ.</li>
               <li>✅ Trả lời đúng: <span className="text-[var(--green)]">+2 giây</span>, +10 điểm.</li>
               <li>❌ Trả lời sai: <span className="text-[var(--red)]">-3 giây</span>.</li>
               <li>💀 Hết giờ = GAME OVER.</li>

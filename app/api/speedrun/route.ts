@@ -18,8 +18,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'No words found' }, { status: 404 });
     }
 
-    // Shuffle words to pick 50
-    const shuffledWords = words.sort(() => 0.5 - Math.random()).slice(0, 50);
+    // Shuffle words to pick 300 for endless survival
+    const shuffledWords = words.sort(() => 0.5 - Math.random()).slice(0, 300);
     
     // Extract all meanings for distractors
     const allMeanings = words.map(w => w.meaning_vi);
