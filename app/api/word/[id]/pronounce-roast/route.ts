@@ -93,7 +93,7 @@ Trả về JSON duy nhất:
       body: JSON.stringify({
         model: 'meta/llama-3.1-8b-instruct',
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
+        temperature: 0.85,
         top_p: 0.9,
         max_tokens: 100,
         response_format: { type: "json_object" }
