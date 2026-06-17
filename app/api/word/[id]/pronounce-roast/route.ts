@@ -64,16 +64,24 @@ Hệ thống tự động chấm điểm: ${calculatedScore}/100 điểm.
 Nhiệm vụ: Viết 1 câu nhận xét ngắn (tối đa 15 từ) theo văn phong Threads/TikTok độc hại nhưng hài hước.
 Yêu cầu văn phong:
 - Tránh các từ lóng cũ kỹ gượng ép (ét ô ét, xà lơ, keo lỳ, đỉnh chóp).
-- Sử dụng văn phong châm biếm, "mỏ hỗn" tinh tế, "xịt keo", "kiếp nạn", "red flag", "cứu tui", "chê", "over hợp", hoặc các cấu trúc meme tự nhiên như:
-  * "Nghe xong muốn xịt keo cứng ngắc..."
-  * "Phát âm kiểu này thì chịu hẳn, cứu con..."
-  * "Ủa rồi mắc gì đọc từ '${word.word}' thành..."
-  * "Cảm ơn bạn đã đọc, nhưng lần sau xin đừng..."
-  * "Đọc chuẩn ghê, chuẩn bị đi học lại vỡ lòng..."
-  * "Gục ngã thực sự, phát âm kiểu này thì..."
-  * "Mục tiêu 8.0 IELTS nhưng phát âm thế này thì..."
-- NẾU ĐIỂM = 100: Khen dí dỏm, "flex", "10 điểm không có nhưng", "mận vải", "đỉnh nóc kịch trần".
-- NẾU ĐIỂM < 100: Khịa xéo xắt, vào thẳng vấn đề, không giải thích dài dòng.
+- Sử dụng văn phong châm biếm, "mỏ hỗn" tinh tế, "xịt keo", "kiếp nạn", "red flag", "cứu tui", "chê", "over hợp".
+- Tham khảo các ví dụ mẫu hài hước sau để bắt chước văn phong:
+  * Điểm dưới 50:
+    - "Học tiếng Anh hay học tiếng Lào vậy sếp? Nghe mà trầm cảm giùm."
+    - "Ủa rồi mắc gì đọc từ '${word.word}' thành ra cái âm thanh vô tri này dạ?"
+    - "Nghe xong muốn gấp cái lỗ tai lại liền luôn á, cứu tui..."
+    - "Phát âm kiểu này thì kiếp nạn thứ 82 của tiếng Anh đã xuất hiện."
+    - "Ý là mình đọc tiếng Anh hay đang làm phép thuật trừ tà vậy bạn?"
+    - "Cảm ơn bạn đã đọc, nhưng lần sau xin đừng đọc nữa nha..."
+  * Điểm từ 50-79:
+    - "Cũng cố gắng đó, nhưng nghe nó cứ lạ lạ sao á..."
+    - "Phát âm thế này thì IELTS 8.0 kiếp sau sẽ có nhé bạn yêu."
+    - "Đọc nghe cũng over hợp với mấy bạn thích tự tạo ngôn ngữ mới."
+    - "Đọc chuẩn ghê, chuẩn bị đi học lại lớp vỡ lòng là vừa."
+  * Điểm 100:
+    - "Mận vải! Phát âm keo lỳ đỉnh nóc kịch trần luôn nha."
+    - "10 điểm không có nhưng! Đọc chuẩn thế này thì ai làm lại sếp."
+    - "Flexing trình nói xịn đét thế này thì ai chơi lại bạn."
 
 Trả về JSON:
 {

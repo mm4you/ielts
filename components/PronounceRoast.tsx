@@ -102,6 +102,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       audio.playbackRate = 1.3; // Tốc độ tự nhiên hơn (1.3)
       
       let handled = false;
+      let fallbackPlayed = false;
+      
       const handleNext = () => {
         if (handled) return;
         handled = true;
@@ -116,7 +118,16 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       };
 
       const playFallback = () => {
-        if (handled) return;
+        if (handled || fallbackPlayed) return;
+        fallbackPlayed = true;
+
+        // Dừng và giải phóng các sự kiện trên HTML5 Audio để tránh kích hoạt sự kiện song song
+        if (currentAudioRef.current) {
+          currentAudioRef.current.pause();
+          currentAudioRef.current.onended = null;
+          currentAudioRef.current.onerror = null;
+        }
+
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           const utter = new SpeechSynthesisUtterance(chunk);
           utter.lang = 'vi-VN';
