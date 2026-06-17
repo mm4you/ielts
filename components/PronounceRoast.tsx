@@ -97,7 +97,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       currentAudioRef.current = audio;
       
       audio.src = url;
-      audio.playbackRate = 1.35;
+      audio.playbackRate = 1.5; // Tăng tốc độ lên 1.5
       
       audio.onended = () => {
         if (isUnmountedRef.current) return;
@@ -111,6 +111,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           const utter = new SpeechSynthesisUtterance(chunk);
           utter.lang = 'vi-VN';
+          utter.rate = 1.3; // Tăng tốc độ Web Speech lên 1.3
           utter.onend = () => {
             if (isUnmountedRef.current) return;
             currentSentence++;
@@ -304,9 +305,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       
       setResult(data);
       if (onFinish) onFinish();
-      
-      // Tự động phát âm chửi ngay lập tức
-      speakRoast(data.roast);
     } catch (err: any) {
       if (err.name === 'AbortError') {
         setError('AI đang bận đi đẻ, sếp bấm nút Mic thử lại giùm nha!');
@@ -350,20 +348,28 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           disabled={loading || isTranscribing}
           className={`btn-brutal w-24 h-24 rounded-full flex items-center justify-center text-4xl shadow-[6px_6px_0_var(--line)] transition-transform ${
             isRecording 
-              ? 'bg-[#34C759] animate-pulse scale-110 border-[var(--line)] shadow-[2px_2px_0_var(--line)]' 
-              : result 
-                ? (result.score >= 80 ? 'bg-[#34C759] border-[var(--line)] shadow-[4px_4px_0_var(--line)]' : 'bg-[var(--red)] border-[var(--line)] shadow-[4px_4px_0_var(--line)]') 
-                : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] hover:-translate-y-1'
-          } ${loading || isTranscribing ? 'opacity-50 cursor-not-allowed' : ''}`}
+              ? 'bg-[var(--red)] animate-pulse scale-110 border-[var(--line)] shadow-[2px_2px_0_var(--line)]' 
+              : (loading || isTranscribing)
+                ? 'bg-[var(--yellow)]/30 border-[var(--line)] shadow-[2px_2px_0_var(--line)] animate-bounce'
+                : result 
+                  ? 'bg-[#34C759] border-[var(--line)] shadow-[4px_4px_0_var(--line)]' 
+                  : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] hover:-translate-y-1'
+          } ${loading || isTranscribing ? 'cursor-not-allowed' : ''}`}
         >
-          {isRecording ? '🟢' : result ? (result.score >= 80 ? '✅' : '❌') : '🎤'}
+          {isRecording 
+            ? '🔴' 
+            : (loading || isTranscribing)
+              ? '⏳'
+              : result 
+                ? '🟢' 
+                : '🎤'}
         </button>
       </div>
 
       {isRecording && (
         <div className="text-center animate-pulse">
-          <p className="font-black text-[#34C759] text-xl uppercase">Đang nghe...</p>
-          <p className="font-bold text-[var(--ink)] mt-2">Đọc xong cứ im lặng 1 giây, máy sẽ tự nộp bài!</p>
+          <p className="font-black text-[var(--red)] text-xl uppercase">Đang nghe...</p>
+          <p className="font-bold text-[var(--ink)] mt-2">Đọc xong cứ im lặng 1.5 giây, máy sẽ tự nộp bài!</p>
         </div>
       )}
 

@@ -57,18 +57,27 @@ export async function POST(
       }
     }
 
-    const prompt = `Bạn là một giáo viên tiếng Anh IELTS hệ Gen Z 'mỏ hỗn'.
-Học sinh được yêu cầu đọc từ "${word.word}" (nghĩa: ${word.meaning_vi.split('///')[0] || word.meaning_vi.split('|||')[0]}).
-Tuy nhiên, qua máy ghi âm, học sinh lại đọc thành ra chữ: "${transcribedText}".
-Hệ thống đã tự động chấm điểm phát âm là: ${calculatedScore}/100 điểm.
+    const prompt = `Bạn là một Gen Z chuyên lướt Threads và TikTok 24/7 với biệt tài 'cà khịa' bằng khiếu hài hước châm biếm, xéo xắt cực kỳ tự nhiên (không gượng ép).
+Học sinh cần phát âm từ tiếng Anh "${word.word}" (nghĩa: ${word.meaning_vi.split('///')[0] || word.meaning_vi.split('|||')[0]}), nhưng máy ghi âm lại nhận diện ra: "${transcribedText}".
+Hệ thống tự động chấm điểm: ${calculatedScore}/100 điểm.
 
-Nhiệm vụ: Dùng từ lóng Gen Z Việt Nam (chê, cảm lạnh, vô tri, ét ô ét, xà lơ, mận quá, keo lỳ, đỉnh chóp...) để nhận xét. Cực kỳ ngắn gọn, tối đa 1-2 câu ngắn! Tuyệt đối không chào hỏi dài dòng! Không phân tích chữ!
-   - NẾU ĐIỂM = 100: Tuyệt đối KHÔNG CHỬI. Hãy khen một cách dí dỏm, hài hước. Dùng các từ như 'mận quá', 'keo lỳ', '10 điểm không có nhưng', 'đỉnh nóc kịch trần'.
-   - NẾU ĐIỂM < 100: Chửi xéo xắt, mỏ hỗn, khịa cho nhớ đời vì tội phát âm dở. Dùng từ ngữ mang tính sát thương cao nhưng hài hước. VÀO THẲNG VẤN ĐỀ, KHÔNG GIẢI THÍCH!
+Nhiệm vụ: Viết 1 câu nhận xét ngắn (tối đa 15 từ) theo văn phong Threads/TikTok độc hại nhưng hài hước.
+Yêu cầu văn phong:
+- Tránh các từ lóng cũ kỹ gượng ép (ét ô ét, xà lơ, keo lỳ, đỉnh chóp).
+- Sử dụng văn phong châm biếm, "mỏ hỗn" tinh tế, "xịt keo", "kiếp nạn", "red flag", "cứu tui", "chê", "over hợp", hoặc các cấu trúc meme tự nhiên như:
+  * "Nghe xong muốn xịt keo cứng ngắc..."
+  * "Phát âm kiểu này thì chịu hẳn, cứu con..."
+  * "Ủa rồi mắc gì đọc từ '${word.word}' thành..."
+  * "Cảm ơn bạn đã đọc, nhưng lần sau xin đừng..."
+  * "Đọc chuẩn ghê, chuẩn bị đi học lại vỡ lòng..."
+  * "Gục ngã thực sự, phát âm kiểu này thì..."
+  * "Mục tiêu 8.0 IELTS nhưng phát âm thế này thì..."
+- NẾU ĐIỂM = 100: Khen dí dỏm, "flex", "10 điểm không có nhưng", "mận vải", "đỉnh nóc kịch trần".
+- NẾU ĐIỂM < 100: Khịa xéo xắt, vào thẳng vấn đề, không giải thích dài dòng.
 
-Yêu cầu trả về định dạng JSON bắt buộc gồm:
+Trả về JSON:
 {
-  "roast": "Lời nhận xét cà khịa bằng tiếng Việt pha lóng Gen Z"
+  "roast": "Lời nhận xét"
 }`;
 
     const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
@@ -81,7 +90,7 @@ Yêu cầu trả về định dạng JSON bắt buộc gồm:
         model: 'meta/llama-3.1-8b-instruct',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.8,
-        max_tokens: 250,
+        max_tokens: 100,
         response_format: { type: "json_object" }
       })
     });
