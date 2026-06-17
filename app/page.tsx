@@ -126,7 +126,7 @@ export default async function HomePage() {
             </p>
             <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
               <span className="font-bold text-lg text-[var(--ink)]">Căng não</span>
-              <Link href="/sniper" className="btn-brutal bg-[var(--ink)] text-white">
+              <Link href="/sniper" className="btn-brutal bg-[var(--ink)] text-[var(--paper)]">
                 Bắn ngay
               </Link>
             </div>
