@@ -5,7 +5,6 @@ import { TOPIC_LABELS } from '@/types';
 import { auth } from '@/auth';
 import RecentWordTracker from '@/components/RecentWordTracker';
 import { parseMeaning } from '@/lib/parse';
-import RoastButton from '@/components/RoastButton';
 
 async function getWordAndProgress(id: string) {
   const session = await auth();
@@ -120,8 +119,6 @@ export default async function WordDetailPage({
               </div>
             </div>
           </div>
-
-          <RoastButton wordId={word.id} wordText={word.word} />
         </div>
       </div>
     </div>
