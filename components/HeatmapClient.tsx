@@ -45,9 +45,16 @@ export default function HeatmapClient() {
             });
           }
           setData(calendarData);
+        } else {
+          // Fallback if API fails
+          const today = format(new Date(), 'yyyy-MM-dd');
+          setData([{ date: today, count: 0, level: 0 }]);
         }
       } catch (e) {
         console.error(e);
+        // Fallback if network fails
+        const today = format(new Date(), 'yyyy-MM-dd');
+        setData([{ date: today, count: 0, level: 0 }]);
       } finally {
         setLoading(false);
       }
