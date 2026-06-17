@@ -110,10 +110,13 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         
         // Quét 5 phương án dự đoán của mỗi kết quả
         for (let j = 0; j < resultItem.length; j++) {
-          const text = resultItem[j].transcript.toLowerCase().trim();
+          const rawText = resultItem[j].transcript.toLowerCase().trim();
+          const cleanText = rawText.replace(/[^a-z0-9\s]/g, '');
+          const cleanTarget = target.replace(/[^a-z0-9\s]/g, '');
+          
           if (!bestTranscript) bestTranscript = resultItem[0].transcript; // Mặc định lấy cái đầu tiên
           
-          if (text === target) {
+          if (cleanText === cleanTarget || rawText.includes(target)) {
             isPerfectMatch = true;
             bestTranscript = resultItem[j].transcript;
             break;
