@@ -33,8 +33,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   }, []);
 
   const speakRoast = (text: string) => {
-    // Dùng Google Translate TTS
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(text)}`;
+    // Gọi qua Next.js API Proxy để tránh bị Google chặn CORS hoặc Referer
+    const url = `/api/tts?text=${encodeURIComponent(text)}`;
     const audio = new Audio(url);
     
     setIsPlaying(true);
@@ -42,8 +42,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     audio.onerror = () => setIsPlaying(false);
     
     audio.play().catch(e => {
-      console.error("Google TTS failed, falling back to Web Speech API:", e);
-      // Fallback: Nếu Google TTS bị lỗi (do CORS, text quá dài, block autoplay...), dùng giọng đọc mặc định của trình duyệt
+      console.error("Audio proxy failed, falling back to Web Speech API:", e);
       if (window.speechSynthesis) {
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'vi-VN';
@@ -80,7 +79,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     recognition.maxAlternatives = 5;
 
     let hasEvaluated = false;
-    let autoStopTimeout: NodeJS.Timeout;
     let currentTranscript = '';
 
     recognition.onstart = () => {
@@ -88,11 +86,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       setError('');
       setTranscribed('');
       setResult(null);
-      
-      // Tự động ngắt sau 7 giây để tránh cắt ngang nếu người dùng đọc chậm
-      autoStopTimeout = setTimeout(() => {
-        if (recognitionRef.current) recognitionRef.current.stop();
-      }, 7000);
     };
 
     recognition.onresult = async (event: any) => {
@@ -132,7 +125,6 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       // Hoặc nếu người dùng dừng nói (isFinal)
       if (isPerfectMatch || isFinal) {
         hasEvaluated = true;
-        clearTimeout(autoStopTimeout);
         recognition.stop();
         await evaluatePronunciation(bestTranscript);
       }
@@ -144,14 +136,12 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         setError(`Lỗi Mic: ${event.error}`);
       }
       setIsRecording(false);
-      clearTimeout(autoStopTimeout);
     };
 
     recognition.onend = () => {
       setIsRecording(false);
-      clearTimeout(autoStopTimeout);
       
-      // Nếu ngắt mà chưa chấm điểm (do timeout hoặc bấm ngắt tay), thì lấy kết quả cuối cùng để chấm
+      // Nếu ngắt mà chưa chấm điểm (do bấm ngắt tay), thì lấy kết quả cuối cùng để chấm
       if (!hasEvaluated && currentTranscript) {
         hasEvaluated = true;
         evaluatePronunciation(currentTranscript);
