@@ -33,6 +33,10 @@ export const TOPICS = [
   'Work',
   'Culture',
   'Globalization',
+  'Gre', 'Sat', 'Gmat', 'Idioms', 'Phrasal verbs', 'Slang', 'Colloquial', 
+  'Sports', 'Entertainment', 'Travel', 'Food', 'Cooking', 'Fashion',
+  'Fitness', 'Hobby', 'Gaming', 'Internet', 'Marketing', 'Finance', 'Real estate',
+  'Astronomy', 'Geology', 'Meteorology', 'Anthropology', 'Archaeology'
 ] as const;
 
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
@@ -59,6 +63,31 @@ export const TOPIC_LABELS: Record<string, string> = {
   Work: 'Công việc',
   Culture: 'Văn hóa',
   Globalization: 'Toàn cầu hóa',
+  Gre: 'Từ vựng GRE',
+  Sat: 'Từ vựng SAT',
+  Gmat: 'Từ vựng GMAT',
+  Idioms: 'Thành ngữ (Idioms)',
+  'Phrasal verbs': 'Cụm động từ',
+  Slang: 'Từ lóng (Slang)',
+  Colloquial: 'Khẩu ngữ (Giao tiếp)',
+  Sports: 'Thể thao',
+  Entertainment: 'Giải trí',
+  Travel: 'Du lịch',
+  Food: 'Đồ ăn',
+  Cooking: 'Nấu ăn',
+  Fashion: 'Thời trang',
+  Fitness: 'Thể thao & Thể hình',
+  Hobby: 'Sở thích',
+  Gaming: 'Trò chơi (Gaming)',
+  Internet: 'Internet',
+  Marketing: 'Marketing',
+  Finance: 'Tài chính',
+  'Real estate': 'Bất động sản',
+  Astronomy: 'Thiên văn học',
+  Geology: 'Địa chất học',
+  Meteorology: 'Khí tượng học',
+  Anthropology: 'Nhân chủng học',
+  Archaeology: 'Khảo cổ học'
 };
 
 export const RATING_LABELS: Record<ReviewRating, string> = {
