@@ -300,7 +300,7 @@ export default function BlockBlastClient() {
   }
 
   return (
-    <div className="max-w-md mx-auto py-4 md:py-8 px-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
+    <div className="max-w-md mx-auto pt-4 pb-24 md:py-8 px-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
       {/* Header */}
       <div className="w-full flex justify-between items-center bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl mb-6 shrink-0">
         <h1 className="text-xl md:text-2xl font-black font-serif uppercase text-[var(--ink)]">Vocab Blast</h1>
