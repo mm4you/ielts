@@ -22,6 +22,7 @@ export default function SpeedrunPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
+  const [streak, setStreak] = useState(0);
   
   const [isShaking, setIsShaking] = useState(false);
   const [flashColor, setFlashColor] = useState<'green' | 'red' | null>(null);
@@ -45,6 +46,7 @@ export default function SpeedrunPage() {
     setScore(0);
     setTimeLeft(60);
     setCurrentIndex(0);
+    setStreak(0);
     await fetchQuestions();
   };
 
@@ -75,12 +77,14 @@ export default function SpeedrunPage() {
     if (isCorrect) {
       setScore(s => s + 10);
       setTimeLeft(t => t + 2); // Bonus time
+      setStreak(s => s + 1);
       setFlashColor('green');
       
       // Background log activity
       fetch('/api/activity', { method: 'POST' }).catch(() => {});
     } else {
       setTimeLeft(t => Math.max(0, t - 3)); // Penalty
+      setStreak(0);
       setIsShaking(true);
       setFlashColor('red');
       setTimeout(() => setIsShaking(false), 500);
@@ -161,11 +165,16 @@ export default function SpeedrunPage() {
       flashColor === 'green' ? 'bg-green-100' : flashColor === 'red' ? 'bg-red-100' : ''
     }`}>
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-8 bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl">
+      <div className="flex justify-between items-center mb-8 bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl relative">
         <div className="text-2xl font-black text-[var(--ink)]">
           Điểm: <span className="text-[var(--blue)]">{score}</span>
         </div>
-        <div className={`text-4xl font-black ${timeLeft <= 10 ? 'text-[var(--red)] animate-pulse' : 'text-[var(--ink)]'}`}>
+        {streak >= 3 && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl font-black text-[var(--red)] animate-bounce whitespace-nowrap drop-shadow-md">
+            🔥 COMBO x{streak} 🔥
+          </div>
+        )}
+        <div className={`transition-all duration-300 font-black ${timeLeft <= 10 ? 'text-6xl md:text-7xl text-[var(--red)] animate-pulse scale-110 drop-shadow-lg' : 'text-4xl text-[var(--ink)]'}`}>
           {timeLeft}s
         </div>
       </div>
