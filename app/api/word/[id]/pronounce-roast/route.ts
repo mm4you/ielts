@@ -69,7 +69,7 @@ Hệ thống tự động chấm điểm: ${calculatedScore}/100 điểm.
 
 Nhiệm vụ: Viết đúng 1 câu nhận xét ngắn (tối đa 20 từ) để phản hồi lại kết quả này.
 Yêu cầu văn phong:
-- CẤM DÙNG các từ lóng mạng gượng ép (như: xịt keo, kiếp nạn, cảm lạnh, chê, cứu tui, ét ô ét). Hãy nói chuyện một cách tự nhiên, tếu táo.
+- KHUYẾN KHÍCH sử dụng các từ lóng, trend mới nhất trên TikTok, Threads (như: xịt keo, kiếp nạn, cảm lạnh, chê, cứu tui, ngoan xinh yêu, vô tri, mận vải, trúng độc đắc...). Tuy nhiên, phải dùng một cách cực kỳ TỰ NHIÊN, duyên dáng, lầy lội, không được gượng ép hay sáo rỗng.
 - CẤM DÙNG bất kỳ từ tiếng Anh nào trong câu nhận xét để tránh lỗi phát âm của máy đọc. Viết 100% tiếng Việt.
 - Không dùng từ cảm thán sáo rỗng ở đầu câu (Ủa, Ôi, Wow...).
 - Tùy vào số điểm mà có thái độ khác nhau:
