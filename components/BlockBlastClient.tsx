@@ -160,6 +160,7 @@ export default function BlockBlastClient() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
+  const [answerStatus, setAnswerStatus] = useState<{ selectedIdx: number, isCorrect: boolean } | null>(null);
 
   // Drag state
   const [dragState, setDragState] = useState<{
@@ -307,17 +308,22 @@ export default function BlockBlastClient() {
   };
 
   const handleVocabAnswer = (choiceIdx: number) => {
-    if (questions.length === 0) return;
+    if (questions.length === 0 || answerStatus) return;
     const currentQ = questions[currentQIndex];
     const isCorrect = choiceIdx === currentQ.correctIndex;
+    
+    setAnswerStatus({ selectedIdx: choiceIdx, isCorrect });
 
     if (isCorrect) {
       setScore(s => s + 500);
-      setShapes(getSmartShapes(3, board));
-      setGameState('playing');
-      setCurrentQIndex(c => (c + 1) % questions.length);
-      // Background activity update
       fetch('/api/activity', { method: 'POST' }).catch(() => {});
+      
+      setTimeout(() => {
+        setShapes(getSmartShapes(3, board));
+        setGameState('playing');
+        setCurrentQIndex(c => (c + 1) % questions.length);
+        setAnswerStatus(null);
+      }, 600);
     } else {
       setIsShaking(true);
       setTimeout(() => {
@@ -340,7 +346,8 @@ export default function BlockBlastClient() {
         setShapes(getSmartShapes(3, newBoard));
         setGameState('playing');
         setCurrentQIndex(c => (c + 1) % questions.length);
-      }, 800);
+        setAnswerStatus(null);
+      }, 1500);
     }
   };
 
@@ -442,10 +449,20 @@ export default function BlockBlastClient() {
                     <div 
                       key={idx}
                       onClick={() => handleVocabAnswer(idx)}
-                      className="btn-brutal py-3 px-4 text-sm bg-[var(--paper)] hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px] cursor-pointer group"
+                      className={`btn-brutal py-3 px-4 text-sm text-left block w-full h-auto min-h-[60px] ${
+                        !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] cursor-pointer group' :
+                        (idx === questions[currentQIndex].correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' :
+                        (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50'))
+                      }`}
                     >
-                      <span className="font-black text-[var(--ink)] group-hover:text-black text-base leading-tight mb-1">{en}</span>
-                      {vi && <span className="font-bold text-[var(--muted)] group-hover:text-black/80 text-xs">{vi}</span>}
+                      <span className={`block font-black text-base leading-tight mb-1 ${
+                        !answerStatus ? 'text-[var(--ink)] group-hover:text-black' :
+                        (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-black' : 'text-[var(--ink)]')
+                      }`}>{en}</span>
+                      {vi && <span className={`block font-bold text-xs ${
+                        !answerStatus ? 'text-[var(--muted)] group-hover:text-black/80' :
+                        (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-black/80' : 'text-[var(--muted)]')
+                      }`}>{vi}</span>}
                     </div>
                   );
                 })}

@@ -26,6 +26,7 @@ export default function SpeedrunPage() {
   
   const [isShaking, setIsShaking] = useState(false);
   const [flashColor, setFlashColor] = useState<'green' | 'red' | null>(null);
+  const [answerStatus, setAnswerStatus] = useState<{ selectedIdx: number, isCorrect: boolean } | null>(null);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -70,34 +71,49 @@ export default function SpeedrunPage() {
     };
   }, [gameState, questions]);
 
-  const handleAnswer = (choiceIndex: number) => {
+  const handleAnswer = (choiceIdx: number) => {
+    if (questions.length === 0 || answerStatus) return;
+    
     const currentQ = questions[currentIndex];
-    const isCorrect = choiceIndex === currentQ.correctIndex;
+    const isCorrect = choiceIdx === currentQ.correctIndex;
+
+    setAnswerStatus({ selectedIdx: choiceIdx, isCorrect });
 
     if (isCorrect) {
-      setScore(s => s + 10);
-      setTimeLeft(t => t + 2); // Bonus time
+      setScore(s => s + 10 + (streak * 2));
+      setTimeLeft(t => t + 2);
       setStreak(s => s + 1);
       setFlashColor('green');
-      
-      // Background log activity
       fetch('/api/activity', { method: 'POST' }).catch(() => {});
+      
+      setTimeout(() => {
+        setFlashColor(null);
+        if (currentIndex < questions.length - 1) {
+          setCurrentIndex(c => c + 1);
+        } else {
+          clearInterval(timerRef.current!);
+          setGameState('gameover');
+        }
+        setAnswerStatus(null);
+      }, 500);
+
     } else {
       setTimeLeft(t => Math.max(0, t - 3)); // Penalty
       setStreak(0);
       setIsShaking(true);
       setFlashColor('red');
-      setTimeout(() => setIsShaking(false), 500);
-    }
-
-    setTimeout(() => setFlashColor(null), 300);
-
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(c => c + 1);
-    } else {
-      // Finished all 50 questions
-      clearInterval(timerRef.current!);
-      setGameState('gameover');
+      
+      setTimeout(() => {
+        setIsShaking(false);
+        setFlashColor(null);
+        if (currentIndex < questions.length - 1) {
+          setCurrentIndex(c => c + 1);
+        } else {
+          clearInterval(timerRef.current!);
+          setGameState('gameover');
+        }
+        setAnswerStatus(null);
+      }, 1500);
     }
   };
 
@@ -198,7 +214,6 @@ export default function SpeedrunPage() {
         {currentQ.pos && <span className="text-lg font-bold text-[var(--muted)] border-2 border-[var(--line)] px-3 py-1 rounded-full">{currentQ.pos}</span>}
       </div>
 
-      {/* Choices */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {currentQ.choices.map((choice, idx) => {
           const { en, vi } = parseMeaning(choice, currentQ.pos || '');
@@ -206,10 +221,22 @@ export default function SpeedrunPage() {
             <div 
               key={idx}
               onClick={() => handleAnswer(idx)}
-              className="btn-brutal bg-[var(--paper)] text-left flex flex-col items-center justify-center py-3 px-2 md:py-6 md:px-4 hover:bg-[var(--yellow)] transition-colors active:scale-95 min-h-[60px] cursor-pointer"
+              className={`btn-brutal text-left block w-full h-auto min-h-[60px] md:min-h-[80px] py-3 px-4 md:py-6 md:px-6 cursor-pointer transition-colors active:scale-95 ${
+                !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] group' :
+                (idx === currentQ.correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' :
+                (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50'))
+              }`}
             >
-              <span className="text-lg md:text-xl font-bold text-[var(--ink)] mb-1 text-center">{en}</span>
-              {vi && <span className="text-sm font-bold text-[var(--muted)] text-center">{vi}</span>}
+              <div className="flex flex-col h-full justify-center">
+                <span className={`block text-lg md:text-xl font-black mb-1 text-center ${
+                  !answerStatus ? 'text-[var(--ink)] group-hover:text-black' :
+                  (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-black' : 'text-[var(--ink)]')
+                }`}>{en}</span>
+                {vi && <span className={`block text-sm font-bold text-center ${
+                  !answerStatus ? 'text-[var(--muted)] group-hover:text-black/80' :
+                  (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-black/80' : 'text-[var(--muted)]')
+                }`}>{vi}</span>}
+              </div>
             </div>
           );
         })}

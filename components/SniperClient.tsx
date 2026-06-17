@@ -89,11 +89,18 @@ export default function SniperClient() {
       baseDuration = Math.max(3, 6 - (score / 1000));
     }
 
+    const lanes = [12, 22, 32, 42];
+    // Shuffle lanes
+    for (let i = lanes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [lanes[i], lanes[j]] = [lanes[j], lanes[i]];
+    }
+
     const newTargets: Target[] = currentQ.choices.map((choice, idx) => ({
       id: `${currentQIndex}-${idx}`,
       text: choice,
       isCorrect: idx === currentQ.correctIndex,
-      top: 12 + Math.random() * 33, // 12% to 45% top to ensure they stay in the top half and don't overlap the bottom panel
+      top: lanes[idx] + (Math.random() * 3 - 1.5), // slight vertical variance within lane
       duration: baseDuration + (Math.random() * 2), // random variance
       delay: Math.random() * 1.5,
       direction: Math.random() > 0.5 ? 'ltr' : 'rtl',
