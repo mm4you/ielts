@@ -77,11 +77,22 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
     let currentSentence = 0;
 
-    // Lấy danh sách giọng đọc vi-VN hỗ trợ giọng miền Nam (Linh trên iOS/macOS hoặc giọng chứa nam/south)
+    // Lấy danh sách giọng đọc vi-VN hỗ trợ giọng miền Nam (Hoài My trên Edge, Tương/Dũng/Kiệt trên iOS/macOS)
     const voices = typeof window !== 'undefined' && window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    
+    const isSouthernVoice = (name: string) => {
+      const lower = name.toLowerCase();
+      // Khớp các giọng miền Nam nổi tiếng của Microsoft và Apple
+      if (lower.includes('hoaimy') || lower.includes('hoài my') || lower.includes('tuong') || lower.includes('tương') || lower.includes('dung') || lower.includes('dũng') || lower.includes('kiet') || lower.includes('kiệt')) {
+        return true;
+      }
+      // Tách chữ để kiểm tra từ "nam" độc lập, tránh bị khớp nhầm với "vietnam" hay "vietnamese"
+      const words = lower.split(/[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/u);
+      return words.includes('nam') && !words.includes('vietnam') && !words.includes('vietnamese');
+    };
+
     const southernVoice = voices.find(v => 
-      v.lang.replace('_', '-').startsWith('vi') && 
-      (v.name.toLowerCase().includes('linh') || v.name.toLowerCase().includes('south') || v.name.toLowerCase().includes('nam'))
+      v.lang.replace('_', '-').startsWith('vi') && isSouthernVoice(v.name)
     );
 
     const playSentence = (index: number) => {
