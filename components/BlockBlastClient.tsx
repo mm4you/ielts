@@ -91,6 +91,7 @@ export default function BlockBlastClient() {
   const [shapes, setShapes] = useState<(Shape | null)[]>([]);
   
   const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'vocab' | 'gameover'>('setup');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   
@@ -123,6 +124,23 @@ export default function BlockBlastClient() {
       .catch(console.error);
   };
 
+  // Load high score on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('blockblast_highscore');
+    if (saved) {
+      setHighScore(parseInt(saved, 10));
+    }
+  }, []);
+
+  // Update high score when score changes
+  useEffect(() => {
+    if (score > highScore) {
+      setHighScore(score);
+      localStorage.setItem('blockblast_highscore', score.toString());
+    }
+  }, [score, highScore]);
+
+  // Main game loop effect
   useEffect(() => {
     if (gameState === 'playing' && shapes.some(s => s !== null)) {
       if (!checkAnyCanFit(board, shapes)) {
@@ -269,7 +287,14 @@ export default function BlockBlastClient() {
       <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
         <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
           <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[#8b5cf6]">Block Blast</h2>
-          <p className="text-xl font-black mb-8">Xếp Hình Sinh Tồn</p>
+          <p className="text-xl font-black mb-4 md:mb-8 text-[var(--ink)]">Xếp Hình Sinh Tồn</p>
+          
+          {highScore > 0 && (
+            <div className="mb-6 p-4 border-[3px] border-[var(--line)] bg-[var(--yellow)] rounded-xl shadow-[4px_4px_0_var(--ink)] inline-block">
+              <span className="block text-sm font-black uppercase text-[var(--ink)]">Kỷ Lục Cao Nhất</span>
+              <span className="block text-3xl font-black text-[var(--red)]">{highScore}</span>
+            </div>
+          )}
           
           <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
             <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
@@ -306,8 +331,15 @@ export default function BlockBlastClient() {
     <div className="max-w-md mx-auto pt-4 pb-24 md:py-8 px-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
       {/* Top Bar */}
       <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl shrink-0 gap-4 w-full">
-        <div className="text-2xl font-black text-[var(--ink)] flex-1">
-          Điểm: <span className="text-[var(--blue)]">{score}</span>
+        <div className="flex-1 flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+          <div className="text-xl md:text-2xl font-black text-[var(--ink)]">
+            Điểm: <span className="text-[var(--blue)]">{score}</span>
+          </div>
+          {highScore > 0 && (
+            <div className="text-sm font-bold text-[var(--muted)]">
+              Kỷ lục: {highScore}
+            </div>
+          )}
         </div>
         <button 
           onClick={() => setGameState('setup')} 
@@ -364,7 +396,13 @@ export default function BlockBlastClient() {
         {gameState === 'gameover' && (
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl">
             <h2 className="text-5xl font-serif font-black text-[var(--red)] mb-4">GAME OVER</h2>
-            <p className="text-white font-bold mb-6 text-xl">Điểm: {score}</p>
+            <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] rounded-xl mb-6 text-center w-full max-w-[200px] shadow-[4px_4px_0_var(--ink)]">
+              <span className="block text-sm font-bold text-[var(--muted)] uppercase">Điểm của bạn</span>
+              <span className="block text-4xl font-black text-[var(--blue)]">{score}</span>
+              {score >= highScore && score > 0 && (
+                <span className="block mt-2 text-xs font-black text-[var(--red)] animate-pulse uppercase">🎉 Kỷ lục mới! 🎉</span>
+              )}
+            </div>
             <button 
               onClick={() => setGameState('setup')}
               className="btn-brutal bg-[var(--yellow)] w-full mb-2"
