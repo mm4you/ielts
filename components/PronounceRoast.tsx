@@ -68,41 +68,86 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
     recognition.lang = 'en-US';
-    recognition.interimResults = false;
+    // Bật interimResults để máy quét liên tục từng âm tiết, giúp cực kỳ nhạy!
+    recognition.interimResults = true; 
     recognition.maxAlternatives = 5;
+
+    let hasEvaluated = false;
+    let autoStopTimeout: NodeJS.Timeout;
+    let currentTranscript = '';
 
     recognition.onstart = () => {
       setIsRecording(true);
       setError('');
       setTranscribed('');
       setResult(null);
+      
+      // Tự động ngắt sau 4 giây để tránh bị treo chờ (vì chỉ đọc 1 từ)
+      autoStopTimeout = setTimeout(() => {
+        if (recognitionRef.current) recognitionRef.current.stop();
+      }, 4000);
     };
 
     recognition.onresult = async (event: any) => {
-      // Lấy danh sách các dự đoán (alternatives) của máy tính
-      const results = event.results[0];
-      let bestTranscript = results[0].transcript;
+      if (hasEvaluated) return;
+      
       const target = wordText.toLowerCase();
+      let bestTranscript = '';
+      let isFinal = false;
+      let isPerfectMatch = false;
 
-      // Duyệt qua 5 dự đoán, nếu có cái nào trùng khớp 100% với từ mục tiêu thì lấy cái đó (giúp máy thu âm "chính xác" và bao dung hơn)
-      for (let i = 0; i < results.length; i++) {
-        if (results[i].transcript.toLowerCase() === target) {
-          bestTranscript = results[i].transcript;
-          break;
+      // Quét toàn bộ kết quả trả về (kể cả interim đang đoán)
+      for (let i = 0; i < event.results.length; i++) {
+        const resultItem = event.results[i];
+        if (resultItem.isFinal) isFinal = true;
+        
+        // Quét 5 phương án dự đoán của mỗi kết quả
+        for (let j = 0; j < resultItem.length; j++) {
+          const text = resultItem[j].transcript.toLowerCase().trim();
+          if (!bestTranscript) bestTranscript = resultItem[0].transcript; // Mặc định lấy cái đầu tiên
+          
+          if (text === target) {
+            isPerfectMatch = true;
+            bestTranscript = resultItem[j].transcript;
+            break;
+          }
         }
+        if (isPerfectMatch) break;
       }
 
+      currentTranscript = bestTranscript;
       setTranscribed(bestTranscript);
-      await evaluatePronunciation(bestTranscript);
+
+      // NẾU BẮT ĐƯỢC CHỮ CHUẨN 100% -> DỪNG NGAY LẬP TỨC! Cảm giác cực kỳ nhạy!
+      // Hoặc nếu người dùng dừng nói (isFinal)
+      if (isPerfectMatch || isFinal) {
+        hasEvaluated = true;
+        clearTimeout(autoStopTimeout);
+        recognition.stop();
+        await evaluatePronunciation(bestTranscript);
+      }
     };
 
     recognition.onerror = (event: any) => {
-      setError(`Lỗi Mic: ${event.error}`);
+      // Bỏ qua lỗi no-speech nếu nó tự động ngắt
+      if (event.error !== 'no-speech') {
+        setError(`Lỗi Mic: ${event.error}`);
+      }
       setIsRecording(false);
+      clearTimeout(autoStopTimeout);
     };
 
     recognition.onend = () => {
       setIsRecording(false);
+      clearTimeout(autoStopTimeout);
+      
+      // Nếu ngắt mà chưa chấm điểm (do timeout hoặc bấm ngắt tay), thì lấy kết quả cuối cùng để chấm
+      if (!hasEvaluated && currentTranscript) {
+        hasEvaluated = true;
+        evaluatePronunciation(currentTranscript);
+      } else if (!hasEvaluated && !currentTranscript) {
+        setError('Không nghe thấy gì. Bấm nút Mic nói to lên nha!');
+      }
     };
 
     recognition.start();
