@@ -66,7 +66,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.maxAlternatives = 5;
 
     recognition.onstart = () => {
       setIsRecording(true);
@@ -76,9 +76,21 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
     };
 
     recognition.onresult = async (event: any) => {
-      const speechResult = event.results[0][0].transcript;
-      setTranscribed(speechResult);
-      await evaluatePronunciation(speechResult);
+      // Lấy danh sách các dự đoán (alternatives) của máy tính
+      const results = event.results[0];
+      let bestTranscript = results[0].transcript;
+      const target = wordText.toLowerCase();
+
+      // Duyệt qua 5 dự đoán, nếu có cái nào trùng khớp 100% với từ mục tiêu thì lấy cái đó (giúp máy thu âm "chính xác" và bao dung hơn)
+      for (let i = 0; i < results.length; i++) {
+        if (results[i].transcript.toLowerCase() === target) {
+          bestTranscript = results[i].transcript;
+          break;
+        }
+      }
+
+      setTranscribed(bestTranscript);
+      await evaluatePronunciation(bestTranscript);
     };
 
     recognition.onerror = (event: any) => {
