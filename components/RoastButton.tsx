@@ -38,6 +38,13 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
   };
 
   const handleRoast = async () => {
+    // Hack để "mở khóa" âm thanh trên trình duyệt ngay khi người dùng bấm nút
+    if (window.speechSynthesis) {
+      const dummy = new SpeechSynthesisUtterance('');
+      dummy.volume = 0;
+      window.speechSynthesis.speak(dummy);
+    }
+
     setLoading(true);
     setError('');
     try {
@@ -49,8 +56,8 @@ export default function RoastButton({ wordId, wordText }: RoastButtonProps) {
         throw new Error(data.error || 'Lỗi kết nối AI');
       }
       setRoastData(data);
-      // Đọc lên ngay sau khi có kết quả
-      speakRoast(data.roast);
+      // Đọc lên ngay sau khi có kết quả. Phải delay 1 chút xíu để DOM render xong state.
+      setTimeout(() => speakRoast(data.roast), 100);
     } catch (err: any) {
       setError(err.message);
     } finally {

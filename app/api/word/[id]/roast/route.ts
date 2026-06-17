@@ -20,9 +20,20 @@ export async function POST(
       return NextResponse.json({ error: 'Word not found' }, { status: 404 });
     }
 
-    const apiKey = process.env.NVIDIA_API_KEY;
+    let apiKey = process.env.NVIDIA_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: 'NVIDIA API Key is missing' }, { status: 500 });
+      // Đọc trực tiếp từ file .env phòng khi server Next.js chưa khởi động lại để nhận biến mới
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const envFile = fs.readFileSync(path.join(process.cwd(), '.env'), 'utf-8');
+        const match = envFile.match(/NVIDIA_API_KEY="?([^"\n]+)"?/);
+        if (match) apiKey = match[1];
+      } catch (e) {}
+    }
+
+    if (!apiKey) {
+      return NextResponse.json({ error: 'NVIDIA API Key is missing. Vui lòng khởi động lại server.' }, { status: 500 });
     }
 
     const prompt = `Bạn là một giáo viên tiếng Anh IELTS hệ Gen Z 'mỏ hỗn', cực kỳ xéo xắt, hay ra dẻ, thích cà khịa học sinh lười biếng.
