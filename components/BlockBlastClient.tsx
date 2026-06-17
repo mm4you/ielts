@@ -326,20 +326,20 @@ export default function BlockBlastClient() {
 
         {/* Vocab Overlay */}
         {gameState === 'vocab' && questions.length > 0 && (
-          <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
-            <div className="bg-[var(--paper)] p-4 rounded-xl border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] w-full text-center">
-              <span className="text-[var(--red)] font-black uppercase text-sm mb-2 block animate-pulse">Hết Gạch! Hãy trả lời:</span>
-              <h2 className="text-3xl font-serif font-black mb-4 text-[var(--ink)]">{questions[currentQIndex].word}</h2>
-              <div className="grid grid-cols-1 gap-2">
+          <div className={`fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-4 ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
+            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] w-full max-w-md max-h-[90vh] flex flex-col">
+              <span className="text-[var(--red)] font-black uppercase text-sm mb-2 block animate-pulse text-center shrink-0">Hết Gạch! Hãy trả lời:</span>
+              <h2 className="text-3xl md:text-4xl font-serif font-black mb-4 text-[var(--ink)] text-center shrink-0">{questions[currentQIndex].word}</h2>
+              <div className="grid grid-cols-1 gap-3 overflow-y-auto p-1">
                 {questions[currentQIndex].choices.map((choice, idx) => {
                   const { en, vi } = parseMeaning(choice, questions[currentQIndex].pos || '');
                   return (
                     <button 
                       key={idx}
                       onClick={() => handleVocabAnswer(idx)}
-                      className="btn-brutal py-2 px-3 text-sm bg-white hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px]"
+                      className="btn-brutal py-3 px-4 text-sm bg-white hover:bg-[var(--yellow)] text-left flex flex-col justify-center min-h-[60px]"
                     >
-                      <span className="font-black text-[var(--ink)] text-base leading-tight mb-0.5">{en}</span>
+                      <span className="font-black text-[var(--ink)] text-base leading-tight mb-1">{en}</span>
                       {vi && <span className="font-bold text-[var(--muted)] text-xs">{vi}</span>}
                     </button>
                   );
