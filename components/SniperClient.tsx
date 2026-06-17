@@ -36,6 +36,7 @@ export default function SniperClient() {
   
   const [targets, setTargets] = useState<Target[]>([]);
   const [flash, setFlash] = useState<'green' | 'red' | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchQuestions = async () => {
     try {
@@ -50,11 +51,13 @@ export default function SniperClient() {
   };
 
   const startGame = async () => {
-    setGameState('playing');
+    setLoading(true);
+    await fetchQuestions();
     setScore(0);
     setLives(3);
     setCurrentQIndex(0);
-    await fetchQuestions();
+    setGameState('playing');
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -176,8 +179,8 @@ export default function SniperClient() {
             </select>
           </div>
 
-          <button onClick={startGame} className="w-full btn-brutal bg-[var(--blue)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4">
-            VÀO TRƯỜNG BẮN
+          <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--blue)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
+            {loading ? 'ĐANG TẢI...' : 'VÀO TRƯỜNG BẮN'}
           </button>
           <button onClick={() => router.push('/')} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
             Về Trang Chủ
@@ -195,8 +198,8 @@ export default function SniperClient() {
           <p className="text-2xl font-black mb-4">Điểm thiện xạ:</p>
           <div className="text-7xl font-black text-[var(--ink)] mb-8">{score}</div>
           
-          <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4 shadow-[4px_4px_0_var(--ink)]">
-            Chơi lại
+          <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4 shadow-[4px_4px_0_var(--ink)] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
+            {loading ? 'ĐANG TẢI...' : 'CHƠI LẠI'}
           </button>
           <button onClick={() => router.push('/')} className="w-full btn-brutal bg-white text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
             Về trang chủ
