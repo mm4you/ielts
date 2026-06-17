@@ -90,7 +90,7 @@ export default function SniperClient() {
       id: `${currentQIndex}-${idx}`,
       text: choice,
       isCorrect: idx === currentQ.correctIndex,
-      top: 10 + Math.random() * 60, // 10% to 70% top
+      top: 10 + Math.random() * 45, // 10% to 55% top to avoid mission panel
       duration: baseDuration + (Math.random() * 2), // random variance
       delay: Math.random() * 1.5,
       direction: Math.random() > 0.5 ? 'ltr' : 'rtl',
@@ -247,7 +247,7 @@ export default function SniperClient() {
       </div>
 
       {/* Bottom Mission Panel */}
-      <div className="absolute bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-10 pointer-events-none">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-10 pointer-events-none">
         <div className="panel bg-[var(--paper)] border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] p-4 md:p-6 text-center">
           <span className="text-sm font-black text-[var(--red)] uppercase tracking-widest mb-2 block animate-pulse">
             Mục tiêu cần diệt:
