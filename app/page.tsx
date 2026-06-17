@@ -2,7 +2,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoginWall from '@/components/LoginWall';
 import Link from 'next/link';
-import HeatmapClient from '@/components/HeatmapClient';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
@@ -39,15 +38,13 @@ export default async function HomePage() {
               IELTS Vocabulary Studio
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif text-[var(--ink)] mb-4">
-              Ôn trắc nghiệm Từ vựng
+              Lò Luyện Từ Vựng Khắc Nghiệt
             </h1>
             <p className="text-[var(--muted)] text-lg max-w-[700px]">
               Ứng dụng học từ vựng IELTS. Giao diện gọn, tập trung. Luyện từ với hệ thống lặp lại ngắt quãng thông minh.
             </p>
           </div>
         </section>
-
-        <HeatmapClient />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
