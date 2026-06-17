@@ -77,67 +77,74 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
     let currentSentence = 0;
 
-    const playNext = () => {
-      if (!sentences || currentSentence >= sentences.length) {
+    const playSentence = (index: number) => {
+      // Ngăn chặn việc chạy đè nhiều nhánh callback trùng lặp
+      if (index !== currentSentence) return;
+
+      if (!sentences || index >= sentences.length) {
         setIsPlaying(false);
         return;
       }
 
-      const chunk = sentences[currentSentence].trim();
+      const chunk = sentences[index].trim();
       if (!chunk) {
-        currentSentence++;
-        playNext();
+        currentSentence = index + 1;
+        playSentence(currentSentence);
         return;
       }
 
       const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(chunk)}`;
       
-      // Tái sử dụng đối tượng Audio đã được "mở khóa" từ trước
       const audio = currentAudioRef.current || new Audio();
       currentAudioRef.current = audio;
       
       audio.src = url;
-      audio.playbackRate = 1.5; // Tăng tốc độ lên 1.5
+      audio.playbackRate = 1.3; // Tốc độ tự nhiên hơn (1.3)
       
-      audio.onended = () => {
+      let handled = false;
+      const handleNext = () => {
+        if (handled) return;
+        handled = true;
+        
         if (isUnmountedRef.current) return;
-        currentSentence++;
-        playNext(); // Phát câu tiếp theo
+        currentSentence = index + 1;
+        playSentence(currentSentence);
       };
 
-      audio.onerror = (e) => {
-        console.error("Google TTS failed chunk:", chunk, e);
-        // Fallback Web Speech API cho đoạn này
+      audio.onended = () => {
+        handleNext();
+      };
+
+      const playFallback = () => {
+        if (handled) return;
         if (typeof window !== 'undefined' && window.speechSynthesis) {
           const utter = new SpeechSynthesisUtterance(chunk);
           utter.lang = 'vi-VN';
-          utter.rate = 1.3; // Tăng tốc độ Web Speech lên 1.3
+          utter.rate = 1.1; // Tốc độ Web Speech tự nhiên hơn (1.1)
           utter.onend = () => {
-            if (isUnmountedRef.current) return;
-            currentSentence++;
-            playNext();
+            handleNext();
           };
           utter.onerror = () => {
-            if (isUnmountedRef.current) return;
-            currentSentence++;
-            playNext();
+            handleNext();
           };
           window.speechSynthesis.speak(utter);
         } else {
-          currentSentence++;
-          playNext();
+          handleNext();
         }
+      };
+
+      audio.onerror = (e) => {
+        console.warn("Google TTS failed chunk, using fallback:", chunk, e);
+        playFallback();
       };
       
       audio.play().catch(e => {
-        console.warn("Audio blocked by browser policy, using fallback or waiting for user gesture:", e);
-        if (audio.onerror) {
-          audio.onerror(e as any);
-        }
+        console.warn("Audio play blocked by browser, using fallback:", e);
+        playFallback();
       });
     };
 
-    playNext();
+    playSentence(0);
   };
 
   const startRecording = async () => {
