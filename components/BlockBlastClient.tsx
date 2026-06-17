@@ -265,12 +265,12 @@ export default function BlockBlastClient() {
 
       {/* Board */}
       <div className={`relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 touch-none ${gameState === 'gameover' ? 'opacity-50' : ''}`}>
-        <div id="block-blast-grid" className="grid grid-cols-8 gap-1 bg-[var(--line)] w-full max-w-[320px] md:max-w-[400px] aspect-square">
+        <div id="block-blast-grid" className="grid grid-cols-8 gap-1 bg-[var(--line)] w-fit mx-auto">
           {board.map((row, r) => (
             row.map((cell, c) => (
               <div 
                 key={`${r}-${c}`}
-                className={`w-full h-full rounded-sm border-2 transition-colors duration-200 ${
+                className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-sm border-2 transition-colors duration-200 ${
                   cell === 1 ? 'bg-[var(--blue)] border-[rgba(0,0,0,0.2)] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]' : 
                   cell === 2 ? 'bg-[var(--ink)] border-[var(--ink)] shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center after:content-["X"] after:text-gray-500 after:font-black' : 
                   'bg-[#2d3748] border-[#1a202c]'
