@@ -237,7 +237,8 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                   <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Email</th>
                   <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Từ đang học</th>
                   <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Quyền</th>
-                  <th className="px-4 py-3 font-bold">Ngày tham gia</th>
+                  <th className="px-4 py-3 font-bold border-r border-[var(--paper)]">Ngày tham gia</th>
+                  <th className="px-4 py-3 font-bold text-center">Hành Động</th>
                 </tr>
               </thead>
               <tbody>
@@ -262,8 +263,31 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                         <span className="text-xs font-bold text-[var(--muted)]">Học viên</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-[var(--muted)]">
+                    <td className="px-4 py-3 text-sm text-[var(--muted)] border-r border-[var(--line)]">
                       {new Date(user.createdAt).toLocaleDateString('vi-VN')}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {user.email !== 'ungnhutkhang53@gmail.com' && (
+                        <button 
+                          onClick={async () => {
+                            if (confirm(`Bạn có chắc muốn xóa học viên ${user.name || user.email}? Hành động này không thể hoàn tác!`)) {
+                              try {
+                                const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
+                                if (res.ok) {
+                                  window.location.reload();
+                                } else {
+                                  alert('Không thể xóa người dùng này.');
+                                }
+                              } catch (e) {
+                                alert('Có lỗi xảy ra.');
+                              }
+                            }
+                          }}
+                          className="btn-brutal bg-[var(--red)] text-white text-xs px-3 py-1"
+                        >
+                          Xóa
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
