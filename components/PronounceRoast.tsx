@@ -205,7 +205,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
               onClick={() => speakRoast(result.roast)}
               className={`text-sm px-3 py-1 rounded border-2 border-[var(--line)] font-bold w-full sm:w-auto ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
             >
-              {isPlaying ? '🔊 Đang phát...' : '🔊 Nghe AI chửi'}
+              {isPlaying ? '🔊 Đang la...' : '🔊 Nghe la'}
             </button>
           </div>
           <p className="font-bold text-lg leading-relaxed whitespace-pre-wrap text-[var(--ink)]">{result.roast}</p>
