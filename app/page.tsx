@@ -104,6 +104,20 @@ export default async function HomePage() {
               </Link>
             </div>
           </article>
+
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--blue)] shadow-[8px_8px_0_var(--blue)]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--blue)] rounded-bl-full opacity-10"></div>
+            <h2 className="text-2xl font-serif font-bold mb-2 text-[var(--blue)]">Lật Thẻ Tìm Cặp</h2>
+            <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
+              Luyện trí nhớ hình ảnh bằng cách ghép cặp từ Tiếng Anh và nghĩa Tiếng Việt.
+            </p>
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+              <span className="font-bold text-lg text-[var(--blue)]">Nhẹ nhàng</span>
+              <Link href="/match" className="btn-brutal bg-[var(--blue)] text-white">
+                Chơi ngay
+              </Link>
+            </div>
+          </article>
         </div>
       </main>
       <Footer />
