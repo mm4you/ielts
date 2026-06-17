@@ -264,7 +264,7 @@ export default function BlockBlastClient() {
       </div>
 
       {/* Board */}
-      <div className={`relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 touch-none ${gameState === 'gameover' ? 'opacity-50' : ''}`}>
+      <div className="relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 touch-none">
         <div id="block-blast-grid" className="grid grid-cols-8 gap-1 bg-[var(--line)] w-fit mx-auto">
           {board.map((row, r) => (
             row.map((cell, c) => (
