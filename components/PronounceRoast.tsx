@@ -54,6 +54,16 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   }, []);
 
   const speakRoast = (text: string) => {
+    // Dừng âm thanh đang phát & hủy callbacks của lượt phát cũ để không bị lặp đè
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.onended = null;
+      currentAudioRef.current.onerror = null;
+    }
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
     setIsPlaying(true);
     
     // Tách câu để lách luật 200 ký tự của Google TTS
@@ -81,8 +91,12 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       }
 
       const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(chunk)}`;
-      const audio = new Audio(url);
+      
+      // Tái sử dụng đối tượng Audio đã được "mở khóa" từ trước
+      const audio = currentAudioRef.current || new Audio();
       currentAudioRef.current = audio;
+      
+      audio.src = url;
       audio.playbackRate = 1.35;
       
       audio.onended = () => {
@@ -94,7 +108,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       audio.onerror = (e) => {
         console.error("Google TTS failed chunk:", chunk, e);
         // Fallback Web Speech API cho đoạn này
-        if (window.speechSynthesis) {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
           const utter = new SpeechSynthesisUtterance(chunk);
           utter.lang = 'vi-VN';
           utter.onend = () => {
@@ -115,7 +129,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       };
       
       audio.play().catch(e => {
-        console.error("Audio blocked:", e);
+        console.warn("Audio blocked by browser policy, using fallback or waiting for user gesture:", e);
         if (audio.onerror) {
           audio.onerror(e as any);
         }
@@ -128,12 +142,24 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const startRecording = async () => {
     if (typeof window === 'undefined') return;
     
-    // Unlock audio
+    // Unlock Web Speech API
     if (window.speechSynthesis) {
       const dummy = new SpeechSynthesisUtterance('');
       dummy.volume = 0;
       window.speechSynthesis.speak(dummy);
     }
+
+    // Unlock HTML5 Audio bằng cách phát tiếng tĩnh rất ngắn ngay khi người dùng click
+    if (!currentAudioRef.current) {
+      currentAudioRef.current = new Audio();
+    }
+    const audio = currentAudioRef.current;
+    audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+    audio.play().then(() => {
+      audio.pause();
+    }).catch(e => {
+      console.warn("Silent audio unlock failed:", e);
+    });
 
     try {
       setError('');
@@ -278,6 +304,9 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       
       setResult(data);
       if (onFinish) onFinish();
+      
+      // Tự động phát âm chửi ngay lập tức
+      speakRoast(data.roast);
     } catch (err: any) {
       if (err.name === 'AbortError') {
         setError('AI đang bận đi đẻ, sếp bấm nút Mic thử lại giùm nha!');
@@ -320,10 +349,14 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           onClick={isRecording ? stopRecording : startRecording}
           disabled={loading || isTranscribing}
           className={`btn-brutal w-24 h-24 rounded-full flex items-center justify-center text-4xl shadow-[6px_6px_0_var(--line)] transition-transform ${
-            isRecording ? 'bg-[#34C759] animate-pulse scale-110 border-[var(--line)] shadow-[2px_2px_0_var(--line)]' : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] hover:-translate-y-1'
+            isRecording 
+              ? 'bg-[#34C759] animate-pulse scale-110 border-[var(--line)] shadow-[2px_2px_0_var(--line)]' 
+              : result 
+                ? (result.score >= 80 ? 'bg-[#34C759] border-[var(--line)] shadow-[4px_4px_0_var(--line)]' : 'bg-[var(--red)] border-[var(--line)] shadow-[4px_4px_0_var(--line)]') 
+                : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] hover:-translate-y-1'
           } ${loading || isTranscribing ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          {isRecording ? '🟢' : '🎤'}
+          {isRecording ? '🟢' : result ? (result.score >= 80 ? '✅' : '❌') : '🎤'}
         </button>
       </div>
 
