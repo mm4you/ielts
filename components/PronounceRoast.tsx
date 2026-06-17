@@ -141,9 +141,23 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         🎙️ CHẤM ĐIỂM PHÁT ÂM
       </div>
 
-      <div className="text-center mb-6 pt-4">
+      <div className="text-center mb-6 pt-4 relative">
         <p className="font-bold text-[var(--muted)] mb-2">Hãy đọc to từ này vào Mic:</p>
-        <h3 className="text-4xl font-black text-[var(--red)] uppercase tracking-widest">{wordText}</h3>
+        <div className="flex items-center justify-center gap-3">
+          <h3 className="text-4xl font-black text-[var(--red)] uppercase tracking-widest">{wordText}</h3>
+          <button 
+            onClick={() => {
+              if (!window.speechSynthesis) return;
+              const utter = new SpeechSynthesisUtterance(wordText);
+              utter.lang = 'en-US';
+              window.speechSynthesis.speak(utter);
+            }}
+            className="text-2xl hover:scale-125 transition-transform"
+            title="Nghe cách đọc chuẩn"
+          >
+            🔊
+          </button>
+        </div>
       </div>
 
       <div className="flex justify-center mb-6">
