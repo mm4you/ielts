@@ -130,9 +130,18 @@ export default function SwipePage() {
 
   return (
     <div className="max-w-md mx-auto w-full relative min-h-[calc(100vh-80px)] py-4 md:py-8 flex flex-col">
-      <div className="flex justify-between font-bold mb-4">
-        <span>Thẻ {currentIndex + 1} / {words.length}</span>
-        <span className="text-[var(--muted)]">Vuốt để phân loại</span>
+      <div className="flex items-center justify-between font-bold mb-4 bg-[var(--paper)] p-3 border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] rounded-xl gap-4">
+        <div className="flex-1">
+          <span>Thẻ {currentIndex + 1} / {words.length}</span>
+          <span className="text-[var(--muted)] hidden md:inline ml-4">Vuốt để phân loại</span>
+        </div>
+        <button 
+          onClick={() => setGameState('setup')} 
+          className="w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0"
+          title="Dừng lọc thẻ"
+        >
+          X
+        </button>
       </div>
 
       <div className="relative w-full flex-1 min-h-[300px] md:min-h-[450px]">

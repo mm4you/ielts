@@ -168,18 +168,25 @@ export default function SpeedrunPage() {
       flashColor === 'green' ? 'bg-green-100' : flashColor === 'red' ? 'bg-red-100' : ''
     }`}>
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl relative shrink-0">
-        <div className="text-2xl font-black text-[var(--ink)]">
+      <div className="flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl relative shrink-0 gap-4">
+        <div className="text-xl md:text-2xl font-black text-[var(--ink)] flex-1">
           Điểm: <span className="text-[var(--blue)]">{score}</span>
         </div>
         {streak >= 3 && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl font-black text-[var(--red)] animate-bounce whitespace-nowrap drop-shadow-md">
-            🔥 COMBO x{streak} 🔥
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl md:text-3xl font-black text-[var(--red)] animate-bounce whitespace-nowrap drop-shadow-md">
+            🔥 x{streak}
           </div>
         )}
-        <div className={`transition-all duration-300 font-black ${timeLeft <= 10 ? 'text-6xl md:text-7xl text-[var(--red)] animate-pulse scale-110 drop-shadow-lg' : 'text-4xl text-[var(--ink)]'}`}>
+        <div className={`transition-all duration-300 font-black ${timeLeft <= 10 ? 'text-4xl md:text-6xl text-[var(--red)] animate-pulse drop-shadow-lg' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
           {timeLeft}s
         </div>
+        <button 
+          onClick={() => setGameState('setup')} 
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2"
+          title="Thoát game"
+        >
+          X
+        </button>
       </div>
 
       {/* Question Card */}

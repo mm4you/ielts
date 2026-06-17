@@ -304,10 +304,18 @@ export default function BlockBlastClient() {
 
   return (
     <div className="max-w-md mx-auto pt-4 pb-24 md:py-8 px-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
-      {/* Header */}
-      <div className="w-full flex justify-between items-center bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl mb-6 shrink-0">
-        <h1 className="text-xl md:text-2xl font-black font-serif uppercase text-[var(--ink)]">Vocab Blast</h1>
-        <div className="text-2xl font-black text-[var(--blue)]">{score}</div>
+      {/* Top Bar */}
+      <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl shrink-0 gap-4 w-full">
+        <div className="text-2xl font-black text-[var(--ink)] flex-1">
+          Điểm: <span className="text-[var(--blue)]">{score}</span>
+        </div>
+        <button 
+          onClick={() => setGameState('setup')} 
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0"
+          title="Thoát game"
+        >
+          X
+        </button>
       </div>
 
       {/* Board */}

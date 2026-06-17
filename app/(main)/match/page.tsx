@@ -166,13 +166,20 @@ export default function MatchPage() {
   return (
     <div className="max-w-4xl mx-auto py-4 md:py-10 px-2 md:px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center">
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl shrink-0">
-        <div className="text-2xl font-black text-[var(--ink)]">
+      <div className="flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl shrink-0 gap-4 w-full">
+        <div className="text-xl md:text-2xl font-black text-[var(--ink)] flex-1">
           Lượt (Moves): <span className="text-[var(--blue)]">{moves}</span>
         </div>
-        <div className="text-2xl font-black text-[var(--green)]">
+        <div className="text-xl md:text-2xl font-black text-[var(--green)]">
           {matchedIndices.length / 2} / 6 Cặp
         </div>
+        <button 
+          onClick={() => setGameState('setup')} 
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2"
+          title="Thoát game"
+        >
+          X
+        </button>
       </div>
 
       {/* Grid */}

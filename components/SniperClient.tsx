@@ -214,17 +214,24 @@ export default function SniperClient() {
     }`}>
       
       {/* Top Bar (Score & Lives) */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10 pointer-events-none">
-        <div className="panel py-2 px-4 bg-[var(--paper)] text-xl md:text-2xl font-black text-[var(--ink)]">
+      <div className="absolute top-4 left-4 right-4 flex items-center z-10 pointer-events-none gap-2">
+        <div className="panel py-2 px-3 md:px-4 bg-[var(--paper)] text-xl md:text-2xl font-black text-[var(--ink)] flex-1">
           ĐIỂM: <span className="text-[var(--blue)]">{score}</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1 md:gap-2">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className={`text-3xl ${i < lives ? 'text-[var(--red)] drop-shadow-md' : 'text-gray-400 opacity-50'} transition-all`}>
+            <div key={i} className={`text-2xl md:text-3xl ${i < lives ? 'text-[var(--red)] drop-shadow-md' : 'text-gray-400 opacity-50'} transition-all`}>
               ❤️
             </div>
           ))}
         </div>
+        <button 
+          onClick={() => setGameState('setup')} 
+          className="w-10 h-10 md:w-12 md:h-12 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 pointer-events-auto"
+          title="Thoát game"
+        >
+          X
+        </button>
       </div>
 
       {/* Target Zone */}

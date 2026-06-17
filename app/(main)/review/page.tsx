@@ -137,9 +137,18 @@ export default function ReviewPage() {
 
   return (
     <div className="max-w-3xl mx-auto w-full px-2 md:px-4 py-4 md:py-8 min-h-[calc(100vh-80px)] flex flex-col">
-      <div className="flex items-center justify-between mb-2 md:mb-4 font-bold text-[var(--ink)] shrink-0">
-        <span>Thẻ {currentIndex + 1} / {words.length}</span>
-        <span>{Math.round(progress)}%</span>
+      <div className="flex justify-between font-bold mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl items-center gap-4">
+        <div className="flex-1 flex justify-between items-center mr-4">
+          <span>Thẻ {currentIndex + 1} / {words.length}</span>
+          <span>{Math.round(progress)}%</span>
+        </div>
+        <button 
+          onClick={() => setGameState('setup')} 
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0"
+          title="Dừng ôn tập"
+        >
+          X
+        </button>
       </div>
 
       <div className="w-full h-3 md:h-4 bg-[var(--paper)] border-[3px] border-[var(--line)] rounded-full mb-4 md:mb-10 overflow-hidden shadow-[2px_2px_0_var(--line)] shrink-0">
