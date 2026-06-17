@@ -53,11 +53,11 @@ export default async function HomePage() {
             <p className="text-[var(--muted)] mb-6 flex-1">
               Ôn tập các từ vựng đến hạn bằng flashcard. Hệ thống tự tính thời điểm lặp lại tối ưu.
             </p>
-            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
               <span className="font-bold text-lg">
                 {!session ? 'Cần đăng nhập' : (dueWords > 0 ? `${dueWords.toLocaleString('vi-VN')} thẻ cần ôn` : 'Đã ôn xong')}
               </span>
-              <Link href="/review" className="btn-primary">
+              <Link href="/review" className="btn-brutal bg-[var(--green)] text-white">
                 Bắt đầu
               </Link>
             </div>
@@ -70,7 +70,7 @@ export default async function HomePage() {
             <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
               60 giây sinh tồn đếm ngược. Trả lời đúng +2s. Sai bị trừ 3s. Hết giờ là GAME OVER!
             </p>
-            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
               <span className="font-bold text-lg text-[var(--red)]">Ép nhịp tim</span>
               <Link href="/speedrun" className="btn-brutal bg-[var(--red)] text-white animate-pulse">
                 Chơi luôn
@@ -84,7 +84,7 @@ export default async function HomePage() {
             <p className="text-[var(--muted)] mb-6 flex-1">
               Tra cứu, tìm kiếm danh sách toàn bộ từ vựng theo chủ đề hoặc cấp độ (A1-C2).
             </p>
-            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
               <span className="font-bold text-lg">Khám phá <span className="text-[var(--blue)]">{totalWords.toLocaleString('vi-VN')}</span> từ</span>
               <Link href="/library" className="btn-brutal bg-[var(--yellow)] text-[var(--ink)]">
                 Vào thư viện
@@ -98,7 +98,7 @@ export default async function HomePage() {
             <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
               Luyện trí nhớ hình ảnh bằng cách ghép cặp từ Tiếng Anh và nghĩa Tiếng Việt.
             </p>
-            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
               <span className="font-bold text-lg text-[var(--blue)]">Nhẹ nhàng</span>
               <Link href="/match" className="btn-brutal bg-[var(--blue)] text-white">
                 Chơi ngay
@@ -111,7 +111,7 @@ export default async function HomePage() {
             <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
               Xếp hình sinh tồn! Kéo thả gạch ăn điểm, trả lời từ vựng để mở khóa gạch mới.
             </p>
-            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
               <span className="font-bold text-lg text-[#8b5cf6]">Gây nghiện</span>
               <Link href="/blockblast" className="btn-brutal bg-[#8b5cf6] text-white">
                 Xếp hình
@@ -124,7 +124,7 @@ export default async function HomePage() {
             <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
               Bắn hạ từ vựng tiếng Anh đang bay với tốc độ cao để rèn luyện phản xạ.
             </p>
-            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex-wrap gap-2">
               <span className="font-bold text-lg text-[var(--ink)]">Căng não</span>
               <Link href="/sniper" className="btn-brutal bg-[var(--ink)] text-white">
                 Bắn ngay
