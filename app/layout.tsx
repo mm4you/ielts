@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
@@ -16,6 +16,19 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "IELTS Vocab - Học từ vựng IELTS",
   description: "Ứng dụng học từ vựng IELTS với hệ thống ôn tập thông minh",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Vocab",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ef4444",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
