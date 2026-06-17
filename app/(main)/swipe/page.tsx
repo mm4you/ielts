@@ -173,8 +173,8 @@ export default function SwipePage() {
                         {pos}
                       </span>
                     )}
-                    <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight">{en}</p>
-                    {vi && <p className="text-base font-bold text-[var(--muted)]">{vi}</p>}
+                    <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight break-words">{en}</p>
+                    {vi && <p className="text-base font-bold text-[var(--muted)] break-words">{vi}</p>}
                   </div>
                 );
               })()}

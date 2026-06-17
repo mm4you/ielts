@@ -193,8 +193,8 @@ export default function MatchPage() {
               </div>
 
               {/* Front of card (Face up) */}
-              <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-1 md:p-2 text-center rotate-y-180 leading-tight ${isMatched ? 'bg-[var(--ink)] border-[var(--ink)] shadow-none' : 'bg-[var(--paper)] border-[var(--line)]'}`}>
-                <span className={`font-black ${isMatched ? 'text-[var(--yellow)]' : (card.type === 'en' ? 'text-base md:text-3xl text-[var(--ink)]' : 'text-sm md:text-xl text-[var(--muted)]')}`}>
+              <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-2 text-center rotate-y-180 leading-tight overflow-y-auto ${isMatched ? 'bg-[var(--ink)] border-[var(--ink)] shadow-none' : 'bg-[var(--paper)] border-[var(--line)]'}`}>
+                <span className={`font-black break-words block w-full my-auto ${isMatched ? 'text-[var(--yellow)]' : (card.type === 'en' ? 'text-sm md:text-2xl text-[var(--ink)]' : 'text-[10px] md:text-sm text-[var(--muted)]')}`}>
                   {card.content}
                 </span>
               </div>

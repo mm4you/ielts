@@ -179,8 +179,8 @@ export default function ReviewPage() {
                       {pos}
                     </span>
                   )}
-                  <p className="text-2xl font-bold text-[var(--ink)] mb-2">{en}</p>
-                  {vi && <p className="text-lg font-bold text-[var(--muted)]">{vi}</p>}
+                  <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight break-words">{en}</p>
+                  {vi && <p className="text-lg font-bold text-[var(--muted)] break-words">{vi}</p>}
                 </div>
               );
             })()}
