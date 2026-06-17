@@ -107,6 +107,18 @@ export default async function HomePage() {
                 Chơi ngay
               </Link>
             </div>
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[#8b5cf6] shadow-[8px_8px_0_#8b5cf6]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#8b5cf6] rounded-bl-full opacity-10"></div>
+            <h2 className="text-2xl font-serif font-bold mb-2 text-[#8b5cf6]">Block Blast</h2>
+            <p className="text-[var(--muted)] mb-6 flex-1 font-bold">
+              Xếp hình sinh tồn! Kéo thả gạch ăn điểm, trả lời từ vựng để mở khóa gạch mới.
+            </p>
+            <div className="w-full flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
+              <span className="font-bold text-lg text-[#8b5cf6]">Gây nghiện</span>
+              <Link href="/blockblast" className="btn-brutal bg-[#8b5cf6] text-white">
+                Xếp hình
+              </Link>
+            </div>
           </article>
         </div>
       </main>
