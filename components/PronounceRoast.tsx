@@ -233,13 +233,13 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
           const average = sum / bufferLength;
 
-          // Nếu âm lượng đủ lớn (ngưỡng 10)
-          if (average > 10) { 
+          // Nếu âm lượng đủ lớn (ngưỡng 15 để tránh bị kích hoạt bởi tiếng thở/tiếng ồn nhỏ)
+          if (average > 15) { 
             hasSpoken = true;
             silenceStart = Date.now(); // Reset bộ đếm im lặng
           } else {
-            // Nếu đã nói xong và im lặng kéo dài 1.5 giây -> TỰ ĐỘNG NGẮT!
-            if (hasSpoken && Date.now() - silenceStart > 1500) {
+            // Nếu đã nói xong và im lặng kéo dài 900ms -> TỰ ĐỘNG NGẮT NGAY!
+            if (hasSpoken && Date.now() - silenceStart > 900) {
               if (mediaRecorder.state === 'recording') mediaRecorder.stop();
             }
           }
@@ -410,7 +410,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       {isRecording && (
         <div className="text-center animate-pulse">
           <p className="font-black text-[var(--red)] text-xl uppercase">Đang nghe...</p>
-          <p className="font-bold text-[var(--ink)] mt-2">Đọc xong cứ im lặng 1.5 giây, máy sẽ tự nộp bài!</p>
+          <p className="font-bold text-[var(--ink)] mt-2">Đọc xong cứ im lặng 1 giây, máy sẽ tự nộp bài!</p>
         </div>
       )}
 
