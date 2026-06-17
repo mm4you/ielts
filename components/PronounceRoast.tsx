@@ -13,9 +13,10 @@ declare global {
 interface PronounceRoastProps {
   wordId: number;
   wordText: string;
+  onFinish?: () => void;
 }
 
-export default function PronounceRoast({ wordId, wordText }: PronounceRoastProps) {
+export default function PronounceRoast({ wordId, wordText, onFinish }: PronounceRoastProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [transcribed, setTranscribed] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,26 +32,19 @@ export default function PronounceRoast({ wordId, wordText }: PronounceRoastProps
   }, []);
 
   const speakRoast = (text: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
+    // Dùng Google Translate TTS để đảm bảo 100% ra giọng tiếng Việt chuẩn, không bị lỗi giọng Tây lơ lớ
+    // Do AI đã được giới hạn cực ngắn nên không sợ bị quá limit ký tự của Google
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(text)}`;
+    const audio = new Audio(url);
     
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'vi-VN';
-    utterance.pitch = 0.6;
-    utterance.rate = 1.1;
-
-    const voices = window.speechSynthesis.getVoices();
-    const viVoices = voices.filter(v => v.lang.toLowerCase().includes('vi'));
-    if (viVoices.length > 0) {
-      const maleVoice = viVoices.find(v => v.name.toLowerCase().includes('male'));
-      utterance.voice = maleVoice || viVoices[0]; 
-    }
-
-    utterance.onstart = () => setIsPlaying(true);
-    utterance.onend = () => setIsPlaying(false);
-    utterance.onerror = () => setIsPlaying(false);
-
-    window.speechSynthesis.speak(utterance);
+    setIsPlaying(true);
+    audio.onended = () => setIsPlaying(false);
+    audio.onerror = () => setIsPlaying(false);
+    
+    audio.play().catch(e => {
+      console.error("Lỗi phát âm thanh:", e);
+      setIsPlaying(false);
+    });
   };
 
   const startRecording = () => {
@@ -112,6 +106,7 @@ export default function PronounceRoast({ wordId, wordText }: PronounceRoastProps
       
       setResult(data);
       setTimeout(() => speakRoast(data.roast), 100);
+      if (onFinish) onFinish();
     } catch (err: any) {
       setError(err.message);
     } finally {
