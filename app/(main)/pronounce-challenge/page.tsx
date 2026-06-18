@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PronounceRoast from '@/components/PronounceRoast';
 
 export default function RoastDemoPage() {
+  const router = useRouter();
   const [wordData, setWordData] = useState<{ id: number; word: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState('ALL');
@@ -37,10 +39,19 @@ export default function RoastDemoPage() {
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-2xl text-[var(--ink)]">
-      <h1 className="text-2xl sm:text-3xl font-black mb-6 uppercase border-b-4 border-[var(--line)] pb-2 flex items-center gap-3">
-        🎙️ THỬ THÁCH PHÁT ÂM
-        <span className="bg-[var(--yellow)] text-[var(--ink)] text-sm px-2 py-1 border-2 border-[var(--line)] rotate-[-5deg]">BETA</span>
-      </h1>
+      <div className="flex items-center justify-between mb-6 border-b-4 border-[var(--line)] pb-2">
+        <h1 className="text-2xl sm:text-3xl font-black uppercase flex items-center gap-3">
+          🎙️ THỬ THÁCH PHÁT ÂM
+          <span className="bg-[var(--yellow)] text-[var(--ink)] text-sm px-2 py-1 border-2 border-[var(--line)] rotate-[-5deg]">BETA</span>
+        </h1>
+        <button 
+          onClick={() => router.push('/')} 
+          className="w-10 h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
+          title="Thoát"
+        >
+          X
+        </button>
+      </div>
       
       <p className="mb-6 text-base sm:text-lg font-bold text-[var(--muted)]">
         AI "Mỏ Hỗn" sẽ chấm điểm và nhận xét trình độ phát âm tiếng Anh của bạn!
