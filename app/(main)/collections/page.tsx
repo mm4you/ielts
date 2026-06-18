@@ -503,7 +503,7 @@ export default function CollectionsPage() {
             </div>
           ) : (
             <div className="panel bg-[var(--paper)] p-12 border-2 border-dashed border-[var(--line)] text-center text-[var(--muted)] font-bold shadow-[4px_4px_0_var(--line)]">
-              Chọn một bộ sưu tập ở cột bên trái để hiển thị danh sách từ vựng chi tiết và bắt đầu ôn luyện.
+              Chọn một bộ sưu tập để hiển thị danh sách từ vựng chi tiết và bắt đầu ôn luyện.
             </div>
           )}
         </div>
