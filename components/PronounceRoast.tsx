@@ -157,13 +157,13 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         };
         window.speechSynthesis.speak(utter);
       } else {
-        // Mặc định hoặc do sếp chọn Google Cloud (Google TTS)
-        playGoogleTTS(chunk, handleNext);
+        // Sử dụng Edge TTS proxy với giọng miền Nam chất lượng cao
+        playProxyTTS(chunk, handleNext);
       }
     };
 
-    const playGoogleTTS = (chunk: string, callback: () => void) => {
-      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+    const playProxyTTS = (chunk: string, callback: () => void) => {
+      const url = `/api/tts?text=${encodeURIComponent(chunk)}`;
       const audio = currentAudioRef.current || new Audio();
       currentAudioRef.current = audio;
       
@@ -207,7 +207,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       };
 
       audio.onerror = (e) => {
-        console.warn("Google TTS failed chunk, using standard Web Speech fallback:", chunk, e);
+        console.warn("Edge TTS Proxy failed chunk, using standard Web Speech fallback:", chunk, e);
         if (currentAudioRef.current) {
           currentAudioRef.current.pause();
           currentAudioRef.current.onended = null;
