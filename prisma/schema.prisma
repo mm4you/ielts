@@ -44,6 +44,11 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Game High Scores
+  blockblastHighScore Int      @default(0)
+  speedrunHighScore   Int      @default(0)
+  sniperHighScore     Int      @default(0)
 }
 
 model Account {

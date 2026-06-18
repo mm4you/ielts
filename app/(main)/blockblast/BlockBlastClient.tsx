@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { parseMeaning } from '@/lib/parse';
 import { LEVELS } from '@/types';
 import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
@@ -193,21 +194,66 @@ export default function BlockBlastClient() {
       .catch(console.error);
   };
 
-  // Load high score on mount
+  const { data: session } = useSession();
+
+  // Load high score on mount and sync with database
   useEffect(() => {
-    const saved = localStorage.getItem('blockblast_highscore');
-    if (saved) {
-      setHighScore(parseInt(saved, 10));
-    }
-  }, []);
+    const syncHighScore = async () => {
+      let localScore = 0;
+      const saved = localStorage.getItem('blockblast_highscore');
+      if (saved) {
+        localScore = parseInt(saved, 10);
+        setHighScore(localScore);
+      }
+
+      if (session?.user?.id) {
+        try {
+          const res = await fetch('/api/users/highscores');
+          if (res.ok) {
+            const data = await res.json();
+            const dbScore = data.blockblast ?? 0;
+            
+            const maxScore = Math.max(localScore, dbScore);
+            setHighScore(maxScore);
+
+            // Sync local storage to DB if local is higher
+            if (localScore > dbScore) {
+              await fetch('/api/users/highscores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gameType: 'blockblast', score: localScore }),
+              });
+            }
+            // Sync DB to local storage if DB is higher
+            else if (dbScore > localScore) {
+              localStorage.setItem('blockblast_highscore', dbScore.toString());
+            }
+          }
+        } catch (e) {
+          console.error('Lỗi đồng bộ kỷ lục:', e);
+        }
+      }
+    };
+
+    syncHighScore();
+  }, [session]);
 
   // Update high score when score changes
   useEffect(() => {
     if (score > highScore) {
       setHighScore(score);
       localStorage.setItem('blockblast_highscore', score.toString());
+
+      // Sync to database if logged in
+      if (session?.user?.id) {
+        fetch('/api/users/highscores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gameType: 'blockblast', score }),
+        }).catch(err => console.error('Lỗi cập nhật kỷ lục lên DB:', err));
+      }
     }
-  }, [score, highScore]);
+  }, [score, highScore, session]);
 
   // Main game loop effect
   useEffect(() => {
