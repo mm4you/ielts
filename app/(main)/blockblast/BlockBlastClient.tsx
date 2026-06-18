@@ -401,9 +401,6 @@ export default function BlockBlastClient() {
           <button onClick={startGame} className="w-full btn-brutal bg-[#8b5cf6] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4">
             VÀO XẾP HÌNH
           </button>
-          <button onClick={() => router.push(exitRoute)} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            {exitLabel}
-          </button>
         </div>
       </div>
     );
@@ -507,12 +504,9 @@ export default function BlockBlastClient() {
             </div>
             <button 
               onClick={() => setGameState('setup')}
-              className="btn-brutal bg-[var(--yellow)] w-full mb-2"
+              className="btn-brutal bg-[var(--yellow)] w-full"
             >
               Chơi Lại
-            </button>
-            <button onClick={() => router.push(exitRoute)} className="btn-brutal bg-[var(--paper)] w-full text-[var(--ink)]">
-              {exitLabel}
             </button>
           </div>
         )}

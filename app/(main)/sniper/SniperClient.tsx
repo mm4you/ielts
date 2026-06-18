@@ -229,9 +229,6 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
           <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--blue)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
             {loading ? 'ĐANG TẢI...' : 'VÀO TRƯỜNG BẮN'}
           </button>
-          <button onClick={() => router.push(exitRoute)} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            {exitLabel}
-          </button>
         </div>
       </div>
     );
@@ -270,11 +267,8 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
             </div>
           )}
           
-          <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4 shadow-[4px_4px_0_var(--ink)] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
+          <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
             {loading ? 'ĐANG TẢI...' : 'CHƠI LẠI'}
-          </button>
-          <button onClick={() => router.push(exitRoute)} className="w-full btn-brutal bg-[var(--paper)] text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
-            {exitLabel}
           </button>
         </div>
       </div>

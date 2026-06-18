@@ -178,9 +178,6 @@ function SpeedrunContent() {
           <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
             CHIẾN NGAY 🔥
           </button>
-          <button onClick={() => router.push(exitRoute)} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            {exitLabel}
-          </button>
         </div>
       </div>
     );
@@ -201,11 +198,8 @@ function SpeedrunContent() {
           <p className="text-2xl font-black mb-4">Điểm của bạn:</p>
           <div className="text-7xl font-black text-[var(--green)] mb-8">{score}</div>
           
-          <button onClick={() => setGameState('setup')} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4">
+          <button onClick={() => setGameState('setup')} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase">
             Chơi lại
-          </button>
-          <button onClick={() => router.push(exitRoute)} className="w-full btn-brutal bg-[var(--paper)] text-[var(--ink)] py-4 text-xl uppercase">
-            {exitLabel}
           </button>
         </div>
       </div>

@@ -146,9 +146,6 @@ function ReviewContent() {
           <button onClick={fetchWords} className="w-full btn-brutal bg-[var(--green)] text-white py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
             Bắt đầu ôn tập
           </button>
-          <button onClick={() => router.push(exitRoute)} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            {exitLabel}
-          </button>
         </div>
       </div>
     );
@@ -174,14 +171,9 @@ function ReviewContent() {
         </button>
         <h2 className="text-3xl font-serif mb-4">Bạn chưa đăng nhập hoặc đã học xong!</h2>
         <p className="text-[var(--muted)] mb-8 font-bold">Vui lòng đăng nhập để theo dõi tiến trình học, hoặc khám phá thêm từ vựng mới trong Thư viện.</p>
-        <div className="flex gap-4 justify-center">
-          <button onClick={() => router.push('/library')} className="btn-brutal bg-[var(--yellow)]">
-            Khám phá thư viện
-          </button>
-          <button onClick={() => router.push(exitRoute)} className="btn-brutal bg-[var(--paper)]">
-            {exitLabel}
-          </button>
-        </div>
+        <button onClick={() => router.push('/library')} className="btn-brutal bg-[var(--yellow)] w-full max-w-xs mx-auto">
+          Khám phá thư viện
+        </button>
       </div>
     );
   }
