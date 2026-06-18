@@ -74,13 +74,21 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         mediaRecorderRef.current.stop();
         mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
       }
-      // Dừng âm thanh đang phát
+      // Dừng âm thanh đang phát và xóa sạch callback tránh chạy ngầm khi đổi từ
       if (currentAudioRef.current) {
         currentAudioRef.current.pause();
+        currentAudioRef.current.onended = null;
+        currentAudioRef.current.onerror = null;
         currentAudioRef.current.src = '';
       }
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
+        // Cú lừa Safari: nói câu rỗng rồi hủy để xóa sạch hàng đợi bị nghẽn trên iOS
+        try {
+          const dummy = new SpeechSynthesisUtterance('');
+          window.speechSynthesis.speak(dummy);
+          window.speechSynthesis.cancel();
+        } catch (e) {}
       }
     };
   }, []);
