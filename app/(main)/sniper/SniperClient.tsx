@@ -46,6 +46,23 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
   const [flash, setFlash] = useState<'green' | 'red' | null>(null);
   const [loading, setLoading] = useState(false);
   const [explosions, setExplosions] = useState<Explosion[]>([]);
+  const [playedWords, setPlayedWords] = useState<Question[]>([]);
+
+  useEffect(() => {
+    if (gameState === 'setup') {
+      setPlayedWords([]);
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    const currentQ = questions[currentQIndex];
+    if (gameState === 'playing' && currentQ) {
+      setPlayedWords(prev => {
+        if (prev.some(w => w.id === currentQ.id)) return prev;
+        return [...prev, currentQ];
+      });
+    }
+  }, [currentQIndex, gameState, questions]);
 
   const fetchQuestions = async () => {
     try {
@@ -216,7 +233,25 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
         <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--red)]">
           <h2 className="text-5xl font-serif font-black uppercase mb-4 text-[var(--red)]">TỬ TRẬN</h2>
           <p className="text-2xl font-black mb-4">Điểm thiện xạ:</p>
-          <div className="text-7xl font-black text-[var(--ink)] mb-8">{score}</div>
+          <div className="text-7xl font-black text-[var(--ink)] mb-6">{score}</div>
+          
+          {playedWords.length > 0 && (
+            <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
+              <h3 className="font-black text-sm mb-2 border-b-2 border-dashed border-[var(--line)] pb-2 uppercase text-[var(--blue)]">Các từ đã xuất hiện:</h3>
+              <ul className="space-y-2">
+                {playedWords.map(q => {
+                  const { en, vi } = parseMeaning(q.targetMeaning, q.pos || '');
+                  const targetWord = q.choices[q.correctIndex];
+                  return (
+                    <li key={q.id} className="flex justify-between items-center border-b border-gray-100 last:border-b-0 pb-1 text-xs gap-2">
+                      <span className="font-bold text-[var(--ink)] truncate">{targetWord} ({vi || en})</span>
+                      <SaveToCollection wordId={q.id} wordText={targetWord} />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
           
           <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4 shadow-[4px_4px_0_var(--ink)] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
             {loading ? 'ĐANG TẢI...' : 'CHƠI LẠI'}
@@ -318,7 +353,6 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
                     <div className="flex flex-col items-center justify-center gap-1">
                       <div className="flex items-center gap-2">
                         <span className="leading-tight">{en}</span>
-                        <SaveToCollection wordId={currentQ.id} wordText={currentQ.choices[currentQ.correctIndex]} />
                       </div>
                       {vi && <span className="text-sm md:text-xl font-bold text-[var(--muted)]">{vi}</span>}
                     </div>

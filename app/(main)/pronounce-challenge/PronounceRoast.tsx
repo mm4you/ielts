@@ -433,12 +433,14 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       <div className="absolute -top-4 -left-4 bg-[var(--ink)] text-[var(--bg)] px-3 py-1 font-black border-2 border-[var(--line)] rotate-[-3deg]">
         CHẤM ĐIỂM PHÁT ÂM <span className="text-xs text-[var(--red)] ml-2">BETA</span>
       </div>
+      <div className="absolute top-4 right-4">
+        <SaveToCollection wordId={wordId} wordText={wordText} />
+      </div>
 
       <div className="text-center mb-6 pt-4 relative">
         <p className="font-bold text-[var(--muted)] mb-2">Hãy đọc to từ này vào Mic:</p>
         <div className="flex items-center justify-center gap-3">
           <h3 className="text-4xl font-black text-[var(--red)] uppercase tracking-widest">{wordText}</h3>
-          <SaveToCollection wordId={wordId} wordText={wordText} />
           <button 
             onClick={() => {
               if (typeof window !== 'undefined' && window.speechSynthesis) {

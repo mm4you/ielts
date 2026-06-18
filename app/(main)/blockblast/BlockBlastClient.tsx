@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { parseMeaning } from '@/lib/parse';
 import { LEVELS } from '@/types';
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 type Board = number[][]; // 0=empty, 1=filled, 2=dead
 type Shape = { id: string; grid: number[][]; color: string };
@@ -439,7 +440,10 @@ export default function BlockBlastClient() {
         {/* Vocab Overlay */}
         {gameState === 'vocab' && questions.length > 0 && (
           <div className={`fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-4 ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
-            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] w-full max-w-md max-h-[90vh] flex flex-col">
+            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] w-full max-w-md max-h-[90vh] flex flex-col relative pt-10">
+              <div className="absolute top-4 right-4">
+                <SaveToCollection wordId={questions[currentQIndex].id} wordText={questions[currentQIndex].word} />
+              </div>
               <span className="text-[var(--red)] font-black uppercase text-sm mb-2 block animate-pulse text-center shrink-0">Hết Gạch! Hãy trả lời:</span>
               <h2 className="text-3xl md:text-4xl font-serif font-black mb-4 text-[var(--ink)] text-center shrink-0">{questions[currentQIndex].word}</h2>
               <div className="grid grid-cols-1 gap-3 overflow-y-auto p-1">
