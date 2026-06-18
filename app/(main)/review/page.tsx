@@ -90,6 +90,19 @@ function ReviewContent() {
     }
   };
 
+  const getIntervalPreview = (rating: ReviewRating) => {
+    const word = words[currentIndex];
+    if (!word) return '';
+    const nextSRS = calculateSRS(
+      rating,
+      word.ease_factor,
+      word.interval_days,
+      word.repetition_count
+    );
+    if (nextSRS.interval_days <= 1) return 'Sau 1 ngày';
+    return `Sau ${nextSRS.interval_days} ngày`;
+  };
+
   if (gameState === 'setup') {
     return (
       <div className="flex items-center justify-center py-20 px-4">
@@ -224,23 +237,32 @@ function ReviewContent() {
       </div>
 
       {showMeaning && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 animate-fade-in shrink-0">
-          <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white flex flex-col items-center justify-center py-2 md:py-3">
-            <span className="text-lg md:text-2xl">Lại</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quên sạch</span>
-          </button>
-          <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] flex flex-col items-center justify-center py-2 md:py-3">
-            <span className="text-lg md:text-2xl">Khó</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ mang máng</span>
-          </button>
-          <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white flex flex-col items-center justify-center py-2 md:py-3">
-            <span className="text-lg md:text-2xl">Tốt</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ rõ</span>
-          </button>
-          <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white flex flex-col items-center justify-center py-2 md:py-3">
-            <span className="text-lg md:text-2xl">Dễ</span>
-            <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quá quen thuộc</span>
-          </button>
+        <div className="w-full flex flex-col gap-3 mt-4 md:mt-8 animate-fade-in shrink-0">
+          <p className="text-center text-[10px] md:text-xs font-mono font-black uppercase text-[var(--muted)]">
+            💡 Chọn mức độ ghi nhớ của bạn để thuật toán xếp lịch học tiếp theo:
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+            <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
+              <span className="text-lg md:text-2xl">Lại</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quên sạch</span>
+              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('forgot')}</span>
+            </button>
+            <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
+              <span className="text-lg md:text-2xl">Khó</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ mang máng</span>
+              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/5 px-2 py-0.5 rounded-full">{getIntervalPreview('hard')}</span>
+            </button>
+            <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
+              <span className="text-lg md:text-2xl">Tốt</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ rõ</span>
+              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('good')}</span>
+            </button>
+            <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
+              <span className="text-lg md:text-2xl">Dễ</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quá quen thuộc</span>
+              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('easy')}</span>
+            </button>
+          </div>
         </div>
       )}
     </div>
