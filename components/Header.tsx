@@ -68,14 +68,14 @@ export default function Header() {
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6">
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-sm font-bold transition-colors uppercase tracking-wide ${
+                  className={`text-xs xl:text-sm font-bold transition-colors uppercase tracking-wide ${
                     isActive 
                       ? 'text-[var(--blue)] font-extrabold' 
                       : 'text-[var(--ink)] hover:text-[var(--blue)]'
@@ -87,14 +87,33 @@ export default function Header() {
             })}
             <ThemeToggle />
             {session ? (
-              <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
-                <span className="text-sm font-bold truncate max-w-[100px]" title={session.user?.email || ''}>{session.user?.name || 'User'}</span>
-                {(session.user as any)?.role === 'admin' && (
-                  <Link href="/admin" className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[var(--line)] hover:-translate-y-0.5 transition-transform">
-                    ADMIN
-                  </Link>
-                )}
-                <button onClick={() => signOut()} className="btn-brutal bg-[var(--red)] text-white text-xs px-3 py-1.5 uppercase hover:translate-y-0.5">Đăng xuất</button>
+              <div className="relative group border-l-2 border-dashed border-[var(--line)] pl-4 py-2 -my-2">
+                <button className="w-9 h-9 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-[var(--ink)] text-sm shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer select-none">
+                  {session.user?.name?.charAt(0).toUpperCase() || 'U'}
+                </button>
+                
+                <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--paper)] border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-30 flex flex-col gap-2">
+                  <div className="pb-2 border-b border-dashed border-[var(--line)] text-left">
+                    <p className="font-extrabold text-sm text-[var(--ink)] truncate">{session.user?.name || 'User'}</p>
+                    <p className="text-[10px] font-mono text-[var(--muted)] truncate">{session.user?.email || ''}</p>
+                  </div>
+                  
+                  {(session.user as any)?.role === 'admin' && (
+                    <Link 
+                      href="/admin" 
+                      className="text-xs font-bold text-[var(--ink)] bg-[var(--yellow)] hover:bg-yellow-400 border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all"
+                    >
+                      Trang Admin
+                    </Link>
+                  )}
+                  
+                  <button 
+                    onClick={() => signOut()} 
+                    className="w-full text-xs font-bold text-white bg-[var(--red)] border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
@@ -106,7 +125,7 @@ export default function Header() {
           </div>
 
           {/* Mobile Theme Toggle & Menu Button */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-2">
             <ThemeToggle />
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -124,7 +143,7 @@ export default function Header() {
 
       {/* Mobile Toggleable Menu */}
       {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-[64px] bg-[var(--bg)] z-30 overflow-y-auto pb-safe">
+        <div className="lg:hidden fixed inset-0 top-[64px] bg-[var(--bg)] z-30 overflow-y-auto pb-safe">
           <div className="p-4 flex flex-col gap-4">
             
             {/* Mobile Auth inside Menu */}
