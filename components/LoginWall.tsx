@@ -626,10 +626,6 @@ export default function LoginWall() {
           </svg>
           Đăng nhập bằng Google
         </button>
-
-        <p className="text-xxs text-[var(--muted)] mt-6 font-mono text-center">
-          Bảo mật bằng NextAuth & JWT
-        </p>
       </div>
     </div>
   );
