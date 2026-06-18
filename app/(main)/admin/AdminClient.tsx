@@ -335,7 +335,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           <div className="flex gap-2 items-center flex-wrap">
                             <h3 className="text-xl font-black font-serif text-[var(--ink)]">{word.word}</h3>
                             {pos && (
-                              <span className="bg-gray-100 border border-[var(--line)] px-2 py-0.5 rounded-full text-[10px] font-bold dark:bg-gray-800">
+                              <span className="bg-[var(--blue)] text-white border border-[var(--line)] px-2 py-0.5 rounded-full text-[10px] font-bold select-none">
                                 {pos}
                               </span>
                             )}
@@ -491,7 +491,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                 ADMIN
                               </span>
                             ) : (
-                              <span className="bg-gray-100 border border-[var(--line)] text-[9px] px-2 py-0.5 rounded-full font-bold dark:bg-gray-800 text-[var(--muted)] select-none">
+                              <span className="bg-[var(--blue)] text-white border border-[var(--line)] text-[9px] px-2 py-0.5 rounded-full font-bold select-none">
                                 Học viên
                               </span>
                             )}
