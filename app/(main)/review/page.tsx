@@ -99,8 +99,9 @@ function ReviewContent() {
       word.interval_days,
       word.repetition_count
     );
-    if (nextSRS.interval_days <= 1) return 'Sau 1 ngày';
-    return `Sau ${nextSRS.interval_days} ngày`;
+    const days = nextSRS.interval_days;
+    if (days <= 1) return 'Ôn: Ngày mai';
+    return `Ôn: ${days} ngày nữa`;
   };
 
   if (gameState === 'setup') {
