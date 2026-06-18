@@ -383,16 +383,29 @@ export default function CollectionsPage() {
         <div className="lg:col-span-7 space-y-6">
           {selectedCollection ? (
             <div className="panel bg-[var(--paper)] p-6 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)]">
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-2 border-dashed border-[var(--line)] pb-4 mb-4">
-                <div>
-                  <h2 className="text-2xl font-black text-[var(--ink)] uppercase">
-                    {selectedCollection.name}
-                  </h2>
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-2 border-dashed border-[var(--line)] pb-4 mb-4 w-full">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h2 className="text-2xl font-black text-[var(--ink)] uppercase truncate">
+                      {selectedCollection.name}
+                    </h2>
+                    <span className={`font-mono text-[9px] px-2 py-0.5 rounded border border-[var(--line)] shrink-0 ${
+                      selectedCollection.isPublic ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {selectedCollection.isPublic ? 'Công khai' : 'Riêng tư'}
+                    </span>
+                  </div>
                   {selectedCollection.description && (
                     <p className="text-sm text-[var(--muted)] font-medium mt-1">
                       {selectedCollection.description}
                     </p>
                   )}
+                  <button
+                    onClick={() => openModal('edit', selectedCollection)}
+                    className="mt-2 text-xs font-mono font-bold text-[var(--blue)] hover:underline flex items-center gap-1 cursor-pointer select-none"
+                  >
+                    [ Sửa tên & Chế độ riêng tư ]
+                  </button>
                 </div>
                 
                 {/* Mode indicators inside details panel */}
