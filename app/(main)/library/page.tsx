@@ -160,7 +160,7 @@ export default function LibraryPage() {
                   className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
                   title="Trang trước"
                 >
-                  ◀
+                  &lt;
                 </button>
 
                 {/* Page Numbers */}
@@ -203,7 +203,7 @@ export default function LibraryPage() {
                   className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
                   title="Trang sau"
                 >
-                  ▶
+                  &gt;
                 </button>
               </div>
             </div>
