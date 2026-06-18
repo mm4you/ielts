@@ -143,7 +143,6 @@ export default function SaveToCollection({
               : 'bg-[var(--red)] text-white'
           }`}
         >
-          <span className="text-base">{toast.isSaved ? '✅' : '🗑️'}</span>
           <span>{toast.message}</span>
         </div>
       )}

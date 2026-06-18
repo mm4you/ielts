@@ -14,15 +14,32 @@ export default async function HomePage() {
   const totalWords = await prisma.word.count();
   
   let dueWords = 0;
+  let collectionsCount = 0;
+  let savedWordsCount = 0;
   if (session?.user?.id) {
     const today = new Date();
-    dueWords = await prisma.userProgress.count({
-      where: { 
-        userId: session.user.id,
-        next_review_date: { lte: today },
-        repetition_count: { gt: 0 }
-      }
-    });
+    const [dueCount, colCount, wordsCount] = await Promise.all([
+      prisma.userProgress.count({
+        where: { 
+          userId: session.user.id,
+          next_review_date: { lte: today },
+          repetition_count: { gt: 0 }
+        }
+      }),
+      prisma.collection.count({
+        where: { userId: session.user.id }
+      }),
+      prisma.collectionWord.count({
+        where: {
+          collection: {
+            userId: session.user.id
+          }
+        }
+      })
+    ]);
+    dueWords = dueCount;
+    collectionsCount = colCount;
+    savedWordsCount = wordsCount;
   }
 
   return (
@@ -59,6 +76,22 @@ export default async function HomePage() {
               </span>
               <Link href="/review" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
                 Bắt đầu
+              </Link>
+            </div>
+          </article>
+
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--green)] shadow-[8px_8px_0_var(--green)]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green)] rounded-bl-full opacity-10"></div>
+            <h2 className="text-2xl font-serif font-bold mb-2 text-[var(--green)]">Bộ Sưu Tập Của Tôi</h2>
+            <p className="text-[var(--muted)] mb-6 flex-1">
+              Quản lý các danh mục từ vựng cá nhân. Tự tạo sổ tay từ khó, phân loại theo nhóm và luyện tập riêng biệt.
+            </p>
+            <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
+              <span className="font-bold text-lg text-[var(--green)] text-center min-[380px]:text-left">
+                {collectionsCount} sổ tay — {savedWordsCount} từ
+              </span>
+              <Link href="/collections" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
+                Quản lý bộ
               </Link>
             </div>
           </article>
