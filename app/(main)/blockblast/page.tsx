@@ -1,4 +1,4 @@
-import BlockBlastClient from '@/components/BlockBlastClient';
+import BlockBlastClient from './BlockBlastClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

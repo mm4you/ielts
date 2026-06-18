@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import LoginWall from '@/components/LoginWall';
+import LoginWall from './LoginWall';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';

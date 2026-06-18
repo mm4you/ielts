@@ -3,9 +3,9 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { TOPIC_LABELS } from '@/types';
 import { auth } from '@/auth';
-import RecentWordTracker from '@/components/RecentWordTracker';
+import RecentWordTracker from './RecentWordTracker';
 import { parseMeaning } from '@/lib/parse';
-import WordPronounceChallenge from '@/components/WordPronounceChallenge';
+import WordPronounceChallenge from './WordPronounceChallenge';
 
 async function getWordAndProgress(id: string) {
   const session = await auth();

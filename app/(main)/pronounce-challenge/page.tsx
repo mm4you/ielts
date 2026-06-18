@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import PronounceRoast from '@/components/PronounceRoast';
+import PronounceRoast from './PronounceRoast';
 
 export default function RoastDemoPage() {
   const router = useRouter();

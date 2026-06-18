@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import Card from '@/components/Card';
-import RecentWordsList from '@/components/RecentWordsList';
+import RecentWordsList from './RecentWordsList';
 
 export default function LibraryPage() {
   const [words, setWords] = useState<Word[]>([]);

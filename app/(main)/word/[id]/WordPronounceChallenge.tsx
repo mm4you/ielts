@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import PronounceRoast from './PronounceRoast';
+import PronounceRoast from '@/app/(main)/pronounce-challenge/PronounceRoast';
 
 interface WordPronounceChallengeProps {
   wordId: number;

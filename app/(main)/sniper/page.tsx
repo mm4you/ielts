@@ -1,4 +1,4 @@
-import SniperClient from '@/components/SniperClient';
+import SniperClient from './SniperClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
