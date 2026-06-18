@@ -248,12 +248,7 @@ export default function LoginWall() {
       <div className="bg-orb orb-2"></div>
       
       <div className="panel max-w-md w-full relative z-10 flex flex-col p-8 md:p-10 hover:-translate-y-1 transition-transform duration-300 bg-[var(--paper)]">
-        {/* Waving Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-[var(--blue)] rounded-full border-4 border-[var(--line)] shadow-[3px_3px_0_var(--line)] flex items-center justify-center text-3xl animate-bounce">
-            👋
-          </div>
-        </div>
+
         
         {/* Title */}
         <h1 className="text-3xl md:text-4xl font-serif font-black text-[var(--ink)] text-center mb-2">
@@ -307,7 +302,7 @@ export default function LoginWall() {
         )}
         {successMsg && (
           <div className="bg-[var(--green)] text-white border-2 border-black p-3 font-mono font-bold text-xs shadow-[2px_2px_0_#000] mb-4 text-left rounded">
-            ✓ {successMsg}
+            {successMsg}
           </div>
         )}
 
