@@ -20,25 +20,29 @@ export async function GET(request: Request) {
       };
     }
 
-    const totalCount = await prisma.word.count({ where: queryArgs.where });
-    if (totalCount === 0) {
+    const allWords = await prisma.word.findMany({
+      where: queryArgs.where,
+      select: { id: true, meaning_vi: true }
+    });
+
+    if (allWords.length === 0) {
       return NextResponse.json({ error: 'No words found' }, { status: 404 });
     }
 
     const take = 300;
-    const skip = totalCount > take ? Math.floor(Math.random() * (totalCount - take)) : 0;
+    const shuffledIds = allWords.map(w => w.id).sort(() => 0.5 - Math.random()).slice(0, take);
 
     const words = await prisma.word.findMany({
-      ...queryArgs,
-      skip,
-      take,
+      where: {
+        id: { in: shuffledIds }
+      }
     });
 
-    // Shuffle words
+    // Shuffle words to keep it fully random
     const shuffledWords = words.sort(() => 0.5 - Math.random());
     
-    // Extract meanings for distractors
-    const allMeanings = words.map(w => w.meaning_vi);
+    // Extract meanings for distractors from all words in selection
+    const allMeanings = allWords.map(w => w.meaning_vi);
 
     const questions = shuffledWords.map(word => {
       // Pick 3 random distractors that are not the correct meaning

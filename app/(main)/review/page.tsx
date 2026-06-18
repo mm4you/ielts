@@ -84,7 +84,18 @@ function ReviewContent() {
       console.error('Failed to update word:', error);
     }
 
-    if (currentIndex < words.length - 1) {
+    if (rating === 'forgot') {
+      const updatedWord = {
+        ...word,
+        ease_factor: srsData.ease_factor,
+        interval_days: srsData.interval_days,
+        repetition_count: srsData.repetition_count,
+      };
+      setWords(prev => [...prev, updatedWord]);
+    }
+
+    const hasMore = rating === 'forgot' || currentIndex < words.length - 1;
+    if (hasMore) {
       setCurrentIndex(currentIndex + 1);
       setShowMeaning(false);
     } else {

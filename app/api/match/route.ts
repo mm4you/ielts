@@ -19,18 +19,22 @@ export async function GET(request: Request) {
       };
     }
 
-    const totalCount = await prisma.word.count({ where: queryArgs.where });
-    if (totalCount < 6) {
+    const allWords = await prisma.word.findMany({
+      where: queryArgs.where,
+      select: { id: true }
+    });
+
+    if (allWords.length < 6) {
       return NextResponse.json({ error: 'Not enough words to play match game' }, { status: 404 });
     }
 
     const take = 6;
-    const skip = totalCount > take ? Math.floor(Math.random() * (totalCount - take)) : 0;
+    const shuffledIds = allWords.map(w => w.id).sort(() => 0.5 - Math.random()).slice(0, take);
 
     const words = await prisma.word.findMany({
-      ...queryArgs,
-      skip,
-      take,
+      where: {
+        id: { in: shuffledIds }
+      }
     });
 
     // Shuffle words to pick 6
