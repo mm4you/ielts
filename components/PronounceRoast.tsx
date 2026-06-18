@@ -534,11 +534,11 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           </div>
           <p className="font-bold text-lg leading-relaxed whitespace-pre-wrap text-[var(--ink)] mb-4">{result.roast}</p>
 
-          {/* Đáp án chuẩn của từ */}
+          {/* Chi tiết từ vựng gốc */}
           {result.wordDetails && (
             <div className="mt-4 pt-4 border-t-2 border-dashed border-[var(--line)] text-left">
               <span className="inline-block bg-[var(--yellow)] text-[var(--ink)] text-xs font-black px-2.5 py-1 border-2 border-[var(--line)] uppercase tracking-wider mb-3 rotate-[-1.5deg]">
-                🔑 ĐÁP ÁN CHUẨN:
+                📖 CHI TIẾT TỪ VỰNG:
               </span>
               <div className="flex flex-wrap items-baseline gap-2 mb-2">
                 <span className="text-2xl font-black uppercase text-[var(--blue)] tracking-wider">{result.wordDetails.word}</span>
