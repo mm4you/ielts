@@ -16,6 +16,34 @@ export default function LibraryPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      const start = Math.max(2, currentPage - 2);
+      const end = Math.min(totalPages - 1, currentPage + 2);
+
+      if (start > 2) {
+        pages.push('...');
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (end < totalPages - 1) {
+        pages.push('...');
+      }
+
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   useEffect(() => {
     // Reset to page 1 whenever filters change
     setCurrentPage(1);
@@ -116,30 +144,68 @@ export default function LibraryPage() {
           </div>
 
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-12 bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-xl max-w-md mx-auto">
-              <button
-                disabled={currentPage === 1 || loading}
-                onClick={() => {
-                  setCurrentPage((prev) => Math.max(prev - 1, 1));
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="btn-brutal bg-[var(--bg)] text-[var(--ink)] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed font-bold"
-              >
-                ◀ Trang trước
-              </button>
-              <span className="font-bold text-base text-[var(--ink)]">
-                Trang {currentPage} / {totalPages}
-              </span>
-              <button
-                disabled={currentPage === totalPages || loading}
-                onClick={() => {
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="btn-brutal bg-[var(--bg)] text-[var(--ink)] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed font-bold"
-              >
-                Trang sau ▶
-              </button>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-16 bg-[var(--paper)] p-5 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl w-full">
+              <p className="text-sm font-bold text-[var(--muted)]">
+                Hiển thị từ <span className="text-[var(--ink)] font-black">{(currentPage - 1) * 30 + 1}</span> - <span className="text-[var(--ink)] font-black">{Math.min(currentPage * 30, totalCount)}</span> trên <span className="text-[var(--ink)] font-black">{totalCount}</span> từ vựng
+              </p>
+
+              <div className="flex items-center gap-2 flex-wrap justify-center">
+                {/* Prev Button */}
+                <button
+                  disabled={currentPage === 1 || loading}
+                  onClick={() => {
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
+                  title="Trang trước"
+                >
+                  ◀
+                </button>
+
+                {/* Page Numbers */}
+                {getPageNumbers().map((p, idx) => {
+                  if (p === '...') {
+                    return (
+                      <span key={`dots-${idx}`} className="w-10 h-10 flex items-center justify-center font-bold text-[var(--muted)]">
+                        ...
+                      </span>
+                    );
+                  }
+
+                  const isCurrent = p === currentPage;
+                  return (
+                    <button
+                      key={`page-${p}`}
+                      disabled={loading}
+                      onClick={() => {
+                        setCurrentPage(p as number);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className={`w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold transition-all cursor-pointer ${
+                        isCurrent
+                          ? 'bg-[var(--blue)] text-white shadow-[2px_2px_0_var(--line)]'
+                          : 'bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] hover:bg-[var(--yellow)]/10'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+
+                {/* Next Button */}
+                <button
+                  disabled={currentPage === totalPages || loading}
+                  onClick={() => {
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
+                  title="Trang sau"
+                >
+                  ▶
+                </button>
+              </div>
             </div>
           )}
         </>
