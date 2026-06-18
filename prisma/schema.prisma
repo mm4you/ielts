@@ -22,6 +22,9 @@ model Word {
   updated_at      DateTime  @updatedAt
 
   progress        UserProgress[]
+
+  @@index([word])
+  @@index([topic, level])
 }
 
 model User {
@@ -96,6 +99,7 @@ model UserProgress {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, wordId])
+  @@index([userId, next_review_date])
 }
 
 model DailyActivity {
