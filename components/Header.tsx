@@ -64,15 +64,22 @@ export default function Header() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm font-bold text-[var(--ink)] hover:text-[var(--blue)] transition-colors uppercase tracking-wide"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`text-sm font-bold transition-colors uppercase tracking-wide ${
+                    isActive 
+                      ? 'text-[var(--green)] font-extrabold' 
+                      : 'text-[var(--ink)] hover:text-[var(--blue)]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             <ThemeToggle />
             {session ? (
               <div className="flex items-center gap-4 border-l-2 border-dashed border-[var(--line)] pl-4">
@@ -151,14 +158,14 @@ export default function Header() {
                   onClick={() => setIsMenuOpen(false)}
                   className={`panel flex items-center gap-4 p-4 transition-all ${
                     isActive 
-                      ? 'border-[var(--blue)] shadow-[4px_4px_0_var(--blue)] bg-[var(--paper)]' 
+                      ? 'border-[var(--green)] shadow-[4px_4px_0_var(--green)] bg-[var(--paper)]' 
                       : 'hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--ink)] bg-[var(--paper)] opacity-90'
                   }`}
                 >
-                  <div className={`${isActive ? 'text-[var(--blue)]' : 'text-[var(--ink)]'}`}>
+                  <div className={`${isActive ? 'text-[var(--green)]' : 'text-[var(--ink)]'}`}>
                     {item.icon}
                   </div>
-                  <span className={`text-lg font-black uppercase tracking-wide ${isActive ? 'text-[var(--blue)]' : 'text-[var(--ink)]'}`}>
+                  <span className={`text-lg font-black uppercase tracking-wide ${isActive ? 'text-[var(--green)]' : 'text-[var(--ink)]'}`}>
                     {item.label}
                   </span>
                 </Link>
