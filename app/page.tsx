@@ -58,7 +58,7 @@ export default async function HomePage() {
               Lò Luyện Từ Vựng Khắc Nghiệt
             </h1>
             <p className="text-[var(--muted)] text-lg max-w-[700px]">
-              Ứng dụng học từ vựng IELTS. Giao diện gọn, tập trung. Luyện từ với hệ thống lặp lại ngắt quãng thông minh.
+              Dự án đang phát triển tích cực. Hãy thử nghiệm và gửi góp ý ở góc dưới màn hình để cùng hoàn thiện lò luyện này nhé!
             </p>
           </div>
         </section>
