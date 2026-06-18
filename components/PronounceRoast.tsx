@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { parseMeaning } from '@/lib/parse';
 
 // Hack for TypeScript to recognize Web Speech API
 declare global {
@@ -31,7 +32,18 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const [isRecording, setIsRecording] = useState(false);
   const [transcribed, setTranscribed] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ score: number; roast: string } | null>(null);
+  const [result, setResult] = useState<{
+    score: number;
+    roast: string;
+    wordDetails?: {
+      word: string;
+      ipa?: string | null;
+      pos?: string | null;
+      meaning_vi: string;
+      example?: string | null;
+      synonyms?: string | null;
+    };
+  } | null>(null);
   const [error, setError] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -520,7 +532,44 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
               </button>
             </div>
           </div>
-          <p className="font-bold text-lg leading-relaxed whitespace-pre-wrap text-[var(--ink)]">{result.roast}</p>
+          <p className="font-bold text-lg leading-relaxed whitespace-pre-wrap text-[var(--ink)] mb-4">{result.roast}</p>
+
+          {/* Đáp án chuẩn của từ */}
+          {result.wordDetails && (
+            <div className="mt-4 pt-4 border-t-2 border-dashed border-[var(--line)] text-left">
+              <span className="inline-block bg-[var(--yellow)] text-[var(--ink)] text-xs font-black px-2.5 py-1 border-2 border-[var(--line)] uppercase tracking-wider mb-3 rotate-[-1.5deg]">
+                🔑 ĐÁP ÁN CHUẨN:
+              </span>
+              <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                <span className="text-2xl font-black uppercase text-[var(--blue)] tracking-wider">{result.wordDetails.word}</span>
+                {result.wordDetails.ipa && (
+                  <span className="text-sm font-bold text-[var(--muted)]">{result.wordDetails.ipa}</span>
+                )}
+                {result.wordDetails.pos && (
+                  <span className="text-xs font-bold bg-[var(--ink)] text-[var(--bg)] px-2 py-0.5 border border-[var(--line)]">
+                    {result.wordDetails.pos}
+                  </span>
+                )}
+              </div>
+              <div className="font-bold text-base text-[var(--ink)] mb-3">
+                <span className="text-[var(--muted)]">Ý nghĩa: </span>
+                {(() => {
+                  const { en, vi } = parseMeaning(result.wordDetails.meaning_vi, result.wordDetails.pos);
+                  return (
+                    <span>
+                      {vi} {en && <span className="text-xs font-bold text-[var(--muted)] block sm:inline sm:ml-2 italic font-normal">({en})</span>}
+                    </span>
+                  );
+                })()}
+              </div>
+              {result.wordDetails.example && (
+                <div className="bg-[var(--bg)] p-3 border-2 border-[var(--line)] text-sm font-medium text-[var(--ink)] italic shadow-[2px_2px_0_var(--line)]">
+                  <span className="font-bold not-italic text-[var(--muted)] block mb-1 text-xs uppercase tracking-wide">Ví dụ:</span>
+                  "{result.wordDetails.example}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
