@@ -400,12 +400,6 @@ export default function CollectionsPage() {
                       {selectedCollection.description}
                     </p>
                   )}
-                  <button
-                    onClick={() => openModal('edit', selectedCollection)}
-                    className="mt-2 text-xs font-mono font-bold text-[var(--blue)] hover:underline flex items-center gap-1 cursor-pointer select-none"
-                  >
-                    [ Sửa tên & Chế độ riêng tư ]
-                  </button>
                 </div>
                 
                 {/* Mode indicators inside details panel */}
