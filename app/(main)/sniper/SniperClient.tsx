@@ -33,6 +33,9 @@ interface Explosion {
 
 export default function SniperClient({ collectionId }: { collectionId?: string }) {
   const router = useRouter();
+  const exitRoute = collectionId ? '/collections' : '/';
+  const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
+  
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
@@ -181,7 +184,14 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
   if (gameState === 'setup') {
     return (
       <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)] relative">
+          <button
+            onClick={() => router.push(exitRoute)}
+            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+            title={exitLabel}
+          >
+            X
+          </button>
           <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[var(--ink)]">Thiện Xạ</h2>
           <p className="text-xl font-black mb-8">Bắn Hạ Từ Vựng</p>
           
@@ -219,8 +229,8 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
           <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--blue)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
             {loading ? 'ĐANG TẢI...' : 'VÀO TRƯỜNG BẮN'}
           </button>
-          <button onClick={() => router.push('/')} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            Về Trang Chủ
+          <button onClick={() => router.push(exitRoute)} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
+            {exitLabel}
           </button>
         </div>
       </div>
@@ -230,7 +240,14 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
   if (gameState === 'gameover') {
     return (
       <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--red)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--red)] relative">
+          <button
+            onClick={() => router.push(exitRoute)}
+            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+            title={exitLabel}
+          >
+            X
+          </button>
           <h2 className="text-5xl font-serif font-black uppercase mb-4 text-[var(--red)]">TỬ TRẬN</h2>
           <p className="text-2xl font-black mb-4">Điểm thiện xạ:</p>
           <div className="text-7xl font-black text-[var(--ink)] mb-6">{score}</div>
@@ -256,8 +273,8 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
           <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4 shadow-[4px_4px_0_var(--ink)] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
             {loading ? 'ĐANG TẢI...' : 'CHƠI LẠI'}
           </button>
-          <button onClick={() => router.push('/')} className="w-full btn-brutal bg-[var(--paper)] text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
-            Về trang chủ
+          <button onClick={() => router.push(exitRoute)} className="w-full btn-brutal bg-[var(--paper)] text-[var(--ink)] py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
+            {exitLabel}
           </button>
         </div>
       </div>
@@ -285,8 +302,8 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
           ))}
         </div>
         <button 
-          onClick={() => setGameState('setup')} 
-          className="w-10 h-10 md:w-12 md:h-12 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 pointer-events-auto"
+          onClick={() => router.push(exitRoute)} 
+          className="w-10 h-10 md:w-12 md:h-12 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 pointer-events-auto cursor-pointer"
           title="Thoát game"
         >
           X

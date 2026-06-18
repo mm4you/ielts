@@ -25,6 +25,8 @@ function ReviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const collectionId = searchParams.get('collectionId');
+  const exitRoute = collectionId ? '/collections' : '/';
+  const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
   
   const [words, setWords] = useState<ReviewWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -86,7 +88,7 @@ function ReviewContent() {
       setCurrentIndex(currentIndex + 1);
       setShowMeaning(false);
     } else {
-      router.push('/');
+      router.push(exitRoute);
     }
   };
 
@@ -107,7 +109,14 @@ function ReviewContent() {
   if (gameState === 'setup') {
     return (
       <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center">
+        <div className="panel max-w-md w-full text-center relative border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)]">
+          <button 
+            onClick={() => router.push(exitRoute)} 
+            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm"
+            title={exitLabel}
+          >
+            X
+          </button>
           <h2 className="text-3xl font-serif font-black uppercase mb-4">Ôn Tập Từ Vựng</h2>
           <p className="text-[var(--muted)] font-bold mb-8">Bạn muốn ôn tập từ vựng ở mức độ nào?</p>
           
@@ -137,8 +146,8 @@ function ReviewContent() {
           <button onClick={fetchWords} className="w-full btn-brutal bg-[var(--green)] text-white py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
             Bắt đầu ôn tập
           </button>
-          <button onClick={() => router.push('/')} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            Về Trang Chủ
+          <button onClick={() => router.push(exitRoute)} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
+            {exitLabel}
           </button>
         </div>
       </div>
@@ -155,12 +164,24 @@ function ReviewContent() {
 
   if (!words || words.length === 0) {
     return (
-      <div className="panel text-center py-20 max-w-2xl mx-auto mt-10">
+      <div className="panel text-center py-20 max-w-2xl mx-auto mt-10 relative border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)]">
+        <button 
+          onClick={() => router.push(exitRoute)} 
+          className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm"
+          title={exitLabel}
+        >
+          X
+        </button>
         <h2 className="text-3xl font-serif mb-4">Bạn chưa đăng nhập hoặc đã học xong!</h2>
         <p className="text-[var(--muted)] mb-8 font-bold">Vui lòng đăng nhập để theo dõi tiến trình học, hoặc khám phá thêm từ vựng mới trong Thư viện.</p>
-        <button onClick={() => router.push('/library')} className="btn-brutal bg-[var(--yellow)]">
-          Khám phá thư viện
-        </button>
+        <div className="flex gap-4 justify-center">
+          <button onClick={() => router.push('/library')} className="btn-brutal bg-[var(--yellow)]">
+            Khám phá thư viện
+          </button>
+          <button onClick={() => router.push(exitRoute)} className="btn-brutal bg-[var(--paper)]">
+            {exitLabel}
+          </button>
+        </div>
       </div>
     );
   }
@@ -176,9 +197,9 @@ function ReviewContent() {
           <span>{Math.round(progress)}%</span>
         </div>
         <button 
-          onClick={() => setGameState('setup')} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0"
-          title="Dừng ôn tập"
+          onClick={() => router.push(exitRoute)} 
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
+          title="Thoát"
         >
           X
         </button>

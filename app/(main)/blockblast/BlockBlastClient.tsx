@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { parseMeaning } from '@/lib/parse';
 import { LEVELS } from '@/types';
 import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
@@ -150,6 +150,11 @@ interface Question {
 
 export default function BlockBlastClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const collectionId = searchParams.get('collectionId');
+  const exitRoute = collectionId ? '/collections' : '/';
+  const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
+
   const [board, setBoard] = useState<Board>(Array(8).fill(0).map(() => Array(8).fill(0)));
   const [shapes, setShapes] = useState<(Shape | null)[]>([]);
   
@@ -355,7 +360,14 @@ export default function BlockBlastClient() {
   if (gameState === 'setup') {
     return (
       <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)] relative">
+          <button
+            onClick={() => router.push(exitRoute)}
+            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+            title={exitLabel}
+          >
+            X
+          </button>
           <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[#8b5cf6]">Block Blast</h2>
           <p className="text-xl font-black mb-4 md:mb-8 text-[var(--ink)]">Xếp Hình Sinh Tồn</p>
           
@@ -389,8 +401,8 @@ export default function BlockBlastClient() {
           <button onClick={startGame} className="w-full btn-brutal bg-[#8b5cf6] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4">
             VÀO XẾP HÌNH
           </button>
-          <button onClick={() => router.push('/')} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            Về Trang Chủ
+          <button onClick={() => router.push(exitRoute)} className="block mt-4 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
+            {exitLabel}
           </button>
         </div>
       </div>
@@ -412,8 +424,8 @@ export default function BlockBlastClient() {
           )}
         </div>
         <button 
-          onClick={() => setGameState('setup')} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0"
+          onClick={() => router.push(exitRoute)} 
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
           title="Thoát game"
         >
           X
@@ -477,7 +489,14 @@ export default function BlockBlastClient() {
 
         {/* Game Over Overlay */}
         {gameState === 'gameover' && (
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl relative">
+            <button
+              onClick={() => router.push(exitRoute)}
+              className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+              title={exitLabel}
+            >
+              X
+            </button>
             <h2 className="text-5xl font-serif font-black text-[var(--red)] mb-4">GAME OVER</h2>
             <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] rounded-xl mb-6 text-center w-full max-w-[200px] shadow-[4px_4px_0_var(--ink)]">
               <span className="block text-sm font-bold text-[var(--muted)] uppercase">Điểm của bạn</span>
@@ -492,7 +511,9 @@ export default function BlockBlastClient() {
             >
               Chơi Lại
             </button>
-            <button onClick={() => router.push('/')} className="btn-brutal bg-[var(--paper)] w-full text-[var(--ink)]">Về Trang Chủ</button>
+            <button onClick={() => router.push(exitRoute)} className="btn-brutal bg-[var(--paper)] w-full text-[var(--ink)]">
+              {exitLabel}
+            </button>
           </div>
         )}
       </div>

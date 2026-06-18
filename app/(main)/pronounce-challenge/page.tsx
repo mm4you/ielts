@@ -1,11 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import PronounceRoast from './PronounceRoast';
 
 export default function RoastDemoPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20 px-4">
+        <div className="panel max-w-md w-full text-center animate-pulse">
+          <p className="text-xl font-bold">Đang tải thử thách phát âm...</p>
+        </div>
+      </div>
+    }>
+      <RoastDemoContent />
+    </Suspense>
+  );
+}
+
+function RoastDemoContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const collectionId = searchParams.get('collectionId');
+  const exitRoute = collectionId ? '/collections' : '/';
+  const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
+
   const [wordData, setWordData] = useState<{ id: number; word: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState('ALL');
@@ -45,9 +64,9 @@ export default function RoastDemoPage() {
           <span className="bg-[var(--yellow)] text-[var(--ink)] text-sm px-2 py-1 border-2 border-[var(--line)] rotate-[-5deg]">BETA</span>
         </h1>
         <button 
-          onClick={() => router.push('/')} 
+          onClick={() => router.push(exitRoute)} 
           className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base"
-          title="Thoát"
+          title={exitLabel}
         >
           X
         </button>

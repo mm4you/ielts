@@ -31,6 +31,8 @@ function MatchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const collectionId = searchParams.get('collectionId');
+  const exitRoute = collectionId ? '/collections' : '/';
+  const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
   
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
@@ -128,7 +130,14 @@ function MatchContent() {
   if (gameState === 'setup') {
     return (
       <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--blue)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--blue)] relative">
+          <button
+            onClick={() => router.push(exitRoute)}
+            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+            title={exitLabel}
+          >
+            X
+          </button>
           <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[var(--blue)]">Lật Thẻ</h2>
           <p className="text-xl font-black mb-8">Trò chơi Trí Nhớ</p>
           
@@ -153,8 +162,8 @@ function MatchContent() {
           <button onClick={startGame} className="w-full btn-brutal bg-[var(--blue)] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)]">
             CHIẾN NGAY 🔥
           </button>
-          <button onClick={() => router.push('/')} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
-            Về Trang Chủ
+          <button onClick={() => router.push(exitRoute)} className="block mt-6 text-center text-[var(--muted)] font-bold hover:text-[var(--ink)] underline w-full uppercase text-sm transition-colors">
+            {exitLabel}
           </button>
         </div>
       </div>
@@ -164,7 +173,14 @@ function MatchContent() {
   if (gameState === 'gameover') {
     return (
       <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
+        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)] relative">
+          <button
+            onClick={() => router.push(exitRoute)}
+            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+            title={exitLabel}
+          >
+            X
+          </button>
           <h2 className="text-5xl font-serif font-black uppercase mb-4 text-[var(--blue)]">Chiến Thắng!</h2>
           <p className="text-2xl font-black mb-4">Số lượt lật của bạn:</p>
           <div className="text-7xl font-black text-[var(--green)] mb-6">{moves}</div>
@@ -187,8 +203,8 @@ function MatchContent() {
           <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4">
             Chơi lại
           </button>
-          <button onClick={() => router.push('/')} className="w-full btn-brutal bg-[var(--paper)] text-[var(--ink)] py-4 text-xl uppercase">
-            Về trang chủ
+          <button onClick={() => router.push(exitRoute)} className="w-full btn-brutal bg-[var(--paper)] text-[var(--ink)] py-4 text-xl uppercase">
+            {exitLabel}
           </button>
         </div>
       </div>
@@ -210,8 +226,8 @@ function MatchContent() {
           {matchedIndices.length / 2} / 6 Cặp
         </div>
         <button 
-          onClick={() => setGameState('setup')} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2"
+          onClick={() => router.push(exitRoute)} 
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 cursor-pointer"
           title="Thoát game"
         >
           X
