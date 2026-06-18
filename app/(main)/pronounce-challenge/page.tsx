@@ -41,7 +41,7 @@ export default function RoastDemoPage() {
     <div className="container mx-auto p-4 sm:p-8 max-w-2xl text-[var(--ink)]">
       <div className="flex items-center justify-between mb-6 border-b-4 border-[var(--line)] pb-2">
         <h1 className="text-2xl sm:text-3xl font-black uppercase flex items-center gap-3">
-          🎙️ THỬ THÁCH PHÁT ÂM
+          THỬ THÁCH PHÁT ÂM
           <span className="bg-[var(--yellow)] text-[var(--ink)] text-sm px-2 py-1 border-2 border-[var(--line)] rotate-[-5deg]">BETA</span>
         </h1>
         <button 

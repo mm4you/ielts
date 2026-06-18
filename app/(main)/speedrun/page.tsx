@@ -149,11 +149,11 @@ function SpeedrunContent() {
           <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
             <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
             <ul className="font-bold text-sm space-y-2">
-              <li>⏱️ Khởi đầu với 45 giây.</li>
-              <li>🔥 Chế độ Sinh Tồn: Bắn không giới hạn từ.</li>
-              <li>✅ Trả lời đúng: <span className="text-[var(--green)]">+2 giây</span>, +10 điểm.</li>
-              <li>❌ Trả lời sai: <span className="text-[var(--red)]">-3 giây</span>.</li>
-              <li>💀 Hết giờ = GAME OVER.</li>
+              <li>Khởi đầu với 45 giây.</li>
+              <li>Chế độ Sinh Tồn: Bắn không giới hạn từ.</li>
+              <li>Trả lời đúng: <span className="text-[var(--green)]">+2 giây</span>, +10 điểm.</li>
+              <li>Trả lời sai: <span className="text-[var(--red)]">-3 giây</span>.</li>
+              <li>Hết giờ = GAME OVER.</li>
             </ul>
           </div>
 

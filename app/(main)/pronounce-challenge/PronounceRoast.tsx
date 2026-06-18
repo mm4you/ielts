@@ -431,7 +431,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   return (
     <div className="mt-8 border-4 border-[var(--line)] p-6 bg-[var(--paper)] shadow-[8px_8px_0_var(--line)] relative">
       <div className="absolute -top-4 -left-4 bg-[var(--ink)] text-[var(--bg)] px-3 py-1 font-black border-2 border-[var(--line)] rotate-[-3deg]">
-        🎙️ CHẤM ĐIỂM PHÁT ÂM <span className="text-xs text-[var(--red)] ml-2">BETA</span>
+        CHẤM ĐIỂM PHÁT ÂM <span className="text-xs text-[var(--red)] ml-2">BETA</span>
       </div>
 
       <div className="text-center mb-6 pt-4 relative">

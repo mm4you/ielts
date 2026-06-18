@@ -171,11 +171,11 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
           <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
             <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
             <ul className="font-bold text-sm space-y-2">
-              <li>🎯 Nghĩa Tiếng Việt sẽ hiện ở dưới.</li>
-              <li>🔫 Tìm và BẮN đúng từ Tiếng Anh đang bay lượn trên màn hình.</li>
-              <li>❌ Bắn sai: Mất 1 mạng.</li>
-              <li>⚠️ Để mục tiêu xổng mất: Mất 1 mạng.</li>
-              <li>❤️ Bạn có 3 mạng. Hết mạng = GAME OVER.</li>
+              <li>Nghĩa Tiếng Việt sẽ hiện ở dưới.</li>
+              <li>Tìm và BẮN đúng từ Tiếng Anh đang bay lượn trên màn hình.</li>
+              <li>Bắn sai: Mất 1 mạng.</li>
+              <li>Để mục tiêu xổng mất: Mất 1 mạng.</li>
+              <li>Bạn có 3 mạng. Hết mạng = GAME OVER.</li>
             </ul>
           </div>
 
@@ -241,11 +241,12 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
         <div className="panel py-2 px-3 md:px-4 bg-[var(--paper)] text-xl md:text-2xl font-black text-[var(--ink)] flex-1">
           ĐIỂM: <span className="text-[var(--blue)]">{score}</span>
         </div>
-        <div className="flex gap-1 md:gap-2">
+        <div className="panel py-2 px-3 md:px-4 bg-[var(--paper)] text-xs md:text-sm font-mono font-black text-[var(--ink)] flex-none shadow-[2px_2px_0_var(--line)] flex items-center h-full">
+          MẠNG:&nbsp;
           {[...Array(3)].map((_, i) => (
-            <div key={i} className={`text-2xl md:text-3xl ${i < lives ? 'text-[var(--red)] drop-shadow-md' : 'text-gray-400 opacity-50'} transition-all`}>
-              ❤️
-            </div>
+            <span key={i} className={i < lives ? 'text-[var(--red)] font-black text-sm md:text-base mr-0.5' : 'text-gray-300 text-sm md:text-base mr-0.5'}>
+              X
+            </span>
           ))}
         </div>
         <button 

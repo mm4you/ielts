@@ -368,11 +368,11 @@ export default function BlockBlastClient() {
           <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
             <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
             <ul className="font-bold text-sm space-y-2">
-              <li>🧩 Kéo thả gạch vào bàn cờ để ăn điểm.</li>
-              <li>⚡ Xếp xong 3 khối gạch sẽ phải trả lời từ vựng.</li>
-              <li>✅ Trả lời đúng: Được cấp gạch mới.</li>
-              <li>❌ Trả lời sai: Bị rớt "gạch chết" không thể xóa.</li>
-              <li>💀 Không còn chỗ xếp gạch = GAME OVER.</li>
+              <li>Kéo thả gạch vào bàn cờ để ăn điểm.</li>
+              <li>Xếp xong 3 khối gạch sẽ phải trả lời từ vựng.</li>
+              <li>Trả lời đúng: Được cấp gạch mới.</li>
+              <li>Trả lời sai: Bị rớt "gạch chết" không thể xóa.</li>
+              <li>Không còn chỗ xếp gạch = GAME OVER.</li>
             </ul>
           </div>
 

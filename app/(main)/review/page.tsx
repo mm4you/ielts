@@ -231,8 +231,8 @@ function ReviewContent() {
             })()}
           </div>
         ) : (
-          <div className="absolute bottom-8 text-[var(--muted)] font-bold text-lg animate-pulse flex items-center gap-2">
-            <span>👆</span> Bấm vào thẻ để xem nghĩa
+          <div className="absolute bottom-8 text-[var(--muted)] font-bold text-lg animate-pulse">
+            Bấm vào thẻ để xem nghĩa
           </div>
         )}
       </div>

@@ -297,7 +297,7 @@ export default function LoginWall() {
         {/* Success / Error Message */}
         {error && (
           <div className="bg-[var(--red)] text-white border-2 border-black p-3 font-mono font-bold text-xs shadow-[2px_2px_0_#000] mb-4 text-left rounded">
-            ⚠️ {error}
+            {error}
           </div>
         )}
         {successMsg && (
@@ -487,7 +487,7 @@ export default function LoginWall() {
               <form onSubmit={handleForgotVerifyCode} className="flex flex-col gap-4">
                 {isDevMode && (
                   <div className="bg-amber-100 text-amber-950 border-2 border-amber-400 p-3 font-mono text-xs rounded shadow-[2px_2px_0_rgba(251,191,36,0.3)]">
-                    💡 <strong>Dev Mode:</strong> Mã xác minh cho {email} là: <strong className="text-sm bg-amber-200 px-2 py-0.5 rounded border border-amber-400">{devCode}</strong> (mã này cũng được ghi vào tệp log).
+                    <strong>Dev Mode:</strong> Mã xác minh cho {email} là: <strong className="text-sm bg-amber-200 px-2 py-0.5 rounded border border-amber-400">{devCode}</strong> (mã này cũng được ghi vào tệp log).
                   </div>
                 )}
                 <div className="flex flex-col gap-1">
