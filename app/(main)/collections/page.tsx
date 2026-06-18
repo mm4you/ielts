@@ -401,7 +401,7 @@ export default function CollectionsPage() {
                     href={`/review?collectionId=${selectedCollection.id}`}
                     className="btn-brutal bg-[var(--blue)] text-white text-xs px-3 py-1.5 font-bold uppercase shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5"
                   >
-                    Luyện SRS
+                    Ôn tập
                   </Link>
                   <Link
                     href={`/speedrun?collectionId=${selectedCollection.id}`}
