@@ -40,15 +40,21 @@ export async function GET(request: Request) {
 
   // Fallback if no words due, just for testing/demo purposes
   if (words.length === 0) {
-    const rawWords = await prisma.word.findMany({
-      where: {
-        ...(level && level !== 'all' ? { level } : {}),
-        ...(collectionId ? { collections: { some: { collectionId } } } : {})
-      }
+    const fallbackWhere = {
+      ...(level && level !== 'all' ? { level } : {}),
+      ...(collectionId ? { collections: { some: { collectionId } } } : {})
+    };
+
+    const totalFallbackCount = await prisma.word.count({ where: fallbackWhere });
+    const skip = totalFallbackCount > limit ? Math.floor(Math.random() * (totalFallbackCount - limit)) : 0;
+
+    const selected = await prisma.word.findMany({
+      where: fallbackWhere,
+      skip,
+      take: limit,
     });
     
-    const shuffled = rawWords.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, limit);
+    const shuffled = selected.sort(() => 0.5 - Math.random());
 
     words = selected.map(w => ({
       ...w,

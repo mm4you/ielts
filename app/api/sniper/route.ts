@@ -19,14 +19,22 @@ export async function GET(request: Request) {
       };
     }
 
-    const words = await prisma.word.findMany(queryArgs);
-    
-    if (!words || words.length === 0) {
+    const totalCount = await prisma.word.count({ where: queryArgs.where });
+    if (totalCount === 0) {
       return NextResponse.json({ error: 'No words found' }, { status: 404 });
     }
 
-    // Pick 50 random questions
-    const shuffledWords = words.sort(() => 0.5 - Math.random()).slice(0, 50);
+    const take = 50;
+    const skip = totalCount > take ? Math.floor(Math.random() * (totalCount - take)) : 0;
+
+    const words = await prisma.word.findMany({
+      ...queryArgs,
+      skip,
+      take,
+    });
+
+    // Shuffle words to pick 50 random questions
+    const shuffledWords = words.sort(() => 0.5 - Math.random());
     const allEnglishWords = words.map(w => w.word);
 
     const questions = shuffledWords.map(word => {
