@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description: 'Bắn Hạ Từ Vựng',
 };
 
-export default function SniperPage() {
-  return <SniperClient />;
+export default async function SniperPage({ searchParams }: { searchParams: Promise<{ collectionId?: string }> }) {
+  const resolvedParams = await searchParams;
+  return <SniperClient collectionId={resolvedParams.collectionId} />;
 }

@@ -1,17 +1,22 @@
 import Link from 'next/link';
 import { Word } from '@/types';
 import { parseMeaning } from '@/lib/parse';
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 export default function Card({ word }: { word: Word }) {
   return (
-    <Link href={`/word/${word.id}`} className="block panel hover:-translate-y-1 transition-transform cursor-pointer h-full flex flex-col group">
-      <div className="flex items-start justify-between mb-4">
+    <div className="block panel hover:-translate-y-1 transition-transform h-full flex flex-col group relative">
+      <Link href={`/word/${word.id}`} className="absolute inset-0 z-0"></Link>
+      <div className="flex items-start justify-between mb-4 relative z-10">
         <div>
-          <h3 className="text-xl font-bold font-serif group-hover:text-[var(--blue)] transition-colors">{word.word}</h3>
+          <Link href={`/word/${word.id}`} className="block">
+            <h3 className="text-xl font-bold font-serif group-hover:text-[var(--blue)] transition-colors">{word.word}</h3>
+          </Link>
           {word.ipa && (
             <span className="text-sm text-[var(--muted)]">{word.ipa}</span>
           )}
         </div>
+        <SaveToCollection wordId={word.id} />
       </div>
       
       {(() => {
@@ -39,6 +44,6 @@ export default function Card({ word }: { word: Word }) {
         <span className="chip bg-[var(--yellow)] text-[#111827]">{word.level}</span>
         <span className="chip">{word.topic}</span>
       </div>
-    </Link>
+    </div>
   );
 }

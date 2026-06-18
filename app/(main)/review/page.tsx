@@ -1,13 +1,31 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ReviewWord, ReviewRating, RATING_LABELS, LEVELS } from '@/types';
 import { calculateSRS } from '@/lib/srs';
 import { parseMeaning } from '@/lib/parse';
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 export default function ReviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20 px-4">
+        <div className="panel max-w-md w-full text-center">
+          <p className="text-xl font-bold animate-pulse">Đang tải cấu hình ôn tập...</p>
+        </div>
+      </div>
+    }>
+      <ReviewContent />
+    </Suspense>
+  );
+}
+
+function ReviewContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const collectionId = searchParams.get('collectionId');
+  
   const [words, setWords] = useState<ReviewWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMeaning, setShowMeaning] = useState(false);
@@ -20,7 +38,8 @@ export default function ReviewPage() {
     setLoading(true);
     setGameState('playing');
     try {
-      const res = await fetch(`/api/review?level=${selectedLevel}&limit=${selectedLimit}`);
+      const collectionParam = collectionId ? `&collectionId=${collectionId}` : '';
+      const res = await fetch(`/api/review?level=${selectedLevel}&limit=${selectedLimit}${collectionParam}`);
       const data = await res.json();
       if (res.status === 401 || data.error) {
         setWords([]);
@@ -32,7 +51,7 @@ export default function ReviewPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedLevel, selectedLimit]);
+  }, [selectedLevel, selectedLimit, collectionId]);
 
   const handleRating = async (rating: ReviewRating) => {
     const word = words[currentIndex];
@@ -165,6 +184,9 @@ export default function ReviewPage() {
         <div className="absolute top-4 left-4 flex gap-2">
           <span className="chip bg-[var(--yellow)]">{currentWord.level}</span>
           <span className="chip">{currentWord.topic}</span>
+        </div>
+        <div className="absolute top-4 right-4">
+          <SaveToCollection wordId={currentWord.id} />
         </div>
         
         <h2 className={`text-4xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 ${showMeaning ? 'mt-8' : ''}`}>

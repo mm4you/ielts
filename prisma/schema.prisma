@@ -22,6 +22,7 @@ model Word {
   updated_at      DateTime  @updatedAt
 
   progress        UserProgress[]
+  collections     CollectionWord[]
 
   @@index([word])
   @@index([topic, level])
@@ -39,6 +40,7 @@ model User {
   sessions      Session[]
   progress      UserProgress[]
   dailyActivity DailyActivity[]
+  collections   Collection[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,4 +113,30 @@ model DailyActivity {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  isPublic    Boolean          @default(false)
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  words       CollectionWord[]
+  
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([userId])
+}
+
+model CollectionWord {
+  collectionId String
+  wordId       Int
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  word         Word       @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime   @default(now())
+
+  @@id([collectionId, wordId])
 }

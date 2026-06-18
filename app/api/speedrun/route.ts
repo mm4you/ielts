@@ -7,9 +7,17 @@ export async function GET(request: Request) {
     const level = searchParams.get('level') || 'all';
     
     // Fetch random words
-    const queryArgs: any = {};
+    const collectionId = searchParams.get('collectionId');
+    
+    // Fetch random words
+    const queryArgs: any = { where: {} };
     if (level !== 'all') {
-      queryArgs.where = { level };
+      queryArgs.where.level = level;
+    }
+    if (collectionId) {
+      queryArgs.where.collections = {
+        some: { collectionId }
+      };
     }
 
     const words = await prisma.word.findMany(queryArgs);

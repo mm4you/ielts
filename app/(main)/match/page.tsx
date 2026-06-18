@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Word, LEVELS } from '@/types';
 import { parseMeaning } from '@/lib/parse';
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 interface Card {
   id: string; // unique card id
@@ -13,7 +14,24 @@ interface Card {
 }
 
 export default function MatchPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20 px-4">
+        <div className="panel max-w-md w-full text-center">
+          <p className="text-xl font-bold animate-pulse">Đang tải cấu hình ghép thẻ...</p>
+        </div>
+      </div>
+    }>
+      <MatchContent />
+    </Suspense>
+  );
+}
+
+function MatchContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const collectionId = searchParams.get('collectionId');
+  
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   
@@ -22,12 +40,15 @@ export default function MatchPage() {
   const [matchedIndices, setMatchedIndices] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
+  const [playedWords, setPlayedWords] = useState<Word[]>([]);
 
   const fetchAndSetupCards = async () => {
     try {
-      const res = await fetch(`/api/match?level=${selectedLevel}`);
+      const collectionParam = collectionId ? `&collectionId=${collectionId}` : '';
+      const res = await fetch(`/api/match?level=${selectedLevel}${collectionParam}`);
       const data: Word[] = await res.json();
       if (data.length > 0) {
+        setPlayedWords(data);
         const generatedCards: Card[] = [];
         data.forEach(word => {
           const { en, vi } = parseMeaning(word.meaning_vi, word.pos);
@@ -146,7 +167,22 @@ export default function MatchPage() {
         <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)]">
           <h2 className="text-5xl font-serif font-black uppercase mb-4 text-[var(--blue)]">Chiến Thắng!</h2>
           <p className="text-2xl font-black mb-4">Số lượt lật của bạn:</p>
-          <div className="text-7xl font-black text-[var(--green)] mb-8">{moves}</div>
+          <div className="text-7xl font-black text-[var(--green)] mb-6">{moves}</div>
+
+          <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
+            <h3 className="font-black text-sm mb-2 border-b-2 border-dashed border-[var(--line)] pb-2 uppercase text-[var(--blue)]">Các từ đã ghép cặp:</h3>
+            <ul className="space-y-2">
+              {playedWords.map(w => {
+                const { en, vi } = parseMeaning(w.meaning_vi, w.pos);
+                return (
+                  <li key={w.id} className="flex justify-between items-center border-b border-gray-100 last:border-b-0 pb-1 text-xs">
+                    <span className="font-bold text-[var(--ink)]">{w.word} ({vi || en})</span>
+                    <SaveToCollection wordId={w.id} />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
           
           <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase mb-4">
             Chơi lại

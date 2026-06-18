@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { LEVELS } from '@/types';
 import { parseMeaning } from '@/lib/parse';
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 interface Question {
   id: number;
@@ -14,7 +15,24 @@ interface Question {
 }
 
 export default function SpeedrunPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20 px-4">
+        <div className="panel max-w-md w-full text-center">
+          <p className="text-xl font-bold animate-pulse">Đang tải cấu hình tốc chiến...</p>
+        </div>
+      </div>
+    }>
+      <SpeedrunContent />
+    </Suspense>
+  );
+}
+
+function SpeedrunContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const collectionId = searchParams.get('collectionId');
+  
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   
@@ -33,7 +51,8 @@ export default function SpeedrunPage() {
 
   const fetchQuestions = async () => {
     try {
-      const res = await fetch(`/api/speedrun?level=${selectedLevel}`);
+      const collectionParam = collectionId ? `&collectionId=${collectionId}` : '';
+      const res = await fetch(`/api/speedrun?level=${selectedLevel}${collectionParam}`);
       const data = await res.json();
       if (!data.error) {
         setQuestions(data);
@@ -213,6 +232,9 @@ export default function SpeedrunPage() {
       <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
         <div className="absolute top-4 left-4">
           <span className="chip bg-[var(--blue)] text-white">{currentIndex + 1} / {questions.length}</span>
+        </div>
+        <div className="absolute top-4 right-4">
+          <SaveToCollection wordId={currentQ.id} />
         </div>
         <h2 id="speedrun-target-word" className={`text-4xl md:text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full transition-all duration-200 ${
           explosions.length > 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100'

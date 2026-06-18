@@ -7,6 +7,8 @@ import RecentWordTracker from './RecentWordTracker';
 import { parseMeaning } from '@/lib/parse';
 import WordPronounceChallenge from './WordPronounceChallenge';
 
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
+
 async function getWordAndProgress(id: string) {
   const session = await auth();
   const word = await prisma.word.findUnique({
@@ -55,7 +57,10 @@ export default async function WordDetailPage({
       <div className="card">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h1 className="text-4xl font-bold">{word.word}</h1>
+            <div className="flex gap-3 items-center flex-wrap">
+              <h1 className="text-4xl font-bold">{word.word}</h1>
+              <SaveToCollection wordId={word.id} />
+            </div>
             {word.ipa && <p className="text-xl text-[var(--muted)] mt-1">{word.ipa}</p>}
           </div>
           <span className="px-3 py-1 bg-[var(--primary)] text-white rounded-full text-sm font-medium">

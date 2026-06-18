@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { LEVELS } from '@/types';
 import { parseMeaning } from '@/lib/parse';
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 interface Question {
   id: number;
@@ -30,7 +31,7 @@ interface Explosion {
   color: string;
 }
 
-export default function SniperClient() {
+export default function SniperClient({ collectionId }: { collectionId?: string }) {
   const router = useRouter();
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -48,7 +49,8 @@ export default function SniperClient() {
 
   const fetchQuestions = async () => {
     try {
-      const res = await fetch(`/api/sniper?level=${selectedLevel}`);
+      const collectionParam = collectionId ? `&collectionId=${collectionId}` : '';
+      const res = await fetch(`/api/sniper?level=${selectedLevel}${collectionParam}`);
       const data = await res.json();
       if (!data.error) {
         setQuestions(data);
@@ -313,7 +315,10 @@ export default function SniperClient() {
                   const { en, vi } = parseMeaning(currentQ.targetMeaning, currentQ.pos || '');
                   return (
                     <div className="flex flex-col items-center justify-center gap-1">
-                      <span className="leading-tight">{en}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="leading-tight">{en}</span>
+                        <SaveToCollection wordId={currentQ.id} />
+                      </div>
                       {vi && <span className="text-sm md:text-xl font-bold text-[var(--muted)]">{vi}</span>}
                     </div>
                   );

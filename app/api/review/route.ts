@@ -10,6 +10,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const level = searchParams.get('level');
+  const collectionId = searchParams.get('collectionId');
   const limitParam = searchParams.get('limit');
   const limit = limitParam ? parseInt(limitParam, 10) : 50;
 
@@ -21,7 +22,8 @@ export async function GET(request: Request) {
       userId,
       next_review_date: { lte: today },
       repetition_count: { gt: 0 },
-      ...(level && level !== 'all' ? { word: { level } } : {})
+      ...(level && level !== 'all' ? { word: { level } } : {}),
+      ...(collectionId ? { word: { collections: { some: { collectionId } } } } : {})
     },
     orderBy: { next_review_date: 'asc' },
     take: limit,
@@ -40,7 +42,8 @@ export async function GET(request: Request) {
   if (words.length === 0) {
     const rawWords = await prisma.word.findMany({
       where: {
-        ...(level && level !== 'all' ? { level } : {})
+        ...(level && level !== 'all' ? { level } : {}),
+        ...(collectionId ? { collections: { some: { collectionId } } } : {})
       }
     });
     

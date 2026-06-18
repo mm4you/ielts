@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { parseMeaning } from '@/lib/parse';
+import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 // Hack for TypeScript to recognize Web Speech API
 declare global {
@@ -437,6 +438,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         <p className="font-bold text-[var(--muted)] mb-2">Hãy đọc to từ này vào Mic:</p>
         <div className="flex items-center justify-center gap-3">
           <h3 className="text-4xl font-black text-[var(--red)] uppercase tracking-widest">{wordText}</h3>
+          <SaveToCollection wordId={wordId} />
           <button 
             onClick={() => {
               if (typeof window !== 'undefined' && window.speechSynthesis) {
