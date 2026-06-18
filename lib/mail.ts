@@ -25,16 +25,26 @@ export async function sendResetPasswordEmail(email: string, code: string) {
     const mailOptions = {
       from: smtpFrom,
       to: email,
-      subject: 'Mã xác minh đặt lại mật khẩu - IELTS Vocab',
-      text: `Mã xác minh của bạn là: ${code}. Mã này có hiệu lực trong vòng 15 phút.`,
+      subject: 'Reset Password Verification Code - IELTS Vocab',
+      text: `Mã xác minh đặt lại mật khẩu của bạn là: ${code} (Hiệu lực 15 phút).\nYour password reset verification code is: ${code} (Valid for 15 minutes).`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 3px solid #111827; border-radius: 12px; background-color: #fffdf8; box-shadow: 6px 6px 0 #111827;">
           <h2 style="font-family: serif; color: #111827; border-bottom: 2px dashed #111827; padding-bottom: 10px; margin-top: 0;">IELTS Vocab Studio</h2>
-          <p style="font-size: 16px; color: #1f2937;">Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng sử dụng mã xác minh dưới đây để hoàn tất quá trình:</p>
+          <p style="font-size: 15px; color: #1f2937; margin-bottom: 6px; font-weight: bold;">
+            Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng sử dụng mã xác minh dưới đây để hoàn tất:
+          </p>
+          <p style="font-size: 14px; color: #5b6474; margin-top: 0; font-style: italic; margin-bottom: 20px;">
+            You requested a password reset. Please use the verification code below to complete the process:
+          </p>
           <div style="background-color: #0ea5e9; color: white; font-family: monospace; font-size: 32px; font-weight: bold; text-align: center; padding: 15px; border: 3px solid #111827; border-radius: 8px; margin: 20px 0; letter-spacing: 5px; box-shadow: 4px 4px 0 #111827;">
             ${code}
           </div>
-          <p style="font-size: 13px; color: #5b6474;">Mã xác minh này có hiệu lực trong vòng <strong>15 phút</strong>. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+          <p style="font-size: 12px; color: #5b6474; margin-bottom: 4px; margin-top: 20px;">
+            Mã xác minh này có hiệu lực trong vòng <strong>15 phút</strong>. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email.
+          </p>
+          <p style="font-size: 11px; color: #9ca3af; margin-top: 0; font-style: italic;">
+            This verification code is valid for 15 minutes. If you did not request this, please ignore this email.
+          </p>
         </div>
       `,
     };
