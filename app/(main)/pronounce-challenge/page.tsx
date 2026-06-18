@@ -65,7 +65,7 @@ export default function RoastDemoPage() {
           disabled={loading}
           className={`btn-brutal w-full sm:w-auto px-8 py-3 text-xl font-black ${loading ? 'bg-[var(--muted)] text-[var(--paper)]' : 'bg-[var(--blue)] text-[var(--bg)] hover:brightness-110'}`}
         >
-          {loading ? '⏳ Đang xoay ru-lét...' : '🎲 ĐỔI TỪ KHÁC'}
+          {loading ? '⏳ Đang xoay ru-lét...' : 'ĐỔI TỪ KHÁC'}
         </button>
         {errorMsg && <p className="text-red-500 font-bold mt-4">{errorMsg}</p>}
       </div>
