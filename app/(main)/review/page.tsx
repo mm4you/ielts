@@ -239,7 +239,7 @@ function ReviewContent() {
       {showMeaning && (
         <div className="w-full flex flex-col gap-3 mt-4 md:mt-8 animate-fade-in shrink-0">
           <p className="text-center text-[10px] md:text-xs font-mono font-black uppercase text-[var(--muted)]">
-            💡 Chọn mức độ ghi nhớ của bạn để thuật toán xếp lịch học tiếp theo:
+            Chọn mức độ ghi nhớ của bạn để thuật toán xếp lịch học tiếp theo:
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">

@@ -311,7 +311,7 @@ export default function CollectionsPage() {
                         <span className={`font-mono text-[9px] px-2 py-0.5 rounded border border-[var(--line)] ${
                           col.isPublic ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
                         }`}>
-                          {col.isPublic ? '🌐 Công khai' : '🔒 Riêng tư'}
+                          {col.isPublic ? 'Công khai' : 'Riêng tư'}
                         </span>
                       </div>
                       
@@ -490,7 +490,7 @@ export default function CollectionsPage() {
             </div>
           ) : (
             <div className="panel bg-[var(--paper)] p-12 border-2 border-dashed border-[var(--line)] text-center text-[var(--muted)] font-bold shadow-[4px_4px_0_var(--line)]">
-              💡 Chọn một bộ sưu tập ở cột bên trái để hiển thị danh sách từ vựng chi tiết và bắt đầu ôn luyện.
+              Chọn một bộ sưu tập ở cột bên trái để hiển thị danh sách từ vựng chi tiết và bắt đầu ôn luyện.
             </div>
           )}
         </div>
@@ -550,13 +550,13 @@ export default function CollectionsPage() {
                   className="w-4 h-4 border-2 border-[var(--line)] rounded accent-[var(--blue)] cursor-pointer"
                 />
                 <label htmlFor="isPublic" className="text-xs font-bold font-mono text-[var(--ink)] cursor-pointer select-none">
-                  🌐 Công khai bộ sưu tập này cho người khác xem
+                  Công khai bộ sưu tập này cho người khác xem
                 </label>
               </div>
 
               {formError && (
                 <p className="text-xs font-mono font-bold text-[var(--red)] py-1">
-                  ⚠ {formError}
+                  {formError}
                 </p>
               )}
 
