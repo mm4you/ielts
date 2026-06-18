@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 export default function LoginWall() {
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
-  const [forgotStep, setForgotStep] = useState<1 | 2>(1);
+  const [forgotStep, setForgotStep] = useState<1 | 2 | 3>(1);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,6 +14,9 @@ export default function LoginWall() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [devCode, setDevCode] = useState('');
+  const [isDevMode, setIsDevMode] = useState(false);
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -117,29 +120,73 @@ export default function LoginWall() {
     }
 
     setError('');
+    setSuccessMsg('');
     setLoading(true);
 
     try {
       const res = await fetch('/api/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify', email }),
+        body: JSON.stringify({ action: 'send_code', email }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Xác thực email thất bại.');
+        setError(data.error || 'Gửi mã xác minh thất bại.');
         setLoading(false);
         return;
       }
 
       setForgotStep(2);
-      setSuccessMsg(`Xác thực thành công cho tài khoản ${data.name || ''}. Vui lòng nhập mật khẩu mới.`);
+      if (data.devMode) {
+        setIsDevMode(true);
+        setDevCode(data.code || '');
+      } else {
+        setIsDevMode(false);
+        setDevCode('');
+      }
+      setSuccessMsg('Mã xác minh đã được gửi thành công đến email của bạn.');
       setLoading(false);
     } catch (err) {
       console.error(err);
-      setError('Có lỗi xảy ra khi xác thực email.');
+      setError('Có lỗi xảy ra khi gửi mã xác minh.');
+      setLoading(false);
+    }
+  };
+
+  const handleForgotVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code) {
+      setError('Vui lòng nhập mã xác minh.');
+      return;
+    }
+
+    setError('');
+    setSuccessMsg('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify_code', email, code }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Xác nhận mã thất bại.');
+        setLoading(false);
+        return;
+      }
+
+      setForgotStep(3);
+      setSuccessMsg('Xác nhận mã thành công! Vui lòng nhập mật khẩu mới.');
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError('Có lỗi xảy ra khi xác nhận mã.');
       setLoading(false);
     }
   };
@@ -162,13 +209,14 @@ export default function LoginWall() {
     }
 
     setError('');
+    setSuccessMsg('');
     setLoading(true);
 
     try {
       const res = await fetch('/api/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'reset', email, password: newPassword }),
+        body: JSON.stringify({ action: 'reset_password', email, code, password: newPassword }),
       });
 
       const data = await res.json();
@@ -184,6 +232,8 @@ export default function LoginWall() {
       setNewPassword('');
       setConfirmNewPassword('');
       setPassword('');
+      setCode('');
+      setForgotStep(1);
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -396,11 +446,8 @@ export default function LoginWall() {
 
         {mode === 'forgot' && (
           <div className="flex flex-col gap-4">
-            {forgotStep === 1 ? (
+            {forgotStep === 1 && (
               <form onSubmit={handleForgotVerify} className="flex flex-col gap-4">
-                <div className="bg-amber-100 text-amber-900 border-2 border-amber-400 p-3 font-mono text-xs rounded shadow-[2px_2px_0_rgba(251,191,36,0.3)]">
-                  💡 <strong>Chế độ thử nghiệm:</strong> Chỉ cần nhập Email của tài khoản, hệ thống sẽ xác minh trực tiếp để bạn đổi mật khẩu ngay lập tức.
-                </div>
                 <div className="flex flex-col gap-1">
                   <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
                     Nhập Email đã đăng ký
@@ -435,11 +482,61 @@ export default function LoginWall() {
                       loading ? 'opacity-50' : ''
                     }`}
                   >
-                    {loading ? 'Đang xác minh...' : 'Tiếp tục'}
+                    {loading ? 'Đang gửi...' : 'Gửi mã'}
                   </button>
                 </div>
               </form>
-            ) : (
+            )}
+
+            {forgotStep === 2 && (
+              <form onSubmit={handleForgotVerifyCode} className="flex flex-col gap-4">
+                {isDevMode && (
+                  <div className="bg-amber-100 text-amber-950 border-2 border-amber-400 p-3 font-mono text-xs rounded shadow-[2px_2px_0_rgba(251,191,36,0.3)]">
+                    💡 <strong>Dev Mode:</strong> Mã xác minh cho {email} là: <strong className="text-sm bg-amber-200 px-2 py-0.5 rounded border border-amber-400">{devCode}</strong> (mã này cũng được ghi vào tệp log).
+                  </div>
+                )}
+                <div className="flex flex-col gap-1">
+                  <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+                    Nhập mã xác minh (6 chữ số)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    disabled={loading}
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="123456"
+                    className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all text-center tracking-widest text-lg font-black"
+                  />
+                </div>
+
+                <div className="flex gap-3 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotStep(1);
+                      setError('');
+                      setSuccessMsg('');
+                    }}
+                    className="btn-brutal bg-white text-[var(--ink)] py-3 font-mono font-bold text-sm uppercase rounded flex-1 text-center border-4 border-black"
+                  >
+                    Quay lại
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`btn-brutal bg-[var(--blue)] text-white py-3 font-mono font-bold text-sm uppercase rounded flex-[2] text-center border-4 border-black ${
+                      loading ? 'opacity-50' : ''
+                    }`}
+                  >
+                    {loading ? 'Đang xác nhận...' : 'Xác nhận mã'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {forgotStep === 3 && (
               <form onSubmit={handleForgotReset} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
@@ -475,7 +572,7 @@ export default function LoginWall() {
                   <button
                     type="button"
                     onClick={() => {
-                      setForgotStep(1);
+                      setForgotStep(2);
                       setError('');
                       setSuccessMsg('');
                     }}
