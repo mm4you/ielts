@@ -177,7 +177,7 @@ function MatchContent() {
                 return (
                   <li key={w.id} className="flex justify-between items-center border-b border-gray-100 last:border-b-0 pb-1 text-xs">
                     <span className="font-bold text-[var(--ink)]">{w.word} ({vi || en})</span>
-                    <SaveToCollection wordId={w.id} />
+                    <SaveToCollection wordId={w.id} wordText={w.word} />
                   </li>
                 );
               })}

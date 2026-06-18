@@ -16,7 +16,7 @@ export default function Card({ word }: { word: Word }) {
             <span className="text-sm text-[var(--muted)]">{word.ipa}</span>
           )}
         </div>
-        <SaveToCollection wordId={word.id} />
+        <SaveToCollection wordId={word.id} wordText={word.word} />
       </div>
       
       {(() => {

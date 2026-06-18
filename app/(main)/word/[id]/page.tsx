@@ -59,7 +59,7 @@ export default async function WordDetailPage({
           <div>
             <div className="flex gap-3 items-center flex-wrap">
               <h1 className="text-4xl font-bold">{word.word}</h1>
-              <SaveToCollection wordId={word.id} />
+              <SaveToCollection wordId={word.id} wordText={word.word} />
             </div>
             {word.ipa && <p className="text-xl text-[var(--muted)] mt-1">{word.ipa}</p>}
           </div>

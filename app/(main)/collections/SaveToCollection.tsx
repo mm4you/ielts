@@ -4,18 +4,26 @@ import { useState, useEffect } from 'react';
 
 interface SaveToCollectionProps {
   wordId: number;
+  wordText?: string;
   className?: string;
   onSaveStatusChange?: (saved: boolean) => void;
 }
 
+interface Toast {
+  show: boolean;
+  message: string;
+  isSaved: boolean;
+}
+
 export default function SaveToCollection({
   wordId,
+  wordText = '',
   className = '',
   onSaveStatusChange,
 }: SaveToCollectionProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
+  const [toast, setToast] = useState<Toast | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -38,6 +46,16 @@ export default function SaveToCollection({
     };
   }, [wordId]);
 
+  // Toast Auto-Dismiss
+  useEffect(() => {
+    if (toast?.show) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   const handleToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -57,13 +75,15 @@ export default function SaveToCollection({
         if (onSaveStatusChange) {
           onSaveStatusChange(nextSaved);
         }
-        if (nextSaved) {
-          setMessage(`Lưu: ${data.collection?.name || 'Sổ tay'}`);
-        } else {
-          setMessage(`Bỏ lưu: ${data.collection?.name || 'Sổ tay'}`);
-        }
-        // Auto clear message after 1.5 seconds
-        setTimeout(() => setMessage(''), 1500);
+
+        // Trigger toast notification at the right corner of the screen
+        setToast({
+          show: true,
+          message: nextSaved 
+            ? `Đã lưu thành công: "${wordText || 'từ vựng'}"` 
+            : `Đã gỡ thành công: "${wordText || 'từ vựng'}"`,
+          isSaved: nextSaved
+        });
       }
     } catch (e) {
       console.error(e);
@@ -72,7 +92,7 @@ export default function SaveToCollection({
     }
   };
 
-  if (loading && !message) {
+  if (loading && !toast) {
     return (
       <span className={`text-[10px] font-mono opacity-50 select-none ${className}`}>
         [ ... ]
@@ -81,24 +101,52 @@ export default function SaveToCollection({
   }
 
   return (
-    <span className={`inline-flex items-center gap-1.5 ${className}`}>
-      <button
-        type="button"
-        onClick={handleToggle}
-        disabled={loading}
-        className={`text-[10px] md:text-xs font-mono font-bold px-2 py-0.5 rounded border border-[var(--line)] transition-all cursor-pointer select-none ${
-          isSaved
-            ? 'bg-[var(--blue)] text-white hover:brightness-110 shadow-[1px_1px_0_var(--line)]'
-            : 'bg-white hover:bg-gray-50 text-[var(--ink)] shadow-[1px_1px_0_var(--line)]'
-        }`}
-      >
-        {isSaved ? 'Đã lưu' : 'Lưu'}
-      </button>
-      {message && (
-        <span className="text-[9px] md:text-[10px] font-mono text-[var(--blue)] font-bold animate-pulse whitespace-nowrap">
-          {message}
-        </span>
+    <>
+      {/* Stylesheet injected for toast animations */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes slideInRight {
+          from {
+            transform: translateX(120%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .animate-toast-slide {
+          animation: slideInRight 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+      `}} />
+
+      <span className={`inline-flex items-center ${className}`}>
+        <button
+          type="button"
+          onClick={handleToggle}
+          disabled={loading}
+          className={`text-[10px] md:text-xs font-mono font-bold transition-all cursor-pointer select-none hover:scale-105 active:scale-95 ${
+            isSaved
+              ? 'text-[var(--green)] font-black drop-shadow-[0_0_1px_rgba(22,163,74,0.3)]'
+              : 'text-emerald-600/60 hover:text-[var(--green)]'
+          }`}
+        >
+          {isSaved ? '[ ĐÃ LƯU ]' : '[ LƯU ]'}
+        </button>
+      </span>
+
+      {/* Screen Corner Toast Alert */}
+      {toast?.show && (
+        <div 
+          className={`fixed bottom-6 right-6 z-50 py-3 px-5 border-[3px] border-[var(--line)] shadow-[4px_4px_0px_#000] font-mono text-sm font-bold uppercase flex items-center gap-3 rounded-xl animate-toast-slide ${
+            toast.isSaved 
+              ? 'bg-[var(--green)] text-white' 
+              : 'bg-[var(--red)] text-white'
+          }`}
+        >
+          <span className="text-base">{toast.isSaved ? '✅' : '🗑️'}</span>
+          <span>{toast.message}</span>
+        </div>
       )}
-    </span>
+    </>
   );
 }

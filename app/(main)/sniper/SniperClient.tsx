@@ -317,7 +317,7 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
                     <div className="flex flex-col items-center justify-center gap-1">
                       <div className="flex items-center gap-2">
                         <span className="leading-tight">{en}</span>
-                        <SaveToCollection wordId={currentQ.id} />
+                        <SaveToCollection wordId={currentQ.id} wordText={currentQ.choices[currentQ.correctIndex]} />
                       </div>
                       {vi && <span className="text-sm md:text-xl font-bold text-[var(--muted)]">{vi}</span>}
                     </div>

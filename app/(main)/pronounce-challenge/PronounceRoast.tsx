@@ -438,7 +438,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         <p className="font-bold text-[var(--muted)] mb-2">Hãy đọc to từ này vào Mic:</p>
         <div className="flex items-center justify-center gap-3">
           <h3 className="text-4xl font-black text-[var(--red)] uppercase tracking-widest">{wordText}</h3>
-          <SaveToCollection wordId={wordId} />
+          <SaveToCollection wordId={wordId} wordText={wordText} />
           <button 
             onClick={() => {
               if (typeof window !== 'undefined' && window.speechSynthesis) {

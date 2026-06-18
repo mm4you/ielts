@@ -186,7 +186,7 @@ function ReviewContent() {
           <span className="chip">{currentWord.topic}</span>
         </div>
         <div className="absolute top-4 right-4">
-          <SaveToCollection wordId={currentWord.id} />
+          <SaveToCollection wordId={currentWord.id} wordText={currentWord.word} />
         </div>
         
         <h2 className={`text-4xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 ${showMeaning ? 'mt-8' : ''}`}>

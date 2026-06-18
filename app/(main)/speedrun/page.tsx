@@ -234,7 +234,7 @@ function SpeedrunContent() {
           <span className="chip bg-[var(--blue)] text-white">{currentIndex + 1} / {questions.length}</span>
         </div>
         <div className="absolute top-4 right-4">
-          <SaveToCollection wordId={currentQ.id} />
+          <SaveToCollection wordId={currentQ.id} wordText={currentQ.word} />
         </div>
         <h2 id="speedrun-target-word" className={`text-4xl md:text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full transition-all duration-200 ${
           explosions.length > 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100'
