@@ -325,10 +325,19 @@ export default function LoginWall() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <div className="flex justify-between items-center">
-                <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
-                  Mật khẩu
-                </label>
+              <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+                Mật khẩu
+              </label>
+              <input
+                type="password"
+                required
+                disabled={loading}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="******"
+                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+              />
+              <div className="text-right mt-1">
                 <button
                   type="button"
                   onClick={() => {
@@ -342,15 +351,6 @@ export default function LoginWall() {
                   Quên mật khẩu?
                 </button>
               </div>
-              <input
-                type="password"
-                required
-                disabled={loading}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="******"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
-              />
             </div>
 
             <button
