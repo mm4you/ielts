@@ -11,8 +11,18 @@ export async function POST(req: Request) {
 
     const { limit = 10 } = await req.json().catch(() => ({ limit: 10 }));
     
-    // Check if API Key exists
-    const apiKey = process.env.NVIDIA_API_KEY;
+    // Check if API Key exists with filesystem fallback
+    let apiKey = process.env.NVIDIA_API_KEY;
+    if (!apiKey) {
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const envFile = fs.readFileSync(path.join(process.cwd(), '.env'), 'utf-8');
+        const match = envFile.match(/NVIDIA_API_KEY="?([^"\n]+)"?/);
+        if (match) apiKey = match[1];
+      } catch (e) {}
+    }
+
     if (!apiKey) {
       return NextResponse.json({ error: 'Chưa cấu hình NVIDIA_API_KEY trong file .env' }, { status: 400 });
     }
@@ -33,59 +43,86 @@ export async function POST(req: Request) {
     }
 
     let successCount = 0;
+    const batchSize = 5;
 
-    // Process each word with Gemini API
-    for (const word of wordsToImprove) {
-      // Extract the English part from the old meaning
-      const enMeaning = word.meaning_vi.split('|||')[0].trim();
-      
-      const prompt = `
-        Bạn là một giáo viên chuyên dạy IELTS. Hãy giải thích và dịch từ vựng tiếng Anh sau sang tiếng Việt một cách tự nhiên, ngắn gọn và dễ hiểu nhất cho học sinh Việt Nam. 
-        Từ vựng: "${word.word}"
-        Loại từ: ${word.pos || 'Không xác định'}
-        Ngữ cảnh/Nghĩa tiếng Anh gốc: "${enMeaning}"
-        
-        Yêu cầu Format bắt buộc (Chỉ trả về đúng format này, không giải thích gì thêm):
-        [Nghĩa Tiếng Anh gốc] /// [Nghĩa Tiếng Việt tự nhiên]
-        
-        Ví dụ: a system of wires or radio waves /// một hệ thống sử dụng sóng vô tuyến hoặc dây cáp
-      `;
+    // Process words in parallel batches to prevent timeouts
+    for (let i = 0; i < wordsToImprove.length; i += batchSize) {
+      const batch = wordsToImprove.slice(i, i + batchSize);
 
-      try {
-        const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: "meta/llama-3.1-8b-instruct", // You can change this to llama3-70b-instruct if you want
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.3
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const aiText = data.choices?.[0]?.message?.content;
+      await Promise.all(
+        batch.map(async (word) => {
+          // Extract the English part from the old meaning
+          const enMeaning = word.meaning_vi.split('|||')[0].trim();
           
-          if (aiText && aiText.includes('///')) {
-            const cleanText = aiText.trim();
+          const prompt = `
+            Bạn là một giáo viên chuyên dạy IELTS. Hãy giải thích và dịch từ vựng tiếng Anh sau sang tiếng Việt một cách tự nhiên, ngắn gọn và dễ hiểu nhất cho học sinh Việt Nam. 
+            Từ vựng: "${word.word}"
+            Loại từ: ${word.pos || 'Không xác định'}
+            Ngữ cảnh/Nghĩa tiếng Anh gốc: "${enMeaning}"
             
-            // Update the word in database
-            await prisma.word.update({
-              where: { id: word.id },
-              data: { meaning_vi: cleanText }
+            Yêu cầu Format bắt buộc (Chỉ trả về đúng format này, không giải thích gì thêm):
+            [Nghĩa Tiếng Anh gốc] /// [Nghĩa Tiếng Việt tự nhiên]
+            
+            Ví dụ: a system of wires or radio waves /// một hệ thống sử dụng sóng vô tuyến hoặc dây cáp
+          `;
+
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout per call
+
+          try {
+            const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+              },
+              body: JSON.stringify({
+                model: "meta/llama-3.1-8b-instruct",
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.3
+              }),
+              signal: controller.signal
             });
-            successCount++;
+
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+              const data = await response.json();
+              const aiText = data.choices?.[0]?.message?.content;
+              
+              if (aiText) {
+                // Loop through lines to find the one containing '///' (handling extra comments or intro)
+                let cleanText = '';
+                const lines = aiText.split('\n');
+                for (const line of lines) {
+                  const trimmedLine = line.trim();
+                  if (trimmedLine.includes('///')) {
+                    cleanText = trimmedLine;
+                    break;
+                  }
+                }
+                
+                if (cleanText) {
+                  // Update the word in database
+                  await prisma.word.update({
+                    where: { id: word.id },
+                    data: { meaning_vi: cleanText }
+                  });
+                  successCount++;
+                }
+              }
+            }
+          } catch (err: any) {
+            clearTimeout(timeoutId);
+            console.error(`Error improving word ${word.word}:`, err.message || err);
           }
-        }
-      } catch (err) {
-        console.error('Error calling NVIDIA NIM for word:', word.word, err);
+        })
+      );
+
+      // Delay between batches to respect free tier rate limits
+      if (i + batchSize < wordsToImprove.length) {
+        await new Promise(resolve => setTimeout(resolve, 800));
       }
-      
-      // Delay to avoid rate limit (free tier)
-      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     return NextResponse.json({ 
