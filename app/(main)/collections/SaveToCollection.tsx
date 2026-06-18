@@ -124,10 +124,10 @@ export default function SaveToCollection({
           type="button"
           onClick={handleToggle}
           disabled={loading}
-          className={`text-[10px] md:text-xs font-mono font-black px-2.5 py-1 rounded border transition-all cursor-pointer select-none hover:scale-102 active:scale-98 ${
+          className={`text-[10px] md:text-xs font-mono font-black px-2.5 py-1 rounded border border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] transition-all cursor-pointer select-none hover:scale-102 active:scale-98 ${
             isSaved
-              ? 'bg-[var(--green)] text-white border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] hover:brightness-105'
-              : 'bg-[var(--paper)] text-[var(--ink)] border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] hover:bg-green-50 hover:text-[var(--green)] hover:border-[var(--green)] hover:shadow-[1.5px_1.5px_0_var(--green)]'
+              ? 'bg-[var(--green)] text-white hover:brightness-105'
+              : 'bg-green-50 text-[var(--green)] hover:bg-green-100'
           }`}
         >
           {isSaved ? 'ĐÃ LƯU' : 'LƯU'}
