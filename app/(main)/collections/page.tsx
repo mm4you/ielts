@@ -296,7 +296,7 @@ export default function CollectionsPage() {
                 return (
                   <div
                     key={col.id}
-                    onClick={() => setSelectedCollection(col)}
+                    onClick={() => setSelectedCollection(prev => prev?.id === col.id ? null : col)}
                     className={`panel p-5 cursor-pointer transition-all border-[3px] border-[var(--line)] flex flex-col justify-between ${
                       isActive
                         ? 'bg-[var(--paper)] shadow-[6px_6px_0_var(--blue)] border-[var(--blue)] -translate-y-1'
@@ -403,7 +403,7 @@ export default function CollectionsPage() {
                 </div>
                 
                 {/* Mode indicators inside details panel */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 items-center">
                   <Link
                     href={`/review?collectionId=${selectedCollection.id}`}
                     className="btn-brutal bg-[var(--blue)] text-white text-xs px-3 py-1.5 font-bold uppercase shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5"
@@ -416,6 +416,13 @@ export default function CollectionsPage() {
                   >
                     Tốc chiến
                   </Link>
+                  <button 
+                    onClick={() => setSelectedCollection(null)} 
+                    className="w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer select-none ml-1"
+                    title="Đóng chi tiết"
+                  >
+                    X
+                  </button>
                 </div>
               </div>
 
