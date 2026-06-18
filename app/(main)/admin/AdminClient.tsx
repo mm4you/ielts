@@ -511,8 +511,66 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                         </div>
                       </div>
 
-                      {!isAdmin && (
-                        <div className="mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex justify-end">
+                      {user.email !== 'ungnhutkhang53@gmail.com' && (
+                        <div className="mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex gap-2">
+                          <button 
+                            onClick={async () => {
+                              const newRole = user.role === 'admin' ? 'user' : 'admin';
+                              const confirmMsg = newRole === 'admin' 
+                                ? `Bạn có chắc muốn cấp quyền ADMIN cho học viên ${user.name || user.email}?` 
+                                : `Bạn có chắc muốn hạ quyền quản trị của ${user.name || user.email} xuống học viên thường không?`;
+                              if (confirm(confirmMsg)) {
+                                try {
+                                  const res = await fetch(`/api/users/${user.id}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ role: newRole })
+                                  });
+                                  if (res.ok) {
+                                    alert('Cập nhật vai trò thành công!');
+                                    window.location.reload();
+                                  } else {
+                                    const data = await res.json();
+                                    alert(data.error || 'Cập nhật thất bại.');
+                                  }
+                                } catch (e) {
+                                  alert('Có lỗi xảy ra.');
+                                }
+                              }
+                            }}
+                            className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-[10px] py-1.5 px-2 font-bold flex-1 shadow-[2px_2px_0_var(--line)] cursor-pointer"
+                          >
+                            {user.role === 'admin' ? 'Hạ quyền' : 'Lên Admin'}
+                          </button>
+                          <button 
+                            onClick={async () => {
+                              const newPass = prompt(`Nhập mật khẩu mới cho ${user.name || user.email}:`, "123456");
+                              if (newPass) {
+                                if (newPass.length < 6) {
+                                  alert('Mật khẩu phải chứa ít nhất 6 ký tự.');
+                                  return;
+                                }
+                                try {
+                                  const res = await fetch(`/api/users/${user.id}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ password: newPass })
+                                  });
+                                  if (res.ok) {
+                                    alert('Đặt lại mật khẩu thành công!');
+                                  } else {
+                                    const data = await res.json();
+                                    alert(data.error || 'Lỗi khi đặt lại mật khẩu.');
+                                  }
+                                } catch (e) {
+                                  alert('Có lỗi xảy ra.');
+                                }
+                              }
+                            }}
+                            className="btn-brutal bg-[var(--blue)] text-white text-[10px] py-1.5 px-2 font-bold flex-1 shadow-[2px_2px_0_var(--line)] cursor-pointer"
+                          >
+                            Đổi Pass
+                          </button>
                           <button 
                             onClick={async () => {
                               if (confirm(`Bạn có chắc muốn xóa học viên ${user.name || user.email}? Hành động này không thể hoàn tác!`)) {
@@ -528,9 +586,9 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                 }
                               }
                             }}
-                            className="btn-brutal bg-[var(--red)] text-white text-xs py-1.5 px-4 font-bold w-full shadow-[2px_2px_0_var(--line)]"
+                            className="btn-brutal bg-[var(--red)] text-white text-[10px] py-1.5 px-2 font-bold shadow-[2px_2px_0_var(--line)] cursor-pointer"
                           >
-                            Xóa học viên
+                            Xóa
                           </button>
                         </div>
                       )}
