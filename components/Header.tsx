@@ -72,7 +72,7 @@ export default function Header() {
                   href={item.href}
                   className={`text-sm font-bold transition-colors uppercase tracking-wide ${
                     isActive 
-                      ? 'text-[var(--green)] font-extrabold' 
+                      ? 'text-[var(--blue)] font-extrabold' 
                       : 'text-[var(--ink)] hover:text-[var(--blue)]'
                   }`}
                 >
@@ -158,14 +158,14 @@ export default function Header() {
                   onClick={() => setIsMenuOpen(false)}
                   className={`panel flex items-center gap-4 p-4 transition-all ${
                     isActive 
-                      ? 'border-[var(--green)] shadow-[4px_4px_0_var(--green)] bg-[var(--paper)]' 
+                      ? 'border-[var(--blue)] shadow-[4px_4px_0_var(--blue)] bg-[var(--paper)]' 
                       : 'hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--ink)] bg-[var(--paper)] opacity-90'
                   }`}
                 >
-                  <div className={`${isActive ? 'text-[var(--green)]' : 'text-[var(--ink)]'}`}>
+                  <div className={`${isActive ? 'text-[var(--blue)]' : 'text-[var(--ink)]'}`}>
                     {item.icon}
                   </div>
-                  <span className={`text-lg font-black uppercase tracking-wide ${isActive ? 'text-[var(--green)]' : 'text-[var(--ink)]'}`}>
+                  <span className={`text-lg font-black uppercase tracking-wide ${isActive ? 'text-[var(--blue)]' : 'text-[var(--ink)]'}`}>
                     {item.label}
                   </span>
                 </Link>

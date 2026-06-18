@@ -223,13 +223,13 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
       <div className="flex gap-4 mb-8 border-b-4 border-[var(--line)]">
         <button 
           onClick={() => setActiveTab('words')}
-          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'words' ? 'border-[var(--green)] text-[var(--green)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
+          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'words' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
         >
           Quản Lý Từ Vựng ({words.length})
         </button>
         <button 
           onClick={() => setActiveTab('users')}
-          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'users' ? 'border-[var(--green)] text-[var(--green)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
+          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'users' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
         >
           Học Viên ({users.length})
         </button>
