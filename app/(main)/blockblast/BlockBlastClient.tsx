@@ -494,7 +494,7 @@ export default function BlockBlastClient() {
       </div>
 
       {/* Shapes tray */}
-      <div className="w-full flex justify-between items-center gap-2 h-32 shrink-0 touch-none">
+      <div className="w-full h-32 panel flex justify-between items-center gap-4 shrink-0 touch-none p-3 bg-[var(--paper)]">
         {shapes.map((shape, idx) => {
           const isDraggingThis = dragState?.trayIdx === idx;
           return (
@@ -514,8 +514,8 @@ export default function BlockBlastClient() {
                   });
                 }
               }}
-              className={`flex-1 h-full panel flex items-center justify-center p-2 transition-transform ${
-                !shape ? 'opacity-20 pointer-events-none' : 'cursor-grab active:cursor-grabbing hover:-translate-y-1'
+              className={`flex-1 h-full border-2 border-dashed border-[var(--line)]/20 rounded-xl flex items-center justify-center p-2 transition-transform bg-[var(--bg)] ${
+                !shape ? 'opacity-20 pointer-events-none' : 'cursor-grab active:cursor-grabbing hover:-translate-y-0.5'
               } ${isDraggingThis ? 'opacity-0' : ''}`}
             >
               {shape && (
