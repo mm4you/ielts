@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { showToast } from '@/components/GlobalToast';
 
 interface SaveToCollectionProps {
   wordId: number;
@@ -16,11 +17,6 @@ interface Collection {
   isPublic: boolean;
 }
 
-interface Toast {
-  show: boolean;
-  message: string;
-  isSaved: boolean;
-}
 
 export default function SaveToCollection({
   wordId,
@@ -30,7 +26,6 @@ export default function SaveToCollection({
 }: SaveToCollectionProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<Toast | null>(null);
 
   // Dropdown States
   const [showDropdown, setShowDropdown] = useState(false);
@@ -62,15 +57,7 @@ export default function SaveToCollection({
     };
   }, [wordId]);
 
-  // Toast Auto-Dismiss
-  useEffect(() => {
-    if (toast?.show) {
-      const timer = setTimeout(() => {
-        setToast(null);
-      }, 2500);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
+
 
   const fetchCollections = async () => {
     setLoadingCollections(true);
@@ -122,13 +109,12 @@ export default function SaveToCollection({
       });
       const data = await res.json();
       if (res.ok) {
-        setToast({
-          show: true,
-          message: data.added 
+        showToast(
+          data.added 
             ? `Đã thêm vào: "${data.collection?.name || 'sổ tay'}"` 
             : `Đã gỡ khỏi: "${data.collection?.name || 'sổ tay'}"`,
-          isSaved: data.added
-        });
+          data.added
+        );
         
         const newIds = data.added 
           ? [...savedCollectionIds.filter(id => id !== collectionId), collectionId]
@@ -178,11 +164,7 @@ export default function SaveToCollection({
         if (onSaveStatusChange) {
           onSaveStatusChange(true);
         }
-        setToast({
-          show: true,
-          message: `Đã lưu vào bộ mới: "${newCol.name}"`,
-          isSaved: true
-        });
+        showToast(`Đã lưu vào bộ mới: "${newCol.name}"`, true);
       }
     } catch (err) {
       console.error(err);
@@ -192,7 +174,7 @@ export default function SaveToCollection({
     }
   };
 
-  if (loading && !toast) {
+  if (loading) {
     return (
       <span className={`text-[10px] font-mono opacity-50 select-none ${className}`}>
         [ ... ]
@@ -202,22 +184,6 @@ export default function SaveToCollection({
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes slideInRight {
-          from {
-            transform: translateX(120%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        .animate-toast-slide {
-          animation: slideInRight 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-      `}} />
-
       <span className={`inline-flex items-center relative ${className}`}>
         <button
           type="button"
@@ -289,19 +255,6 @@ export default function SaveToCollection({
           </>
         )}
       </span>
-
-      {/* Toast Alert */}
-      {toast?.show && (
-        <div 
-          className={`fixed bottom-6 right-6 z-50 py-3 px-5 border-[3px] border-[var(--line)] shadow-[4px_4px_0px_#000] font-mono text-sm font-bold uppercase flex items-center gap-3 rounded-xl animate-toast-slide ${
-            toast.isSaved 
-              ? 'bg-[var(--green)] text-white' 
-              : 'bg-[var(--red)] text-white'
-          }`}
-        >
-          <span>{toast.message}</span>
-        </div>
-      )}
     </>
   );
 }
