@@ -88,7 +88,7 @@ export default async function HomePage() {
             </p>
             <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
               <span className="font-bold text-lg text-[var(--green)] text-center min-[380px]:text-left">
-                {collectionsCount} sổ tay — {savedWordsCount} từ
+                {collectionsCount} sổ tay / {savedWordsCount} từ
               </span>
               <Link href="/collections" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
                 Quản lý bộ
