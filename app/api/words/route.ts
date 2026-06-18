@@ -7,25 +7,51 @@ export async function GET(request: NextRequest) {
   const topic = searchParams.get('topic') || '';
   const level = searchParams.get('level') || '';
 
-  const where: Record<string, string> = {};
-  if (search) where.word = { contains: search, mode: 'insensitive' } as unknown as string;
+  const where: any = {};
+  if (search) where.word = { contains: search, mode: 'insensitive' };
   if (topic) where.topic = topic;
   if (level) where.level = level;
 
+  // Pagination parameters
+  const pageParam = searchParams.get('page');
   const limitParam = searchParams.get('limit');
-  let limit = 100;
-  if (limitParam) {
-    const parsedLimit = parseInt(limitParam, 10);
-    if (!isNaN(parsedLimit) && parsedLimit > 0) {
-      limit = Math.min(parsedLimit, 100);
+
+  let page = 1;
+  if (pageParam) {
+    const parsedPage = parseInt(pageParam, 10);
+    if (!isNaN(parsedPage) && parsedPage > 0) {
+      page = parsedPage;
     }
   }
 
-  const words = await prisma.word.findMany({
-    where,
-    orderBy: { word: 'asc' },
-    take: limit,
-  });
+  let limit = 30; // Default limit 30
+  if (limitParam) {
+    const parsedLimit = parseInt(limitParam, 10);
+    if (!isNaN(parsedLimit) && parsedLimit > 0) {
+      limit = Math.min(parsedLimit, 100); // Max limit 100
+    }
+  }
 
-  return NextResponse.json(words);
+  const skip = (page - 1) * limit;
+
+  // Run total count query and items query in parallel
+  const [totalCount, words] = await Promise.all([
+    prisma.word.count({ where }),
+    prisma.word.findMany({
+      where,
+      orderBy: { word: 'asc' },
+      skip,
+      take: limit,
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return NextResponse.json({
+    words,
+    totalCount,
+    totalPages,
+    currentPage: page,
+    limit,
+  });
 }

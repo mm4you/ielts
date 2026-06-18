@@ -30,7 +30,13 @@ export async function GET(request: Request) {
     // Tạo file tạm trong thư mục /tmp (được Vercel hỗ trợ cho serverless)
     const tmpFilePath = path.join('/tmp', `tts_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.mp3`);
     
-    await tts.ttsPromise(text, tmpFilePath);
+    // Set a timeout of 2.5 seconds for EdgeTTS to prevent API hang
+    const ttsPromise = tts.ttsPromise(text, tmpFilePath);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('EdgeTTS Timeout')), 2500)
+    );
+
+    await Promise.race([ttsPromise, timeoutPromise]);
 
     const buffer = fs.readFileSync(tmpFilePath);
 
