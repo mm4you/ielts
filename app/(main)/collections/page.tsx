@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { parseMeaning } from '@/lib/parse';
 
 interface Collection {
@@ -28,9 +28,14 @@ interface Word {
   topic: string;
 }
 
-export default function CollectionsPage() {
+function CollectionsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const initialCollectionId = searchParams.get('collectionId') || '';
+  const initialQ = searchParams.get('q') || '';
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loadingCollections, setLoadingCollections] = useState(true);
@@ -38,7 +43,7 @@ export default function CollectionsPage() {
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [words, setWords] = useState<Word[]>([]);
   const [loadingWords, setLoadingWords] = useState(false);
-  const [wordSearchQuery, setWordSearchQuery] = useState('');
+  const [wordSearchQuery, setWordSearchQuery] = useState(initialQ);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,6 +92,28 @@ export default function CollectionsPage() {
       fetchCollections();
     }
   }, [session, fetchCollections]);
+
+  // Sync selected collection from URL on initial load
+  useEffect(() => {
+    if (collections.length > 0 && initialCollectionId) {
+      const found = collections.find(c => c.id === initialCollectionId);
+      if (found) {
+        setSelectedCollection(found);
+      }
+    }
+  }, [collections, initialCollectionId]);
+
+  // Sync state changes back to URL query parameters
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCollection) {
+      params.set('collectionId', selectedCollection.id);
+    }
+    if (wordSearchQuery) {
+      params.set('q', wordSearchQuery);
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [selectedCollection, wordSearchQuery, router, pathname]);
 
   useEffect(() => {
     if (selectedCollection) {
@@ -588,5 +615,17 @@ export default function CollectionsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CollectionsPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+        <p className="text-xl font-bold font-mono animate-pulse text-[var(--ink)]">[ ĐANG TẢI DỮ LIỆU... ]</p>
+      </div>
+    }>
+      <CollectionsContent />
+    </Suspense>
   );
 }

@@ -1,18 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import Card from '@/components/Card';
 import RecentWordsList from './RecentWordsList';
 
-export default function LibraryPage() {
+function LibraryContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const initialPage = parseInt(searchParams.get('page') || '1', 10);
+  const initialSearch = searchParams.get('search') || '';
+  const initialTopic = searchParams.get('topic') || '';
+  const initialLevel = searchParams.get('level') || '';
+
   const [words, setWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState('');
+  const [search, setSearch] = useState(initialSearch);
+  const [selectedTopic, setSelectedTopic] = useState(initialTopic);
+  const [selectedLevel, setSelectedLevel] = useState(initialLevel);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -44,11 +54,18 @@ export default function LibraryPage() {
     return pages;
   };
 
+  // Sync state changes to URL query parameters
   useEffect(() => {
-    // Reset to page 1 whenever filters change
-    setCurrentPage(1);
-  }, [search, selectedTopic, selectedLevel]);
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (selectedTopic) params.set('topic', selectedTopic);
+    if (selectedLevel) params.set('level', selectedLevel);
+    if (currentPage > 1) params.set('page', currentPage.toString());
 
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [search, selectedTopic, selectedLevel, currentPage, router, pathname]);
+
+  // Fetch words based on filters & pagination
   useEffect(() => {
     const fetchWords = async () => {
       setLoading(true);
@@ -96,13 +113,19 @@ export default function LibraryPage() {
           type="text"
           placeholder="Tìm kiếm từ..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
           className="flex-1 px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold"
         />
 
         <select
           value={selectedTopic}
-          onChange={(e) => setSelectedTopic(e.target.value)}
+          onChange={(e) => {
+            setSelectedTopic(e.target.value);
+            setCurrentPage(1);
+          }}
           className="px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold appearance-none cursor-pointer"
         >
           <option value="">Tất cả chủ đề</option>
@@ -115,7 +138,10 @@ export default function LibraryPage() {
 
         <select
           value={selectedLevel}
-          onChange={(e) => setSelectedLevel(e.target.value)}
+          onChange={(e) => {
+            setSelectedLevel(e.target.value);
+            setCurrentPage(1);
+          }}
           className="px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold appearance-none cursor-pointer"
         >
           <option value="">Tất cả mức</option>
@@ -211,5 +237,17 @@ export default function LibraryPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function LibraryPage() {
+  return (
+    <Suspense fallback={
+      <div className="text-center py-20">
+        <p className="text-[var(--muted)] font-bold animate-pulse">Đang tải thư viện...</p>
+      </div>
+    }>
+      <LibraryContent />
+    </Suspense>
   );
 }
