@@ -12,9 +12,19 @@ export async function GET(request: NextRequest) {
   if (topic) where.topic = topic;
   if (level) where.level = level;
 
+  const limitParam = searchParams.get('limit');
+  let limit = 100;
+  if (limitParam) {
+    const parsedLimit = parseInt(limitParam, 10);
+    if (!isNaN(parsedLimit) && parsedLimit > 0) {
+      limit = Math.min(parsedLimit, 100);
+    }
+  }
+
   const words = await prisma.word.findMany({
     where,
     orderBy: { word: 'asc' },
+    take: limit,
   });
 
   return NextResponse.json(words);

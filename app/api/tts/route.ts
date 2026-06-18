@@ -17,6 +17,10 @@ export async function GET(request: Request) {
     return new NextResponse('Missing text parameter', { status: 400 });
   }
 
+  if (text.length > 200) {
+    return new NextResponse('Text parameter exceeds maximum length of 200 characters', { status: 400 });
+  }
+
   try {
     const tts = new EdgeTTS({
       voice: 'vi-VN-HoaiMyNeural', // Giọng Nữ Miền Nam (Hoài My)

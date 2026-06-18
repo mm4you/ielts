@@ -67,6 +67,10 @@ export async function POST(
       return NextResponse.json({ error: 'Missing transcribed text' }, { status: 400 });
     }
 
+    if (transcribedText.length > 150) {
+      return NextResponse.json({ error: 'Transcribed text exceeds maximum length of 150 characters' }, { status: 400 });
+    }
+
     const word = await prisma.word.findUnique({
       where: { id: wordId }
     });
@@ -75,17 +79,7 @@ export async function POST(
       return NextResponse.json({ error: 'Word not found' }, { status: 404 });
     }
 
-    let apiKey = process.env.NVIDIA_API_KEY;
-    if (!apiKey) {
-      try {
-        const fs = require('fs');
-        const path = require('path');
-        const envFile = fs.readFileSync(path.join(process.cwd(), '.env'), 'utf-8');
-        const match = envFile.match(/NVIDIA_API_KEY="?([^"\n]+)"?/);
-        if (match) apiKey = match[1];
-      } catch (e) {}
-    }
-
+    const apiKey = process.env.NVIDIA_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: 'NVIDIA API Key is missing.' }, { status: 500 });
     }

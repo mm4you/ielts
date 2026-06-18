@@ -9,7 +9,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { incrementBy = 1 } = await request.json().catch(() => ({ incrementBy: 1 }));
+    const body = await request.json().catch(() => ({}));
+    const incrementBy = body.incrementBy !== undefined ? Number(body.incrementBy) : 1;
+
+    if (!Number.isInteger(incrementBy) || incrementBy < 1 || incrementBy > 100) {
+      return NextResponse.json({ error: 'Invalid incrementBy value. Must be an integer between 1 and 100.' }, { status: 400 });
+    }
     const userId = session.user.id;
 
     // Normalize date to YYYY-MM-DD string to avoid timezone shifts affecting unique constraint

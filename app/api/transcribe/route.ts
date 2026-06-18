@@ -20,6 +20,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
     }
 
+    if (file.size > 2 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Audio file size exceeds the 2MB limit' }, { status: 400 });
+    }
+
     // Prepare Groq API request
     const groqFormData = new FormData();
     groqFormData.append('file', file, 'audio.webm');
