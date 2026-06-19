@@ -64,8 +64,8 @@ export default async function HomePage() {
         </section>
 
         {/* Phần 1: Học Tập Cốt Lõi */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 pt-4 -mx-4 px-4 scrollbar-none md:grid md:grid-cols-3 md:overflow-x-visible md:snap-none md:gap-6 md:pb-0 md:mx-0 md:px-0">
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--blue)] rounded-bl-full opacity-10"></div>
             <h2 className="text-2xl font-serif font-bold mb-2">Học & Ôn tập</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
@@ -81,7 +81,7 @@ export default async function HomePage() {
             </div>
           </article>
 
-          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--green)] shadow-[8px_8px_0_var(--green)]">
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--green)] shadow-[8px_8px_0_var(--green)] snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green)] rounded-bl-full opacity-10"></div>
             <h2 className="text-2xl font-serif font-bold mb-2 text-[var(--green)]">Bộ Sưu Tập Của Tôi</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
@@ -97,7 +97,7 @@ export default async function HomePage() {
             </div>
           </article>
 
-          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform">
+          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--yellow)] rounded-bl-full opacity-10"></div>
             <h2 className="text-2xl font-serif font-bold mb-2">Thư viện Từ điển</h2>
             <p className="text-[var(--muted)] mb-6 flex-1">
