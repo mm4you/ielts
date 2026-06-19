@@ -79,7 +79,9 @@ export default function Header() {
           <Link href="/" className="text-xl md:text-2xl font-bold font-serif tracking-tight text-[var(--ink)] flex items-center gap-2 group shrink-0">
             <div className="relative w-6 h-6 md:w-8 md:h-8">
               <div className="absolute top-0 left-0 w-4 h-4 md:w-6 md:h-6 bg-[var(--blue)] border-2 border-[var(--line)] rounded-sm md:rounded-md transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1"></div>
-              <div className="absolute bottom-0 right-0 w-4 h-4 md:w-6 md:h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-sm md:rounded-md"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-4 md:w-6 md:h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-sm md:rounded-md flex items-center justify-center">
+                <span className="text-[8px] md:text-[10px] font-black font-serif text-[var(--ink)] leading-none -mt-px">V</span>
+              </div>
             </div>
             <span className="hidden sm:inline group-hover:text-[var(--blue)] transition-colors whitespace-nowrap">IELTS Vocab</span>
           </Link>
