@@ -63,53 +63,58 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Phần 1: Học Tập Cốt Lõi */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 pt-4 -mx-4 px-4 scrollbar-none md:grid md:grid-cols-3 md:overflow-x-visible md:snap-none md:gap-6 md:pb-0 md:mx-0 md:px-0">
-          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--blue)] rounded-bl-full opacity-10"></div>
-            <h2 className="text-2xl font-serif font-bold mb-2">Học & Ôn tập</h2>
-            <p className="text-[var(--muted)] mb-6 flex-1">
-              Ôn tập các từ vựng đến hạn bằng flashcard. Hệ thống tự tính thời điểm lặp lại tối ưu.
-            </p>
-            <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
-              <span className="font-bold text-lg text-center min-[380px]:text-left">
-                {!session ? 'Cần đăng nhập' : (dueWords > 0 ? `${dueWords.toLocaleString('vi-VN')} thẻ cần ôn` : 'Đã ôn xong')}
-              </span>
-              <Link href="/review" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
-                Bắt đầu
-              </Link>
-            </div>
-          </article>
+        {/* Phần 1: Học Tập */}
+        <div className="mt-8">
+          <h2 className="text-2xl md:text-3xl font-serif font-black uppercase text-[var(--ink)] tracking-tight mb-2 border-b-[3px] border-dashed border-[var(--line)] pb-3">
+            Học Tập
+          </h2>
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 pt-4 -mx-4 px-4 scrollbar-none md:grid md:grid-cols-3 md:overflow-x-visible md:snap-none md:gap-6 md:pb-0 md:mx-0 md:px-0">
+            <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--blue)] rounded-bl-full opacity-10"></div>
+              <h2 className="text-2xl font-serif font-bold mb-2">Học & Ôn tập</h2>
+              <p className="text-[var(--muted)] mb-6 flex-1">
+                Ôn tập các từ vựng đến hạn bằng flashcard. Hệ thống tự tính thời điểm lặp lại tối ưu.
+              </p>
+              <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
+                <span className="font-bold text-lg text-center min-[380px]:text-left">
+                  {!session ? 'Cần đăng nhập' : (dueWords > 0 ? `${dueWords.toLocaleString('vi-VN')} thẻ cần ôn` : 'Đã ôn xong')}
+                </span>
+                <Link href="/review" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
+                  Bắt đầu
+                </Link>
+              </div>
+            </article>
 
-          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--green)] shadow-[8px_8px_0_var(--green)] snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green)] rounded-bl-full opacity-10"></div>
-            <h2 className="text-2xl font-serif font-bold mb-2 text-[var(--green)]">Bộ Sưu Tập Của Tôi</h2>
-            <p className="text-[var(--muted)] mb-6 flex-1">
-              Quản lý các danh mục từ vựng cá nhân. Tự tạo sổ tay từ khó, phân loại theo nhóm và luyện tập riêng biệt.
-            </p>
-            <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
-              <span className="font-bold text-lg text-[var(--green)] text-center min-[380px]:text-left">
-                {collectionsCount} sổ tay / {savedWordsCount} từ
-              </span>
-              <Link href="/collections" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
-                Quản lý bộ
-              </Link>
-            </div>
-          </article>
+            <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform border-[var(--green)] shadow-[8px_8px_0_var(--green)] snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green)] rounded-bl-full opacity-10"></div>
+              <h2 className="text-2xl font-serif font-bold mb-2 text-[var(--green)]">Bộ Sưu Tập Của Tôi</h2>
+              <p className="text-[var(--muted)] mb-6 flex-1">
+                Quản lý các danh mục từ vựng cá nhân. Tự tạo sổ tay từ khó, phân loại theo nhóm và luyện tập riêng biệt.
+              </p>
+              <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
+                <span className="font-bold text-lg text-[var(--green)] text-center min-[380px]:text-left">
+                  {collectionsCount} sổ tay / {savedWordsCount} từ
+                </span>
+                <Link href="/collections" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
+                  Quản lý bộ
+                </Link>
+              </div>
+            </article>
 
-          <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--yellow)] rounded-bl-full opacity-10"></div>
-            <h2 className="text-2xl font-serif font-bold mb-2">Thư viện Từ điển</h2>
-            <p className="text-[var(--muted)] mb-6 flex-1">
-              Tra cứu, tìm kiếm danh sách toàn bộ từ vựng theo chủ đề hoặc cấp độ (A1-C2).
-            </p>
-            <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
-              <span className="font-bold text-lg text-center min-[380px]:text-left">Khám phá <span className="text-[var(--blue)]">{totalWords.toLocaleString('vi-VN')}</span> từ</span>
-              <Link href="/library" className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-center w-full min-[380px]:w-auto select-none">
-                Vào thư viện
-              </Link>
-            </div>
-          </article>
+            <article className="panel flex flex-col items-start relative overflow-hidden group hover:-translate-y-1 transition-transform snap-start shrink-0 w-[290px] sm:w-[320px] md:w-auto">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--yellow)] rounded-bl-full opacity-10"></div>
+              <h2 className="text-2xl font-serif font-bold mb-2">Thư viện Từ điển</h2>
+              <p className="text-[var(--muted)] mb-6 flex-1">
+                Tra cứu, tìm kiếm danh sách toàn bộ từ vựng theo chủ đề hoặc cấp độ (A1-C2).
+              </p>
+              <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
+                <span className="font-bold text-lg text-center min-[380px]:text-left">Khám phá <span className="text-[var(--blue)]">{totalWords.toLocaleString('vi-VN')}</span> từ</span>
+                <Link href="/library" className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-center w-full min-[380px]:w-auto select-none">
+                  Vào thư viện
+                </Link>
+              </div>
+            </article>
+          </div>
         </div>
 
         {/* Phần 2: Khu Vui Chơi Luyện Phản Xạ */}
