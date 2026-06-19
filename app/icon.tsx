@@ -22,17 +22,17 @@ export default function Icon() {
           background: '#fffaf0',
         }}
       >
-        <div style={{ position: 'relative', width: 360, height: 360, display: 'flex' }}>
+        <div style={{ position: 'relative', width: 340, height: 340, display: 'flex' }}>
           <div
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
-              width: 240,
-              height: 240,
+              width: 230,
+              height: 230,
               background: '#0ea5e9',
-              border: '32px solid #111827',
-              borderRadius: '64px',
+              border: '16px solid #1f2937',
+              borderRadius: '48px',
             }}
           />
           <div
@@ -40,17 +40,17 @@ export default function Icon() {
               position: 'absolute',
               bottom: 0,
               right: 0,
-              width: 240,
-              height: 240,
+              width: 230,
+              height: 230,
               background: '#f59e0b',
-              border: '32px solid #111827',
-              borderRadius: '64px',
+              border: '16px solid #1f2937',
+              borderRadius: '48px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-             <span style={{ fontSize: 120, fontWeight: 900, color: '#111827', fontFamily: 'serif', marginTop: -10 }}>V</span>
+             <span style={{ fontSize: 130, fontWeight: 900, color: '#1f2937', fontFamily: 'serif', marginTop: -6 }}>V</span>
           </div>
         </div>
       </div>
