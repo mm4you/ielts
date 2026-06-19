@@ -102,7 +102,7 @@ export default function Header() {
                     : 'text-[var(--ink)] hover:text-[var(--blue)]'
                 }`}
               >
-                Trò chơi ▾
+                Trò chơi
               </button>
               
               <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-48 bg-[var(--paper)] border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-30 flex flex-col gap-1">
