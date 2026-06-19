@@ -9,21 +9,7 @@ export const size = {
 
 export const contentType = 'image/png'
  
-export default async function Icon() {
-  // Fetch Fraunces Black (900) font to match header
-  const fontRes = await fetch(
-    'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,900&display=swap',
-    { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } }
-  )
-  const css = await fontRes.text()
-  const fontUrlMatch = css.match(/url\(([^)]+\.woff2)\)/)
-  
-  let fonts: { name: string; data: ArrayBuffer; weight: 900; style: 'normal' }[] = []
-  if (fontUrlMatch) {
-    const fontData = await fetch(fontUrlMatch[1]).then((r) => r.arrayBuffer())
-    fonts = [{ name: 'Fraunces', data: fontData, weight: 900, style: 'normal' }]
-  }
-
+export default function Icon() {
   return new ImageResponse(
     (
       <div
@@ -36,17 +22,17 @@ export default async function Icon() {
           background: '#fffaf0',
         }}
       >
-        <div style={{ position: 'relative', width: 340, height: 340, display: 'flex' }}>
+        <div style={{ position: 'relative', width: 360, height: 360, display: 'flex' }}>
           <div
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
-              width: 230,
-              height: 230,
+              width: 240,
+              height: 240,
               background: '#0ea5e9',
-              border: '24px solid #1f2937',
-              borderRadius: '40px',
+              border: '32px solid #111827',
+              borderRadius: '64px',
             }}
           />
           <div
@@ -54,24 +40,21 @@ export default async function Icon() {
               position: 'absolute',
               bottom: 0,
               right: 0,
-              width: 230,
-              height: 230,
+              width: 240,
+              height: 240,
               background: '#f59e0b',
-              border: '24px solid #1f2937',
-              borderRadius: '40px',
+              border: '32px solid #111827',
+              borderRadius: '64px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-             <span style={{ fontSize: 110, fontWeight: 900, color: '#1f2937', fontFamily: fonts.length ? 'Fraunces' : 'Georgia, serif', marginTop: -4 }}>V</span>
+             <span style={{ fontSize: 120, fontWeight: 900, color: '#111827', fontFamily: 'serif', marginTop: -10 }}>V</span>
           </div>
         </div>
       </div>
     ),
-    {
-      ...size,
-      fonts,
-    }
+    { ...size }
   )
 }
