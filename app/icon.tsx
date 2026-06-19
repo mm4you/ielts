@@ -9,7 +9,11 @@ export const size = {
 
 export const contentType = 'image/png'
  
-export default function Icon() {
+export default async function Icon() {
+  const frauncesFontData = await fetch(
+    'https://fonts.gstatic.com/s/fraunces/v31/6NUh8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nBFRg.woff'
+  ).then((res) => res.arrayBuffer())
+
   return new ImageResponse(
     (
       <div
@@ -50,11 +54,21 @@ export default function Icon() {
               justifyContent: 'center',
             }}
           >
-             <span style={{ fontSize: 130, fontWeight: 900, color: '#1f2937', fontFamily: 'serif', marginTop: -6 }}>V</span>
+             <span style={{ fontSize: 130, fontWeight: 900, color: '#1f2937', fontFamily: 'Fraunces', marginTop: -6 }}>V</span>
           </div>
         </div>
       </div>
     ),
-    { ...size }
+    {
+      ...size,
+      fonts: [
+        {
+          name: 'Fraunces',
+          data: frauncesFontData,
+          weight: 900,
+          style: 'normal',
+        },
+      ],
+    }
   )
 }
