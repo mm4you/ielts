@@ -122,13 +122,16 @@ export default function Header() {
                     <Link
                       key={game.href}
                       href={game.href}
-                      className={`text-xs font-bold py-2 px-3 rounded-lg text-left transition-colors uppercase ${
+                      className={`text-xs font-bold py-2 px-3 rounded-lg text-left transition-colors uppercase flex items-center gap-2 ${
                         isGameActive
                           ? game.colorClass
                           : `text-[var(--ink)] ${game.hoverClass}`
                       }`}
                     >
-                      {game.label}
+                      <span className="shrink-0 scale-75">
+                        {game.icon}
+                      </span>
+                      <span>{game.label}</span>
                     </Link>
                   );
                 })}
