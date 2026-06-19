@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Học từ vựng IELTS với các chế độ game sinh tồn và phương pháp lặp lại ngắt quãng SM2.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#fffaf0',
-    theme_color: '#1f2937',
+    background_color: '#f4f4f0',
+    theme_color: '#ef4444',
     icons: [
       {
         src: '/icon?size=192',
