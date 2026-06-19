@@ -114,11 +114,7 @@ export default async function HomePage() {
 
         {/* Phần 2: Khu Vui Chơi Luyện Phản Xạ */}
         <div className="mt-16">
-          <h2 className="text-2xl md:text-3xl font-serif font-black uppercase text-[var(--ink)] tracking-tight mb-2 border-b-[3px] border-dashed border-[var(--line)] pb-3 flex items-center gap-3">
-            <svg className="w-8 h-8 text-[var(--yellow)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          <h2 className="text-2xl md:text-3xl font-serif font-black uppercase text-[var(--ink)] tracking-tight mb-2 border-b-[3px] border-dashed border-[var(--line)] pb-3">
             Khu Vui Chơi Luyện Phản Xạ
           </h2>
           
