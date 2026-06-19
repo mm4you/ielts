@@ -38,26 +38,36 @@ export default function Header() {
     { 
       href: '/speedrun', 
       label: 'Tốc chiến', 
+      colorClass: 'bg-[var(--red)] text-white',
+      hoverClass: 'hover:bg-[var(--red)] hover:text-white',
       icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
     },
     { 
       href: '/blockblast', 
       label: 'Xếp hình', 
+      colorClass: 'bg-[#8b5cf6] text-white',
+      hoverClass: 'hover:bg-[#8b5cf6] hover:text-white',
       icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
     },
     { 
       href: '/sniper', 
       label: 'Thiện xạ', 
+      colorClass: 'bg-[var(--ink)] text-[var(--paper)]',
+      hoverClass: 'hover:bg-[var(--ink)] hover:text-[var(--paper)]',
       icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
     },
     { 
       href: '/match', 
       label: 'Lật thẻ', 
-      icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
+      colorClass: 'bg-[var(--blue)] text-white',
+      hoverClass: 'hover:bg-[var(--blue)] hover:text-white',
+      icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 00-2 2h8a2 2 0 002-2v-2" /></svg>
     },
     { 
       href: '/pronounce-challenge', 
       label: 'AI Mỏ Hỗn', 
+      colorClass: 'bg-[#ff3b30] text-white',
+      hoverClass: 'hover:bg-[#ff3b30] hover:text-white',
       icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
     },
   ];
@@ -114,8 +124,8 @@ export default function Header() {
                       href={game.href}
                       className={`text-xs font-bold py-2 px-3 rounded-lg text-left transition-colors uppercase ${
                         isGameActive
-                          ? 'bg-[var(--blue)] text-white'
-                          : 'text-[var(--ink)] hover:bg-[var(--bg)]'
+                          ? game.colorClass
+                          : `text-[var(--ink)] ${game.hoverClass}`
                       }`}
                     >
                       {game.label}
@@ -251,7 +261,7 @@ export default function Header() {
                       onClick={() => setIsMenuOpen(false)}
                       className={`flex items-center gap-2 p-2.5 rounded-lg border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] transition-all active:scale-95 ${
                         isGameActive
-                          ? 'bg-[var(--blue)] text-white border-[var(--blue)]'
+                          ? `${game.colorClass} border-[var(--line)]`
                           : 'bg-[var(--bg)] text-[var(--ink)]'
                       }`}
                     >
