@@ -54,12 +54,9 @@ export default async function HomePage() {
             <div className="inline-block mb-4 px-3 py-1 border-2 border-[var(--line)] rounded-full bg-[var(--paper)] font-bold text-xs shadow-[2px_2px_0_var(--line)]">
               IELTS Vocabulary Studio
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif text-[var(--ink)] mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif text-[var(--ink)]">
               Lò Luyện Từ Vựng Khắc Nghiệt
             </h1>
-            <p className="text-[var(--muted)] text-lg max-w-[700px]">
-              Dự án đang phát triển tích cực. Hãy thử nghiệm và gửi góp ý ở góc dưới màn hình để cùng hoàn thiện lò luyện này nhé!
-            </p>
           </div>
         </section>
 
