@@ -81,7 +81,7 @@ export default function Header() {
               <div className="absolute top-0 left-0 w-4 h-4 md:w-6 md:h-6 bg-[var(--blue)] border-2 border-[var(--line)] rounded-sm md:rounded-md transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1"></div>
               <div className="absolute bottom-0 right-0 w-4 h-4 md:w-6 md:h-6 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-sm md:rounded-md"></div>
             </div>
-            <span className="group-hover:text-[var(--blue)] transition-colors whitespace-nowrap">IELTS Vocab</span>
+            <span className="hidden sm:inline group-hover:text-[var(--blue)] transition-colors whitespace-nowrap">IELTS Vocab</span>
           </Link>
           
           {/* Desktop Navigation */}
