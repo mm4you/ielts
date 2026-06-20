@@ -25,7 +25,7 @@ const ALLOWED_TOPICS = [
   'Astronomy', 'Geology', 'Meteorology', 'Anthropology', 'Archaeology'
 ];
 
-async function callNvidiaNIM(word: string, pos: string | null, meaning: string, currentTopic: string) {
+async function callNvidiaNIM(word: string, pos: string | null, meaning: string, currentTopic: string, attempt = 1): Promise<any> {
   const prompt = `
 You are an IELTS vocabulary expert. For the following word, provide:
 1. Its standard IPA pronunciation (e.g. /juːˈbɪk.wɪ.təs/).
@@ -52,7 +52,7 @@ Your response MUST be a valid JSON object with the following keys. Do not includ
   const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
   try {
-    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', { 
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -67,6 +67,14 @@ Your response MUST be a valid JSON object with the following keys. Do not includ
     });
 
     clearTimeout(timeoutId);
+
+    if (response.status === 429) {
+      if (attempt <= 3) {
+        console.warn(`  [Rate Limit] Bị giới hạn băng thông (429) cho "${word}". Chờ 15 giây trước khi thử lại lần ${attempt}/3...`);
+        await new Promise(r => setTimeout(r, 15000));
+        return callNvidiaNIM(word, pos, meaning, currentTopic, attempt + 1);
+      }
+    }
 
     if (response.ok) {
       const data = await response.json();
@@ -87,7 +95,12 @@ Your response MUST be a valid JSON object with the following keys. Do not includ
     }
   } catch (err: any) {
     clearTimeout(timeoutId);
-    console.error(`  [Network/Timeout Error] "${word}":`, err.message || err);
+    if (attempt <= 3) {
+      console.warn(`  [Lỗi mạng/Timeout] "${word}". Chờ 5 giây trước khi thử lại lần ${attempt}/3...`);
+      await new Promise(r => setTimeout(r, 5000));
+      return callNvidiaNIM(word, pos, meaning, currentTopic, attempt + 1);
+    }
+    console.error(`  [Thất bại hoàn toàn] "${word}":`, err.message || err);
   }
   return null;
 }
@@ -112,12 +125,17 @@ async function main() {
     process.exit(1);
   }
 
-  // Get limit from command line args if any (e.g. npm run ai:improve -- 50)
+  // Get limit from command line args if any (e.g. npm run ai:optimize -- all or 500)
   const args = process.argv.slice(2);
+  const isAll = args.includes('all') || args.includes('--all');
   const limitArg = args.find(arg => !isNaN(Number(arg)));
-  const maxWordsToProcess = limitArg ? Number(limitArg) : 100; // Default to 100 words per run
+  const maxWordsToProcess = isAll ? Infinity : (limitArg ? Number(limitArg) : 100);
 
-  console.log(`Đang quét database tìm các từ cần sửa/cập nhật (Giới hạn xử lý: ${maxWordsToProcess} từ)...`);
+  if (isAll) {
+    console.log('Đang chạy chế độ liên tục (tối ưu TOÀN BỘ từ vựng còn thiếu)...');
+  } else {
+    console.log(`Đang quét database tìm các từ cần sửa/cập nhật (Giới hạn xử lý: ${maxWordsToProcess} từ)...`);
+  }
 
   // Target words that:
   // - Have empty or null IPA
