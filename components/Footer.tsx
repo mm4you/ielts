@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="hidden md:block border-t-[3px] border-[var(--line)] bg-[var(--paper)] mt-auto w-full">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex flex-col md:flex-row items-center justify-between text-sm font-bold text-[var(--muted)]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12 h-16 flex flex-col md:flex-row items-center justify-between text-sm font-bold text-[var(--muted)]">
         <p>
           © 2026 <span className="text-[var(--ink)]">IELTS Vocab</span>
           {' | '}

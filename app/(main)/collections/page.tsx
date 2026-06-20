@@ -242,7 +242,7 @@ function CollectionsContent() {
 
   if (status === 'loading') {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+      <div className="max-w-6xl mx-auto px-4 py-20 text-center">
         <p className="text-xl font-bold font-mono animate-pulse text-[var(--ink)]">[ ĐANG TẢI DỮ LIỆU... ]</p>
       </div>
     );
@@ -278,7 +278,7 @@ function CollectionsContent() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 mt-12">
+    <div className="max-w-6xl mx-auto px-4 py-8 mt-12">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b-4 border-[var(--line)] pb-4">
         <div>
@@ -621,7 +621,7 @@ function CollectionsContent() {
 export default function CollectionsPage() {
   return (
     <Suspense fallback={
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+      <div className="max-w-6xl mx-auto px-4 py-20 text-center">
         <p className="text-xl font-bold font-mono animate-pulse text-[var(--ink)]">[ ĐANG TẢI DỮ LIỆU... ]</p>
       </div>
     }>
