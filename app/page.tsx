@@ -129,7 +129,7 @@ export default async function HomePage() {
               </p>
               <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
                 <span className="font-bold text-lg text-[var(--red)] text-center min-[380px]:text-left">Ép nhịp tim</span>
-                <Link href="/speedrun" className="btn-brutal bg-[var(--red)] text-white animate-pulse text-center w-full min-[380px]:w-auto select-none">
+                <Link href="/speedrun" className="btn-brutal bg-[var(--red)] text-white text-center w-full min-[380px]:w-auto select-none">
                   Chơi luôn
                 </Link>
               </div>
