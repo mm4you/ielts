@@ -2,13 +2,33 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import nodemailer from 'nodemailer';
 
+// Helper function to safely escape HTML special characters
+function escapeHtml(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const { type, message, contact } = body;
 
+    // A08:2021 - Server-side validation of inputs
     if (!message || typeof message !== 'string' || message.trim() === '') {
       return NextResponse.json({ error: 'Nội dung góp ý không được để trống' }, { status: 400 });
+    }
+
+    if (message.length > 2000) {
+      return NextResponse.json({ error: 'Nội dung góp ý vượt quá giới hạn 2000 ký tự' }, { status: 400 });
+    }
+
+    if (contact && typeof contact === 'string' && contact.length > 300) {
+      return NextResponse.json({ error: 'Thông tin liên hệ vượt quá giới hạn 300 ký tự' }, { status: 400 });
     }
 
     const smtpUser = process.env.SMTP_USER;
@@ -16,7 +36,7 @@ export async function POST(request: Request) {
     const receiverEmail = process.env.FEEDBACK_RECEIVER_EMAIL || smtpUser;
 
     if (!smtpUser || !smtpPassword) {
-      console.error('SMTP credentials are not configured in environment variables');
+      console.error('[SECURITY WARNING] SMTP credentials are not configured in environment variables');
       return NextResponse.json(
         { error: 'Tính năng góp ý qua email chưa được thiết lập cấu hình SMTP trên server.' },
         { status: 500 }
@@ -24,6 +44,7 @@ export async function POST(request: Request) {
     }
 
     const session = await auth();
+    // A01:2021 - Securely bind user context on server, don't trust client input for identity
     const userDisplay = session?.user
       ? `${session.user.name || 'User'} (${session.user.email || 'No Email'}, ID: ${session.user.id || 'N/A'})`
       : 'Khách (Chưa đăng nhập)';
@@ -35,7 +56,12 @@ export async function POST(request: Request) {
       other: 'Ý kiến khác (Other)',
     };
 
-    const typeLabel = typeLabels[type] || type || 'Không phân loại';
+    const rawTypeLabel = typeLabels[type] || type || 'Không phân loại';
+
+    // A03:2021 - HTML Escape all values dynamically rendered in the HTML email body
+    const safeTypeLabel = escapeHtml(rawTypeLabel);
+    const safeMessage = escapeHtml(message);
+    const safeContact = contact ? escapeHtml(contact) : 'Không cung cấp';
 
     // Create nodemailer transport
     const transporter = nodemailer.createTransport({
@@ -46,22 +72,16 @@ export async function POST(request: Request) {
       },
     });
 
-    // Escape HTML message to prevent simple rendering issues
-    const safeMessage = message
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-
     const mailOptions = {
       from: `"IELTS Vocab Feedback" <${smtpUser}>`,
       to: receiverEmail,
-      subject: `[IELTS Vocab] Góp ý mới: ${typeLabel}`,
+      subject: `[IELTS Vocab] Góp ý mới: ${rawTypeLabel}`,
       text: `Chào bạn,
 
 Hệ thống IELTS Vocab nhận được góp ý mới từ người dùng:
 
 - Người gửi: ${userDisplay}
-- Phân loại: ${typeLabel}
+- Phân loại: ${rawTypeLabel}
 - Nội dung góp ý:
 ${message}
 
@@ -77,19 +97,19 @@ IELTS Vocab Mailer`,
           <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
             <tr>
               <td style="padding: 8px 0; font-weight: bold; width: 130px; border-bottom: 1px solid #e5e7eb;">Người gửi:</td>
-              <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${userDisplay}</td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${escapeHtml(userDisplay)}</td>
             </tr>
             <tr>
               <td style="padding: 8px 0; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Phân loại:</td>
               <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
                 <span style="background-color: #fef08a; padding: 2px 6px; border: 1.5px solid #000000; border-radius: 4px; font-weight: bold; font-size: 13px;">
-                  ${typeLabel}
+                  ${safeTypeLabel}
                 </span>
               </td>
             </tr>
             <tr>
               <td style="padding: 8px 0; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Liên hệ thêm:</td>
-              <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-family: monospace;">${contact || 'Không cung cấp'}</td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-family: monospace;">${safeContact}</td>
             </tr>
           </table>
           <div style="background-color: #f3f4f6; border: 2px solid #000000; border-radius: 8px; padding: 15px; margin-top: 10px; white-space: pre-wrap; font-family: sans-serif; line-height: 1.5;">
@@ -107,11 +127,11 @@ IELTS Vocab Mailer`,
 
     return NextResponse.json({ success: true, message: 'Góp ý của bạn đã được gửi đi thành công!' });
   } catch (error: any) {
+    // A09:2021 / A05:2021 - Log detailed errors server-side only, return generic message to client to avoid information disclosure
     console.error('Lỗi khi gửi email góp ý:', error);
     return NextResponse.json(
       { 
-        error: 'Không thể gửi email góp ý. Vui lòng thử lại sau.', 
-        details: error.message || String(error)
+        error: 'Không thể gửi email góp ý. Vui lòng thử lại sau.'
       },
       { status: 500 }
     );
