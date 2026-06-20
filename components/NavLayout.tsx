@@ -9,7 +9,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
       <div className="bg-orb orb-1"></div>
       <div className="bg-orb orb-2"></div>
       <Header />
-      <main className="max-w-6xl w-full mx-auto px-4 sm:px-8 lg:px-12 pt-24 pb-10 flex-1 relative z-10">
+      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10 flex-1 relative z-10">
         {children}
       </main>
       <Footer />
