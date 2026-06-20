@@ -316,7 +316,7 @@ function CollectionsContent() {
           {loadingCollections ? (
             <p className="font-mono text-sm opacity-50">[ Đang tải các bộ sưu tập... ]</p>
           ) : collections.length === 0 ? (
-            <div className="panel p-6 text-center bg-gray-50 border-2 border-dashed border-[var(--line)]">
+            <div className="panel p-6 text-center bg-[var(--bg)] border-2 border-dashed border-[var(--line)] shadow-none">
               <p className="font-bold text-[var(--muted)] mb-4">Bạn chưa tạo bộ sưu tập nào.</p>
               <button
                 onClick={() => openModal('create')}
@@ -345,7 +345,7 @@ function CollectionsContent() {
                           {col.name}
                         </h3>
                         <span className={`font-mono text-[9px] px-2 py-0.5 rounded border border-[var(--line)] ${
-                          col.isPublic ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                          col.isPublic ? 'bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                         }`}>
                           {col.isPublic ? 'Công khai' : 'Riêng tư'}
                         </span>
@@ -426,7 +426,7 @@ function CollectionsContent() {
                       {selectedCollection.name}
                     </h2>
                     <span className={`font-mono text-[9px] px-2 py-0.5 rounded border border-[var(--line)] shrink-0 ${
-                      selectedCollection.isPublic ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                      selectedCollection.isPublic ? 'bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                     }`}>
                       {selectedCollection.isPublic ? 'Công khai' : 'Riêng tư'}
                     </span>
@@ -503,7 +503,7 @@ function CollectionsContent() {
                                 {word.ipa}
                               </span>
                             )}
-                            <span className="text-[9px] bg-gray-100 text-gray-600 border border-[var(--line)] px-1 py-0.2 rounded font-mono uppercase font-bold">
+                            <span className="text-[9px] bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-[var(--line)] px-1 py-0.2 rounded font-mono uppercase font-bold">
                               {word.level}
                             </span>
                           </div>

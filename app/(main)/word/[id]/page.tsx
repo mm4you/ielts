@@ -93,7 +93,7 @@ export default async function WordDetailPage({
                 {word.synonyms.split(',').map((s, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-gray-100 rounded-full text-sm"
+                    className="chip text-sm font-medium"
                   >
                     {s.trim()}
                   </span>
@@ -112,15 +112,15 @@ export default async function WordDetailPage({
           <div className="border-t border-[var(--border)] pt-6">
             <p className="text-sm text-[var(--muted)] mb-3">Thống kê ôn tập</p>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-gray-50 rounded-lg p-3">
+              <div className="border-2 border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)]">
                 <p className="text-2xl font-bold">{progress?.repetition_count ?? 0}</p>
                 <p className="text-xs text-[var(--muted)]">Lần ôn</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3">
+              <div className="border-2 border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)]">
                 <p className="text-2xl font-bold">{progress?.interval_days ?? 0}</p>
                 <p className="text-xs text-[var(--muted)]">Giãn cách (ngày)</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3">
+              <div className="border-2 border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)]">
                 <p className="text-2xl font-bold">{progress?.ease_factor?.toFixed(1) ?? "2.5"}</p>
                 <p className="text-xs text-[var(--muted)]">Độ dễ</p>
               </div>

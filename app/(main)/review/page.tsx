@@ -232,7 +232,7 @@ function ReviewContent() {
         </h2>
         
         {currentWord.ipa && (
-          <p className="text-lg md:text-xl text-[var(--muted)] mb-4 md:mb-8 font-mono bg-gray-100 px-4 py-1 rounded-md border-2 border-[var(--line)]">
+          <p className="text-lg md:text-xl text-[var(--muted)] mb-4 md:mb-8 font-mono bg-[var(--bg)] px-4 py-1 rounded-md border-2 border-[var(--line)]">
             {currentWord.ipa}
           </p>
         )}
