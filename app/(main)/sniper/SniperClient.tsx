@@ -258,7 +258,9 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
                   const targetWord = q.choices[q.correctIndex];
                   return (
                     <li key={q.id} className="flex justify-between items-center border-b border-gray-100 last:border-b-0 pb-1 text-xs gap-2">
-                      <span className="font-bold text-[var(--ink)] truncate">{targetWord} ({vi || en})</span>
+                      <span className="text-[var(--ink)] truncate">
+                        <span className="font-bold">{targetWord}</span> <span className="font-normal">({vi || en})</span>
+                      </span>
                       <SaveToCollection wordId={q.id} wordText={targetWord} />
                     </li>
                   );

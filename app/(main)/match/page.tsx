@@ -189,7 +189,9 @@ function MatchContent() {
                 const { en, vi } = parseMeaning(w.meaning_vi, w.pos);
                 return (
                   <li key={w.id} className="flex justify-between items-center border-b border-gray-100 last:border-b-0 pb-1 text-xs">
-                    <span className="font-bold text-[var(--ink)]">{w.word} ({vi || en})</span>
+                    <span className="text-[var(--ink)]">
+                      <span className="font-bold">{w.word}</span> <span className="font-normal">({vi || en})</span>
+                    </span>
                     <SaveToCollection wordId={w.id} wordText={w.word} />
                   </li>
                 );
