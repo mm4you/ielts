@@ -1,4 +1,7 @@
+"use client";
+
 import Link from 'next/link';
+import { openFeedbackModal } from './FeedbackModal';
 
 export default function Footer() {
   return (
@@ -11,9 +14,12 @@ export default function Footer() {
             GitHub
           </Link>
           {' | '}
-          <Link href="https://www.facebook.com/agug103" target="_blank" rel="noopener noreferrer" className="text-[var(--ink)] hover:text-[var(--green)] underline underline-offset-2 transition-colors font-black">
+          <button 
+            onClick={() => openFeedbackModal()}
+            className="text-[var(--ink)] hover:text-[var(--green)] underline underline-offset-2 transition-colors font-black cursor-pointer bg-transparent border-none p-0 inline font-sans"
+          >
             Góp ý
-          </Link>
+          </button>
         </p>
         <p>Hệ thống Học & Thi Trắc Nghiệm Từ Vựng IELTS</p>
       </div>

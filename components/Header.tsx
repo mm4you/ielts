@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useSession, signIn, signOut } from "next-auth/react";
+import { openFeedbackModal } from '@/components/FeedbackModal';
 
 export default function Header() {
   const { data: session } = useSession();
@@ -164,6 +165,13 @@ export default function Header() {
                   )}
                   
                   <button 
+                    onClick={() => openFeedbackModal()} 
+                    className="w-full text-xs font-bold text-[var(--ink)] bg-[var(--paper)] border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer"
+                  >
+                    Góp ý hệ thống
+                  </button>
+
+                  <button 
                     onClick={() => signOut()} 
                     className="w-full text-xs font-bold text-white bg-[var(--red)] border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer"
                   >
@@ -211,6 +219,13 @@ export default function Header() {
                         </Link>
                       )}
                       
+                      <button 
+                        onClick={() => { setIsProfileOpen(false); openFeedbackModal(); }}
+                        className="w-full text-xs font-bold text-[var(--ink)] bg-[var(--paper)] border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer"
+                      >
+                        Góp ý hệ thống
+                      </button>
+
                       <button 
                         onClick={() => { setIsProfileOpen(false); signOut(); }}
                         className="w-full text-xs font-bold text-white bg-[var(--red)] border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer"
