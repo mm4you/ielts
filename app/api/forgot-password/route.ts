@@ -5,7 +5,17 @@ import { sendResetPasswordEmail } from '@/lib/mail';
 
 export async function POST(req: Request) {
   try {
-    const { action, email, code, password } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return NextResponse.json(
+        { error: 'Yêu cầu không hợp lệ. Dữ liệu JSON bị sai định dạng.' },
+        { status: 400 }
+      );
+    }
+
+    const { action, email, code, password } = body;
 
     if (!email) {
       return NextResponse.json(
@@ -14,37 +24,33 @@ export async function POST(req: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() }
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Email không tồn tại trong hệ thống.' },
-        { status: 404 }
-      );
-    }
-
     // 1. Gửi mã xác minh về email
     if (action === 'send_code') {
-      // Tạo mã xác minh 6 chữ số
-      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-      // Lưu trữ mã xác minh mới (xóa mã cũ của email này trước)
-      await prisma.verificationToken.deleteMany({
-        where: { identifier: email.toLowerCase() }
+      const user = await prisma.user.findUnique({
+        where: { email: email.toLowerCase() }
       });
 
-      await prisma.verificationToken.create({
-        data: {
-          identifier: email.toLowerCase(),
-          token: verificationCode,
-          expires: new Date(Date.now() + 15 * 60 * 1000) // Hết hạn trong 15 phút
-        }
-      });
+      let verificationCode = '';
+      if (user) {
+        // Tạo mã xác minh 6 chữ số
+        verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // Gửi email
-      await sendResetPasswordEmail(email.toLowerCase(), verificationCode);
+        // Lưu trữ mã xác minh mới (xóa mã cũ của email này trước)
+        await prisma.verificationToken.deleteMany({
+          where: { identifier: email.toLowerCase() }
+        });
+
+        await prisma.verificationToken.create({
+          data: {
+            identifier: email.toLowerCase(),
+            token: verificationCode,
+            expires: new Date(Date.now() + 15 * 60 * 1000) // Hết hạn trong 15 phút
+          }
+        });
+
+        // Gửi email
+        await sendResetPasswordEmail(email.toLowerCase(), verificationCode);
+      }
 
       const isSmtpConfigured = !!(
         process.env.SMTP_HOST &&
@@ -55,9 +61,9 @@ export async function POST(req: Request) {
       const devMode = !isSmtpConfigured || process.env.NODE_ENV === 'development';
 
       return NextResponse.json({
-        message: 'Mã xác minh đã được gửi thành công.',
+        message: 'Nếu email tồn tại trong hệ thống, mã xác minh đã được gửi.',
         devMode,
-        ...(devMode ? { code: verificationCode } : {})
+        ...(devMode && user ? { code: verificationCode } : {})
       }, { status: 200 });
     }
 
@@ -131,6 +137,18 @@ export async function POST(req: Request) {
       if (tokenRecord.expires < new Date()) {
         return NextResponse.json(
           { error: 'Mã xác minh đã hết hạn.' },
+          { status: 400 }
+        );
+      }
+
+      // Kiểm tra xem người dùng có thực sự tồn tại trước khi cập nhật
+      const user = await prisma.user.findUnique({
+        where: { email: email.toLowerCase() }
+      });
+
+      if (!user) {
+        return NextResponse.json(
+          { error: 'Mã xác minh không hợp lệ.' },
           { status: 400 }
         );
       }

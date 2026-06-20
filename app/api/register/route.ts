@@ -4,7 +4,16 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json()
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return NextResponse.json(
+        { error: 'Yêu cầu không hợp lệ. Dữ liệu JSON bị sai định dạng.' },
+        { status: 400 }
+      );
+    }
+    const { name, email, password } = body;
 
     // 1. Validation
     if (!name || !email || !password) {
