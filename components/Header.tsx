@@ -9,7 +9,8 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Header() {
   const { data: session } = useSession();
   const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isGamesPopupOpen, setIsGamesPopupOpen] = useState(false);
 
   const navItems = [
     { 
@@ -179,108 +180,149 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile Theme Toggle & Menu Button */}
+          {/* Mobile Theme Toggle & Profile Dropdown */}
           <div className="lg:hidden flex items-center gap-2">
             <ThemeToggle />
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-1 rounded-md border-2 border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-[0_0_0_var(--line)] transition-all"
-            >
-              {isMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-              )}
-            </button>
+            {session ? (
+              <div className="relative">
+                <button 
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="w-9 h-9 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-[var(--ink)] text-sm shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer select-none"
+                >
+                  {session.user?.name?.charAt(0).toUpperCase() || 'U'}
+                </button>
+                
+                {isProfileOpen && (
+                  <>
+                    <div className="fixed inset-0 z-20" onClick={() => setIsProfileOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--paper)] border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl p-3 z-30 flex flex-col gap-2">
+                      <div className="pb-2 border-b border-dashed border-[var(--line)] text-left">
+                        <p className="font-extrabold text-sm text-[var(--ink)] truncate">{session.user?.name || 'User'}</p>
+                        <p className="text-[10px] font-mono text-[var(--muted)] truncate">{session.user?.email || ''}</p>
+                      </div>
+                      
+                      {(session.user as any)?.role === 'admin' && (
+                        <Link 
+                          href="/admin" 
+                          onClick={() => setIsProfileOpen(false)}
+                          className="text-xs font-bold text-[var(--ink)] bg-[var(--yellow)] hover:bg-yellow-400 border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all"
+                        >
+                          Trang Admin
+                        </Link>
+                      )}
+                      
+                      <button 
+                        onClick={() => { setIsProfileOpen(false); signOut(); }}
+                        className="w-full text-xs font-bold text-white bg-[var(--red)] border-2 border-[var(--line)] py-1.5 px-2 rounded-lg text-center shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-none transition-all cursor-pointer"
+                      >
+                        Đăng xuất
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <button 
+                onClick={() => signIn('google')} 
+                className="btn-brutal bg-[var(--blue)] text-white text-xs px-3 py-1.5 uppercase hover:translate-y-0.5 whitespace-nowrap shadow-[2px_2px_0_var(--blue)]"
+              >
+                Đăng nhập
+              </button>
+            )}
           </div>
         </nav>
       </header>
 
-      {/* Mobile Toggleable Menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[64px] bg-[var(--bg)] z-30 overflow-y-auto pb-safe">
-          <div className="p-4 flex flex-col gap-4">
-            
-            {/* Mobile Auth inside Menu */}
-            <div className="panel bg-[var(--paper)] p-4 flex items-center justify-between shadow-[4px_4px_0_var(--line)] mb-2">
-              {session ? (
-                <>
-                  <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-bold text-[var(--ink)] text-lg shadow-[2px_2px_0_var(--line)]">
-                      {session.user?.name?.charAt(0).toUpperCase() || 'U'}
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-sm truncate max-w-[120px]">{session.user?.name || 'User'}</span>
-                      {(session.user as any)?.role === 'admin' && (
-                        <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="text-xs font-bold text-[var(--blue)] underline">Trang Quản Trị</Link>
-                      )}
-                    </div>
-                  </div>
-                  <button onClick={() => { setIsMenuOpen(false); signOut(); }} className="btn-brutal bg-[var(--red)] text-white text-xs px-3 py-2 uppercase">Thoát</button>
-                </>
-              ) : (
-                <div className="flex items-center justify-between w-full">
-                  <span className="font-bold text-[var(--muted)] text-sm">Chưa đăng nhập</span>
-                  <button onClick={() => { setIsMenuOpen(false); signIn('google'); }} className="btn-brutal bg-[var(--blue)] text-white text-xs px-4 py-2 uppercase shadow-[2px_2px_0_var(--blue)]">
-                    Đăng nhập
-                  </button>
-                </div>
-              )}
-            </div>
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[var(--paper)] border-t-[3px] border-[var(--line)] z-30 shadow-[0_-4px_0_var(--line)] flex items-center justify-around h-16 pb-safe">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center justify-center flex-1 h-full py-1 text-center transition-all ${
+                isActive ? 'text-[var(--blue)] font-extrabold scale-102' : 'text-[var(--ink)] opacity-80 hover:opacity-100'
+              }`}
+            >
+              <div className={isActive ? 'text-[var(--blue)] scale-110 transition-transform' : 'text-[var(--ink)]'}>
+                {item.icon}
+              </div>
+              <span className={`text-[9px] font-black uppercase tracking-wider mt-0.5 ${isActive ? 'text-[var(--blue)]' : 'text-[var(--ink)]'}`}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+        
+        {/* Games Tab */}
+        <button
+          onClick={() => setIsGamesPopupOpen(!isGamesPopupOpen)}
+          className={`flex flex-col items-center justify-center flex-1 h-full py-1 text-center transition-all cursor-pointer select-none ${
+            isGamesPopupOpen || gameItems.some(item => pathname === item.href || pathname.startsWith(item.href))
+              ? 'text-[var(--blue)] font-extrabold'
+              : 'text-[var(--ink)] opacity-80 hover:opacity-100'
+          }`}
+        >
+          <div className={isGamesPopupOpen || gameItems.some(item => pathname === item.href || pathname.startsWith(item.href)) ? 'text-[var(--blue)] scale-110 transition-transform' : 'text-[var(--ink)]'}>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.013 14H6m11 0h.01m-.01 0a1 1 0 110-2 1 1 0 010 2zm-12.013 4h12.013c1.1 0 1.987-.9 1.987-2V8c0-1.1-.887-2-1.987-2H4.987C3.887 6 3 6.9 3 8v8c0 1.1.887 2 1.987 2z" />
+            </svg>
+          </div>
+          <span className={`text-[9px] font-black uppercase tracking-wider mt-0.5 ${
+            isGamesPopupOpen || gameItems.some(item => pathname === item.href || pathname.startsWith(item.href))
+              ? 'text-[var(--blue)]'
+              : 'text-[var(--ink)]'
+          }`}>
+            Trò chơi
+          </span>
+        </button>
+      </div>
 
-            {navItems.map((item) => {
-              const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`panel flex items-center gap-4 p-4 transition-all ${
-                    isActive 
-                      ? 'border-[var(--blue)] shadow-[4px_4px_0_var(--blue)] bg-[var(--paper)]' 
-                      : 'hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--ink)] bg-[var(--paper)] opacity-90'
-                  }`}
-                >
-                  <div className={`${isActive ? 'text-[var(--blue)]' : 'text-[var(--ink)]'}`}>
-                    {item.icon}
-                  </div>
-                  <span className={`text-lg font-black uppercase tracking-wide ${isActive ? 'text-[var(--blue)]' : 'text-[var(--ink)]'}`}>
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            })}
-
-            {/* Mobile Games Section */}
-            <div className="panel bg-[var(--paper)] p-4 shadow-[4px_4px_0_var(--line)]">
-              <span className="text-xs font-mono font-black text-[var(--muted)] uppercase tracking-widest block mb-3">
+      {/* Mobile Games Popup Drawer */}
+      {isGamesPopupOpen && (
+        <>
+          {/* Overlay background */}
+          <div className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-25" onClick={() => setIsGamesPopupOpen(false)} />
+          
+          {/* Popup sheet */}
+          <div className="lg:hidden fixed bottom-20 left-4 right-4 bg-[var(--paper)] border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl p-4 z-30 flex flex-col gap-2 max-h-[60vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between border-b-2 border-dashed border-[var(--line)] pb-2 mb-2">
+              <span className="text-xs font-mono font-black text-[var(--muted)] uppercase tracking-widest">
                 Khu Vui Chơi Luyện Phản Xạ
               </span>
-              <div className="grid grid-cols-2 gap-2">
-                {gameItems.map((game) => {
-                  const isGameActive = pathname === game.href || pathname.startsWith(game.href);
-                  return (
-                    <Link
-                      key={game.href}
-                      href={game.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center gap-2 p-2.5 rounded-lg border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] transition-all active:scale-95 ${
-                        isGameActive
-                          ? `${game.colorClass} border-[var(--line)]`
-                          : 'bg-[var(--bg)] text-[var(--ink)]'
-                      }`}
-                    >
-                      <div className="shrink-0 scale-75">
-                        {game.icon}
-                      </div>
-                      <span className="text-xs font-bold uppercase truncate">{game.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+              <button 
+                onClick={() => setIsGamesPopupOpen(false)}
+                className="w-6 h-6 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-md flex items-center justify-center text-xs shadow-[1.5px_1.5px_0_var(--line)]"
+              >
+                X
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {gameItems.map((game) => {
+                const isGameActive = pathname === game.href || pathname.startsWith(game.href);
+                return (
+                  <Link
+                    key={game.href}
+                    href={game.href}
+                    onClick={() => setIsGamesPopupOpen(false)}
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 border-[var(--line)] shadow-[3px_3px_0_var(--line)] hover:translate-y-0.5 hover:shadow-[1.5px_1.5px_0_var(--line)] transition-all active:scale-95 ${
+                      isGameActive
+                        ? `${game.colorClass} border-[var(--line)]`
+                        : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="shrink-0 scale-90">
+                      {game.icon}
+                    </div>
+                    <span className="text-xs font-black uppercase truncate">{game.label}</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );
