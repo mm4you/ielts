@@ -19,31 +19,30 @@ export async function GET(request: Request) {
       };
     }
 
-    const allWords = await prisma.word.findMany({
-      where: queryArgs.where,
-      select: { id: true, word: true }
+    const totalCount = await prisma.word.count({
+      where: queryArgs.where
     });
 
-    if (allWords.length === 0) {
+    if (totalCount === 0) {
       return NextResponse.json({ error: 'No words found' }, { status: 404 });
     }
 
-    const take = 50;
-    const shuffledIds = allWords.map(w => w.id).sort(() => 0.5 - Math.random()).slice(0, take);
+    const take = Math.min(50, totalCount);
+    const skip = totalCount > take ? Math.floor(Math.random() * (totalCount - take + 1)) : 0;
 
     const words = await prisma.word.findMany({
-      where: {
-        id: { in: shuffledIds }
-      }
+      where: queryArgs.where,
+      skip: skip,
+      take: take
     });
 
     // Shuffle words to pick 50 random questions
     const shuffledWords = words.sort(() => 0.5 - Math.random());
-    const allEnglishWords = allWords.map(w => w.word);
+    const selectedEnglishWords = shuffledWords.map(w => w.word);
 
     const questions = shuffledWords.map(word => {
       // Target is the meaning, choices are English words
-      const distractors = allEnglishWords
+      const distractors = selectedEnglishWords
         .filter(w => w !== word.word)
         .sort(() => 0.5 - Math.random())
         .slice(0, 3);
