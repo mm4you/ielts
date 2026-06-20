@@ -253,6 +253,25 @@ function ReviewContent() {
                 </div>
               );
             })()}
+
+            {(currentWord as any).example && (
+              <div className="w-full mt-2 bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)] text-left">
+                <span className="font-bold text-[var(--muted)] block mb-1 text-xs uppercase tracking-wide">Ví dụ ngữ cảnh:</span>
+                {(() => {
+                  const rawEx = (currentWord as any).example;
+                  const separator = rawEx.includes('///') ? '///' : '|||';
+                  const parts = rawEx.split(separator);
+                  const exEn = parts[0]?.trim();
+                  const exVi = parts[1]?.trim();
+                  return (
+                    <>
+                      <p className="text-sm font-bold text-[var(--ink)] font-serif italic">"{exEn}"</p>
+                      {exVi && <p className="text-xs text-[var(--muted)] mt-1">{exVi}</p>}
+                    </>
+                  );
+                })()}
+              </div>
+            )}
           </div>
         ) : (
           <div className="absolute bottom-8 text-[var(--muted)] font-bold text-lg animate-pulse">
