@@ -105,12 +105,13 @@ export default async function WordDetailPage({
             <div>
               <p className="text-sm text-[var(--muted)] mb-1">Ví dụ ngữ cảnh</p>
               {(() => {
-                const parts = word.example.split('///');
+                const separator = word.example.includes('///') ? '///' : '|||';
+                const parts = word.example.split(separator);
                 const exEn = parts[0]?.trim();
                 const exVi = parts[1]?.trim();
                 return (
                   <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] text-left">
-                    <p className="text-base font-bold text-[var(--ink)] font-serif">
+                    <p className="text-base font-bold text-[var(--ink)] font-serif italic">
                       "{exEn}"
                     </p>
                     {exVi && <p className="text-sm text-[var(--muted)] mt-1.5">{exVi}</p>}

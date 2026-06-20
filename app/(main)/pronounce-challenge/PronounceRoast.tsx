@@ -506,9 +506,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         </div>
       )}
 
-      {isTranscribing && (
-        <p className="text-center font-bold text-[var(--blue)] animate-pulse">Đang dùng siêu AI Whisper để bóc băng...</p>
-      )}
+
 
       {transcribed && !isRecording && !isTranscribing && (
         <div className="bg-[var(--bg)] border-2 border-dashed border-[var(--muted)] p-3 text-center mb-4">
@@ -575,9 +573,21 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
                 })()}
               </div>
               {result.wordDetails.example && (
-                <div className="bg-[var(--bg)] p-3 border-2 border-[var(--line)] text-sm font-medium text-[var(--ink)] italic shadow-[2px_2px_0_var(--line)]">
+                <div className="bg-[var(--bg)] p-3 border-2 border-[var(--line)] text-sm font-medium text-[var(--ink)] italic shadow-[2px_2px_0_var(--line)] text-left">
                   <span className="font-bold not-italic text-[var(--muted)] block mb-1 text-xs uppercase tracking-wide">Ví dụ:</span>
-                  "{result.wordDetails.example}"
+                  {(() => {
+                    const rawEx = result.wordDetails.example;
+                    const separator = rawEx.includes('///') ? '///' : '|||';
+                    const parts = rawEx.split(separator);
+                    const exEn = parts[0]?.trim();
+                    const exVi = parts[1]?.trim();
+                    return (
+                      <>
+                        <p className="text-sm font-bold text-[var(--ink)] font-serif italic">"{exEn}"</p>
+                        {exVi && <p className="text-xs text-[var(--muted)] not-italic mt-1">{exVi}</p>}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </div>
