@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+process.env.IS_SCRIPT = 'true';
+import { prisma } from '../lib/prisma';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env', override: false });
-
-const prisma = new PrismaClient();
 const apiKey = process.env.NVIDIA_API_KEY;
 
 async function translateWithAI(word: string, pos: string | null, oldMeaning: string): Promise<string | null> {

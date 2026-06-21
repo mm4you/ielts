@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+process.env.IS_SCRIPT = 'true';
+import { prisma } from '../lib/prisma';
 
 const cambridgeWords = [
   // C1 / C2 Academic
