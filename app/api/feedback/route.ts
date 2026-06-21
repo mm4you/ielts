@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import nodemailer from 'nodemailer';
 import { feedbackSchema } from '@/lib/validations/feedback';
 import { logger } from '@/lib/logger';
+import { rateLimit } from '@/lib/rate-limit';
 
 // Helper function to safely escape HTML special characters
 function escapeHtml(str: string): string {
@@ -17,6 +18,15 @@ function escapeHtml(str: string): string {
 
 export async function POST(request: Request) {
   try {
+    const ip = (request.headers.get('x-forwarded-for') || '127.0.0.1').split(',')[0].trim();
+    const limiter = rateLimit(ip, 5, 60000); // 5 requests per minute
+
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: 'Bạn thao tác quá nhanh. Vui lòng thử lại sau một phút.' },
+        { status: 429 }
+      );
+    }
     const body = await request.json().catch(() => ({}));
     const validation = feedbackSchema.safeParse(body);
 

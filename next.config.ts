@@ -5,8 +5,18 @@ const scriptSrc = `script-src 'self'${isDev ? " 'unsafe-eval'" : ""} 'unsafe-inl
 const cspValue = `default-src 'self'; ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.googleusercontent.com; font-src 'self' data:; connect-src 'self'; media-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self' accounts.google.com; frame-ancestors 'none';`;
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   async headers() {
     return [
+      {
+        source: "/icon",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       {
         source: "/(.*)",
         headers: [

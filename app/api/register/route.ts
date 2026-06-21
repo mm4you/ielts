@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
   try {
+    const ip = (req.headers.get('x-forwarded-for') || '127.0.0.1').split(',')[0].trim();
+    const limiter = rateLimit(ip, 5, 60000); // 5 requests per minute
+
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: 'Bạn thao tác quá nhanh. Vui lòng thử lại sau một phút.' },
+        { status: 429 }
+      );
+    }
     let body;
     try {
       body = await req.json();
