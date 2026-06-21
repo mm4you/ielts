@@ -99,7 +99,7 @@ export default function AnalyticsClient({
       {/* Header */}
       <div className="mb-10 text-center md:text-left">
         <h1 className="text-3xl font-black uppercase tracking-tight text-[var(--ink)] mb-2">
-          📊 Thống kê học tập
+          Thống kê học tập
         </h1>
         <p className="text-[var(--muted)] font-bold">
           Chào mừng trở lại, <span className="text-[var(--blue)]">{userName}</span>! Dưới đây là hành trình chinh phục từ vựng của bạn.
@@ -116,10 +116,12 @@ export default function AnalyticsClient({
               {streak} <span className="text-base font-bold">ngày</span>
             </p>
             <p className="text-xs font-bold text-[var(--muted)] mt-2">
-              {hasActivityToday ? '🎉 Hôm nay đã học' : '🔥 Học ngay hôm nay để giữ chuỗi!'}
+              {hasActivityToday ? 'Hôm nay đã học!' : 'Học ngay hôm nay để giữ chuỗi!'}
             </p>
           </div>
-          <div className="text-5xl animate-bounce">🔥</div>
+          <div className="w-12 h-12 bg-[var(--red)] border-[3px] border-[var(--line)] rounded-xl shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>
+          </div>
         </div>
 
         {/* Total Learned Card */}
@@ -133,7 +135,9 @@ export default function AnalyticsClient({
               Chinh phục được {overallPercent}% kho từ vựng
             </p>
           </div>
-          <div className="text-5xl">📚</div>
+          <div className="w-12 h-12 bg-[var(--blue)] border-[3px] border-[var(--line)] rounded-xl shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          </div>
         </div>
 
         {/* Mastered Card */}
@@ -147,13 +151,15 @@ export default function AnalyticsClient({
               Đã ghi nhớ vào trí nhớ dài hạn
             </p>
           </div>
-          <div className="text-5xl">🧠</div>
+          <div className="w-12 h-12 bg-[var(--green)] border-[3px] border-[var(--line)] rounded-xl shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
         </div>
       </div>
 
       {/* Memory Progress Section */}
       <div className="panel p-6 mb-8">
-        <h2 className="text-lg font-black uppercase mb-4 text-[var(--ink)]">🧠 Tiến trình ghi nhớ từ vựng</h2>
+        <h2 className="text-lg font-black uppercase mb-4 text-[var(--ink)]">Tiến trình ghi nhớ từ vựng</h2>
         
         {/* Progress Bar Container */}
         <div className="h-8 w-full border-[3px] border-[var(--line)] rounded-xl overflow-hidden flex mb-6 shadow-[2px_2px_0_var(--line)]">
@@ -215,9 +221,9 @@ export default function AnalyticsClient({
       </div>
 
       {/* Heatmap Section */}
-      <div className="panel p-6 mb-8">
+      <div className="panel p-6 mb-8 overflow-visible">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-2">
-          <h2 className="text-lg font-black uppercase text-[var(--ink)]">📅 Biểu đồ nhiệt hoạt động</h2>
+          <h2 className="text-lg font-black uppercase text-[var(--ink)]">Biểu đồ nhiệt hoạt động</h2>
           <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--muted)]">
             <span>Ít</span>
             <div className="w-3 h-3 rounded-sm bg-[var(--bg)] border border-[var(--border)] opacity-30" />
@@ -230,7 +236,7 @@ export default function AnalyticsClient({
         </div>
 
         {/* Heatmap Outer Wrapper for horizontal scrolling on mobile */}
-        <div className="overflow-x-auto scrollbar-none pb-2">
+        <div className="overflow-x-auto overflow-y-visible scrollbar-none pb-8">
           <div className="flex gap-2 min-w-[720px] select-none">
             {/* Day of Week Labels Column */}
             <div className="grid grid-rows-7 gap-[3px] pr-2 text-[10px] font-black text-[var(--muted)] text-right h-[122px] justify-between pt-[2px]">
@@ -252,11 +258,11 @@ export default function AnalyticsClient({
                 return (
                   <div key={idx} className="group relative">
                     <div 
-                      className={`w-[14px] h-[14px] rounded-[3px] transition-colors ${colorClass}`} 
+                      className={`w-[14px] h-[14px] rounded-[3px] transition-colors cursor-pointer ${colorClass}`} 
                     />
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-[var(--ink)] text-[var(--paper)] text-[10px] font-black py-1 px-2.5 rounded-lg border-2 border-[var(--line)] whitespace-nowrap z-30 shadow-[2px_2px_0_var(--line)]">
-                      {count > 0 ? `🔥 Đã học ${count} từ` : 'Nhàn rỗi'} vào {formattedVN}
+                    {/* Tooltip - hiển thị bên dưới ô để không bị che */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-[var(--ink)] text-[var(--paper)] text-[10px] font-black py-1 px-2.5 rounded-lg border-2 border-[var(--line)] whitespace-nowrap z-50 shadow-[2px_2px_0_var(--line)] pointer-events-none">
+                      {count > 0 ? `Đã học ${count} từ` : 'Nhàn rỗi'} — {formattedVN}
                     </div>
                   </div>
                 );
@@ -271,11 +277,13 @@ export default function AnalyticsClient({
 
       {/* Game Highscores Grid */}
       <div className="panel p-6">
-        <h2 className="text-lg font-black uppercase mb-4 text-[var(--ink)]">🏆 Kỷ lục trò chơi</h2>
+        <h2 className="text-lg font-black uppercase mb-4 text-[var(--ink)]">Kỷ lục trò chơi</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Block Blast */}
           <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] flex items-center gap-4">
-            <div className="text-3xl">🧩</div>
+            <div className="w-10 h-10 bg-[#8b5cf6] border-[3px] border-[var(--line)] rounded-lg shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+            </div>
             <div>
               <p className="text-[10px] font-black uppercase text-[var(--muted)]">Xếp hình (Block Blast)</p>
               <p className="text-xl font-black text-[var(--ink)]">{highScores.blockblast} điểm</p>
@@ -284,7 +292,9 @@ export default function AnalyticsClient({
 
           {/* Speedrun */}
           <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] flex items-center gap-4">
-            <div className="text-3xl">⚡</div>
+            <div className="w-10 h-10 bg-[var(--red)] border-[3px] border-[var(--line)] rounded-lg shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            </div>
             <div>
               <p className="text-[10px] font-black uppercase text-[var(--muted)]">Tốc chiến (Speedrun)</p>
               <p className="text-xl font-black text-[var(--ink)]">{highScores.speedrun} điểm</p>
@@ -293,7 +303,9 @@ export default function AnalyticsClient({
 
           {/* Sniper */}
           <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] flex items-center gap-4">
-            <div className="text-3xl">🎯</div>
+            <div className="w-10 h-10 bg-[var(--ink)] border-[3px] border-[var(--line)] rounded-lg shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5 text-[var(--paper)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+            </div>
             <div>
               <p className="text-[10px] font-black uppercase text-[var(--muted)]">Thiện xạ (Sniper)</p>
               <p className="text-xl font-black text-[var(--ink)]">{highScores.sniper} điểm</p>
