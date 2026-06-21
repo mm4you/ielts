@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { generateWordDetails } from '@/lib/ai';
 
 // Helper to translate
 async function translateText(text: string): Promise<string> {
@@ -23,14 +24,17 @@ async function fetchRandomWords(): Promise<{word: string, f: number}[]> {
     
     // Shuffle and pick
     const shuffled = data.sort(() => 0.5 - Math.random());
-    return shuffled.map((d: any) => {
-      let f = 0;
-      if (d.tags) {
-        const fTag = d.tags.find((t: string) => t.startsWith('f:'));
-        if (fTag) f = parseFloat(fTag.split(':')[1]);
-      }
-      return { word: d.word, f };
-    });
+    return shuffled
+      .map((d: any) => {
+        let f = 0;
+        if (d.tags) {
+          const fTag = d.tags.find((t: string) => t.startsWith('f:'));
+          if (fTag) f = parseFloat(fTag.split(':')[1]);
+        }
+        return { word: d.word, f };
+      })
+      // Lọc bỏ những từ quá hiếm gặp (f < 0.8) để tránh từ quá khó
+      .filter((w: any) => w.f >= 0.8);
   } catch (e) {
     return [];
   }
@@ -93,28 +97,67 @@ export async function GET(request: Request) {
     const exists = await prisma.word.findFirst({ where: { word } });
     if (exists) continue;
 
-    const dictInfo = await fetchDictionaryInfo(word);
-    if (!dictInfo) continue;
-
-    // Translate to Vietnamese
-    const translatedMeaning = await translateText(dictInfo.definition);
-    const finalMeaning = `${dictInfo.definition} ||| ${translatedMeaning}`;
-    const finalExample = dictInfo.example || '';
-
-    const newWord = await prisma.word.create({
-      data: {
-        word,
-        ipa: dictInfo.ipa,
-        meaning_vi: finalMeaning,
-        example: finalExample,
-        synonyms: dictInfo.synonyms,
-        topic: 'Daily Update',
-        level: getCEFRLevel(f),
+    let added = false;
+    // Thử sinh bằng AI trước để có IPA & Ví dụ chuẩn
+    try {
+      const aiInfo = await generateWordDetails(word);
+      if (aiInfo && aiInfo.meaning) {
+        const newWord = await prisma.word.create({
+          data: {
+            word,
+            ipa: aiInfo.ipa,
+            meaning_vi: aiInfo.meaning,
+            example: aiInfo.example,
+            synonyms: aiInfo.synonyms,
+            topic: 'Daily Update',
+            level: getCEFRLevel(f),
+            pos: aiInfo.pos
+          }
+        });
+        newWords.push(newWord.word);
+        inserted++;
+        added = true;
       }
-    });
+    } catch (err) {
+      console.error(`AI generation failed for word ${word} in cron:`, err);
+    }
 
-    newWords.push(newWord.word);
-    inserted++;
+    // Fallback nếu AI lỗi hoặc không có key
+    if (!added) {
+      const dictInfo = await fetchDictionaryInfo(word);
+      if (!dictInfo) continue;
+
+      // Translate to Vietnamese
+      const translatedMeaning = await translateText(dictInfo.definition);
+      const finalMeaning = `${dictInfo.definition} ||| ${translatedMeaning}`;
+      const finalExample = dictInfo.example || '';
+
+      // Map POS to Vietnamese
+      let finalPos = 'Không phân loại';
+      if (dictInfo.partOfSpeech) {
+        const posEn = dictInfo.partOfSpeech.toLowerCase();
+        if (posEn.includes('noun')) finalPos = 'Danh từ';
+        else if (posEn.includes('verb')) finalPos = 'Động từ';
+        else if (posEn.includes('adjective')) finalPos = 'Tính từ';
+        else if (posEn.includes('adverb')) finalPos = 'Trạng từ';
+      }
+
+      const newWord = await prisma.word.create({
+        data: {
+          word,
+          ipa: dictInfo.ipa,
+          meaning_vi: finalMeaning,
+          example: finalExample,
+          synonyms: dictInfo.synonyms,
+          topic: 'Daily Update',
+          level: getCEFRLevel(f),
+          pos: finalPos
+        }
+      });
+
+      newWords.push(newWord.word);
+      inserted++;
+    }
 
     // Small delay
     await new Promise(r => setTimeout(r, 600));

@@ -8,6 +8,7 @@ export default function SeedBotPage() {
   const [isRunning, setIsRunning] = useState(false);
   const isRunningRef = useRef(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string>('all');
 
   const addLog = (msg: string) => {
     setLogs(prev => [msg, ...prev].slice(0, 50));
@@ -29,8 +30,8 @@ export default function SeedBotPage() {
       if (!isRunningRef.current) break;
       
       try {
-        addLog(`Đang tìm kiếm từ vựng mới... (Lượt ${i + 1}/100)`);
-        const res = await fetch('/api/seed-more');
+        addLog(`Đang tìm kiếm từ vựng mới nhóm [${selectedGroup.toUpperCase()}]... (Lượt ${i + 1}/100)`);
+        const res = await fetch(`/api/seed-more?group=${selectedGroup}`);
         const data = await res.json();
         
         if (data.inserted > 0) {
@@ -58,6 +59,34 @@ export default function SeedBotPage() {
         <p className="text-[var(--muted)] font-bold mb-8 text-center">
           Con Bot này sẽ tự động chạy rảo quanh các từ điển (GRE, SAT, Idioms, Lóng...) để bốc từ vựng mới tinh, xịn xò về kho cho bạn!
         </p>
+
+        <div className="mb-8">
+          <label className="block text-sm font-black uppercase mb-3 text-[var(--ink)]">
+            Chọn nhóm trình độ nạp từ:
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { id: 'all', label: 'Tất Cả', desc: 'Trải đều A1-C2' },
+              { id: 'A', label: 'Nhóm A', desc: 'Cơ bản (A1-A2)' },
+              { id: 'B', label: 'Nhóm B', desc: 'Trung cấp (B1-B2)' },
+              { id: 'C', label: 'Nhóm C', desc: 'Cao cấp (C1-C2)' }
+            ].map(g => (
+              <button
+                key={g.id}
+                disabled={isRunning}
+                onClick={() => setSelectedGroup(g.id)}
+                className={`p-3 border-[3px] border-[var(--line)] rounded-xl font-bold transition-all text-left flex flex-col justify-between shadow-[3px_3px_0_var(--line)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0_var(--line)] disabled:opacity-50 disabled:cursor-not-allowed ${
+                  selectedGroup === g.id
+                    ? 'bg-[var(--yellow)] text-[#111827] border-[var(--line)]'
+                    : 'bg-[var(--paper)] text-[var(--ink)]'
+                }`}
+              >
+                <span className="text-sm font-black uppercase">{g.label}</span>
+                <span className="text-[10px] font-semibold opacity-75 mt-1">{g.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="text-center mb-8">
           <div className="text-6xl font-black text-[var(--green)] mb-2">+{insertedCount}</div>
