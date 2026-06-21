@@ -30,7 +30,7 @@ export default function Card({ word }: { word: Word }) {
             ) : (
               <>
                 <p className="text-[var(--ink)] font-bold line-clamp-1">
-                  {pos && <span className="text-[var(--blue)] mr-1">[{pos}]</span>}
+                  {pos && <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-1.5 py-0.5 rounded font-mono text-[9px] font-extrabold uppercase mr-1.5 shadow-[1px_1px_0_var(--line)]">{pos}</span>}
                   {en}
                 </p>
                 {vi && <p className="text-[var(--muted)] text-sm line-clamp-1">{vi}</p>}
@@ -41,7 +41,7 @@ export default function Card({ word }: { word: Word }) {
       })()}
       
       <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-        <span className="chip bg-[var(--yellow)] text-[#111827]">{word.level}</span>
+        <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] font-black text-[10px] px-2.5 py-0.5 rounded-md uppercase tracking-wider">{word.level}</span>
         <span className="chip">{word.topic}</span>
       </div>
     </div>

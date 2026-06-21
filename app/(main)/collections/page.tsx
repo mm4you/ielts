@@ -344,10 +344,10 @@ function CollectionsContent() {
                         <h3 className="text-xl font-extrabold text-[var(--ink)] line-clamp-1">
                           {col.name}
                         </h3>
-                        <span className={`font-mono text-[10px] px-2 py-0.5 rounded-md border border-[var(--line)] font-bold uppercase ${
+                        <span className={`font-mono text-[10px] px-2.5 py-1 rounded-md border-2 border-[var(--line)] font-black uppercase shadow-[1.5px_1.5px_0_var(--line)] tracking-wider ${
                           col.isPublic 
-                            ? 'bg-[var(--green)] text-white shadow-[1px_1px_0_var(--line)]' 
-                            : 'bg-[var(--red)] text-white shadow-[1px_1px_0_var(--line)]'
+                            ? 'bg-[#16a34a] text-white' 
+                            : 'bg-[#dc2626] text-white'
                         }`}>
                           {col.isPublic ? 'Công khai' : 'Riêng tư'}
                         </span>
@@ -427,10 +427,10 @@ function CollectionsContent() {
                     <h2 className="text-2xl font-black text-[var(--ink)] uppercase truncate">
                       {selectedCollection.name}
                     </h2>
-                    <span className={`font-mono text-[10px] px-2 py-0.5 rounded-md border border-[var(--line)] shrink-0 font-bold uppercase ${
+                    <span className={`font-mono text-[10px] px-2.5 py-1 rounded-md border-2 border-[var(--line)] shrink-0 font-black uppercase shadow-[1.5px_1.5px_0_var(--line)] tracking-wider ${
                       selectedCollection.isPublic 
-                        ? 'bg-[var(--green)] text-white shadow-[1px_1px_0_var(--line)]' 
-                        : 'bg-[var(--red)] text-white shadow-[1px_1px_0_var(--line)]'
+                        ? 'bg-[#16a34a] text-white' 
+                        : 'bg-[#dc2626] text-white'
                     }`}>
                       {selectedCollection.isPublic ? 'Công khai' : 'Riêng tư'}
                     </span>
@@ -507,14 +507,14 @@ function CollectionsContent() {
                                 {word.ipa}
                               </span>
                             )}
-                            <span className="chip bg-[var(--yellow)] text-[#111827] text-[10px] px-2 py-0.5 shrink-0">
+                            <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[1px_1px_0_var(--line)] font-black text-[10px] px-2 py-0.5 rounded-md uppercase shrink-0">
                               {word.level}
                             </span>
                           </div>
                           <div className="text-xs text-[var(--muted)] font-medium mt-1 truncate">
                             {pos && (
-                              <span className="text-[var(--blue)] font-bold mr-1.5">
-                                ({pos})
+                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-1.5 py-0.5 rounded-md font-mono text-[9px] font-extrabold uppercase mr-1.5 shadow-[1px_1px_0_var(--line)]">
+                                {pos}
                               </span>
                             )}
                             <span className="font-bold text-[var(--ink)]">{en}</span>

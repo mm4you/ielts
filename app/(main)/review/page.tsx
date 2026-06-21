@@ -220,7 +220,7 @@ function ReviewContent() {
         onClick={() => { if (!showMeaning) setShowMeaning(true); }}
       >
         <div className="absolute top-4 left-4 flex gap-2">
-          <span className="chip bg-[var(--yellow)]">{currentWord.level}</span>
+          <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] font-black text-[10px] px-2.5 py-0.5 rounded-md uppercase tracking-wider">{currentWord.level}</span>
           <span className="chip">{currentWord.topic}</span>
         </div>
         <div className="absolute top-4 right-4">
@@ -244,7 +244,7 @@ function ReviewContent() {
               return (
                 <div className="mb-4 text-center">
                   {pos && (
-                    <span className="inline-block bg-[var(--blue)] text-white text-sm font-bold px-3 py-1 rounded-md mb-3 shadow-[2px_2px_0_var(--ink)]">
+                    <span className="inline-block bg-[#0ea5e9] text-[#111827] border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] font-black text-sm px-3 py-1 rounded-md mb-3">
                       {pos}
                     </span>
                   )}

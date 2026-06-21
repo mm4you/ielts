@@ -241,7 +241,7 @@ function SpeedrunContent() {
       {/* Question Card */}
       <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
         <div className="absolute top-4 left-4">
-          <span className="chip bg-[var(--blue)] text-white">{currentIndex + 1} / {questions.length}</span>
+          <span className="bg-[#0ea5e9] text-[#111827] border-2 border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] font-black text-xs px-2.5 py-1 rounded-md uppercase tracking-wider">{currentIndex + 1} / {questions.length}</span>
         </div>
         <div className="absolute top-4 right-4">
           <SaveToCollection wordId={currentQ.id} wordText={currentQ.word} />
@@ -249,7 +249,7 @@ function SpeedrunContent() {
         <h2 id="speedrun-target-word" className={`text-4xl md:text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full transition-all duration-200 ${
           explosions.length > 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100'
         }`}>{currentQ.word}</h2>
-        {currentQ.pos && <span className="text-lg font-bold text-[var(--muted)] border-2 border-[var(--line)] px-3 py-1 rounded-full">{currentQ.pos}</span>}
+        {currentQ.pos && <span className="bg-[#0ea5e9] text-[#111827] border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] font-black text-sm px-3 py-1 rounded-md uppercase tracking-wider">{currentQ.pos}</span>}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

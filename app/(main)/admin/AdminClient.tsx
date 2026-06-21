@@ -335,7 +335,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           <div className="flex gap-2 items-center flex-wrap">
                             <h3 className="text-xl font-black font-serif text-[var(--ink)]">{word.word}</h3>
                             {pos && (
-                              <span className="bg-[var(--blue)] text-white border border-[var(--line)] px-2 py-0.5 rounded-full text-[10px] font-bold select-none">
+                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-2 py-0.5 rounded-md text-[10px] font-bold select-none shadow-[1px_1px_0_var(--line)]">
                                 {pos}
                               </span>
                             )}
@@ -367,7 +367,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       </div>
 
                       <div className="flex flex-wrap gap-1.5 mb-4">
-                        <span className="chip bg-[var(--yellow)] text-black text-[10px] py-0.5 px-2">{word.level}</span>
+                        <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[1px_1px_0_var(--line)] font-bold text-[10px] py-0.5 px-2 rounded-md uppercase">{word.level}</span>
                         <span className="chip text-[10px] py-0.5 px-2">{TOPIC_LABELS[word.topic] || word.topic}</span>
                       </div>
 

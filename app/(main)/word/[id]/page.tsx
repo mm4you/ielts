@@ -64,7 +64,7 @@ export default async function WordDetailPage({
             </div>
             {word.ipa && <p className="text-xl text-[var(--muted)] mt-1">{word.ipa}</p>}
           </div>
-          <span className="chip bg-[var(--yellow)] text-[#111827]">
+          <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] font-black text-xs px-3 py-1 rounded-md uppercase tracking-wider">
             {word.level}
           </span>
         </div>
@@ -77,7 +77,7 @@ export default async function WordDetailPage({
               return (
                 <div className="space-y-1">
                   <p className="text-xl font-bold text-[var(--ink)]">
-                    {pos && <span className="text-[var(--blue)] mr-2 text-sm border-2 border-[var(--blue)] px-2 py-0.5 rounded-full">{pos}</span>}
+                    {pos && <span className="bg-[#0ea5e9] text-[#111827] text-sm border-2 border-[var(--line)] px-2.5 py-0.5 rounded-full font-black shadow-[2px_2px_0_var(--line)] mr-2">{pos}</span>}
                     {en}
                   </p>
                   {vi && <p className="text-base text-[var(--muted)]">{vi}</p>}
