@@ -280,28 +280,28 @@ function CollectionsContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 mt-12">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b-4 border-[var(--line)] pb-4">
-        <div>
+      <div className="mb-8 border-b-4 border-[var(--line)] pb-4">
+        <div className="flex items-center justify-between w-full gap-4">
           <h1 className="text-4xl md:text-5xl font-serif font-black uppercase text-[var(--ink)] tracking-tight">
             Bộ Sưu Tập
           </h1>
-          <p className="text-[var(--muted)] font-bold mt-1">
-            Quản lý kho từ vựng cá nhân và bắt đầu ôn luyện
-          </p>
-        </div>
-        <div className="flex items-center gap-3 self-start md:self-auto">
-          <button
-            onClick={() => openModal('create')}
-            className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-6 py-3 font-bold text-sm uppercase shadow-[4px_4px_0_var(--line)] hover:-translate-y-0.5"
-          >
-            [ + Tạo Bộ Mới ]
-          </button>
           <button 
             onClick={() => router.push('/')} 
             className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base"
             title="Về Trang Chủ"
           >
             X
+          </button>
+        </div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2">
+          <p className="text-[var(--muted)] font-bold">
+            Quản lý kho từ vựng cá nhân và bắt đầu ôn luyện
+          </p>
+          <button
+            onClick={() => openModal('create')}
+            className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-6 py-2.5 font-bold text-sm uppercase shadow-[4px_4px_0_var(--line)] hover:-translate-y-0.5 self-start md:self-auto"
+          >
+            [ + Tạo Bộ Mới ]
           </button>
         </div>
       </div>

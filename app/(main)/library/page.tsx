@@ -95,23 +95,23 @@ function LibraryContent() {
 
   return (
     <div>
-      <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b-4 border-[var(--line)] pb-4">
-        <div>
-          <div className="flex items-baseline gap-4 mb-2">
+      <div className="mb-8 border-b-4 border-[var(--line)] pb-4">
+        <div className="flex items-center justify-between w-full gap-4">
+          <div className="flex items-baseline gap-4">
             <h1 className="text-4xl font-bold font-serif">Thư viện từ vựng</h1>
             <span className="text-xl text-[var(--ink)] font-bold bg-[var(--paper)] px-3 py-1 rounded-full border-2 border-[var(--line)]">
               {totalCount} từ
             </span>
           </div>
-          <p className="text-[var(--muted)]">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
+          <Link 
+            href="/" 
+            className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base select-none"
+            title="Về Trang Chủ"
+          >
+            X
+          </Link>
         </div>
-        <Link 
-          href="/" 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base self-start md:self-auto select-none"
-          title="Về Trang Chủ"
-        >
-          X
-        </Link>
+        <p className="text-[var(--muted)] mt-2">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
       </div>
 
       <RecentWordsList />
