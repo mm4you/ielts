@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -14,7 +14,8 @@ export default function LoginWall() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [code, setCode] = useState('');
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [devCode, setDevCode] = useState('');
   const [isDevMode, setIsDevMode] = useState(false);
   
@@ -22,6 +23,107 @@ export default function LoginWall() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
+
+  const code = otp.join('');
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  // Auto focus first OTP input when arriving at Step 2
+  useEffect(() => {
+    if (forgotStep === 2) {
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 50);
+    }
+  }, [forgotStep]);
+
+  const handleOtpChange = (value: string, index: number) => {
+    const cleanValue = value.replace(/[^0-9]/g, '').slice(-1);
+    const newOtp = [...otp];
+    newOtp[index] = cleanValue;
+    setOtp(newOtp);
+
+    // Focus next input if entered a digit
+    if (cleanValue !== '' && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Backspace') {
+      const newOtp = [...otp];
+      if (otp[index] === '' && index > 0) {
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+        inputRefs.current[index - 1]?.focus();
+      } else {
+        newOtp[index] = '';
+        setOtp(newOtp);
+      }
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+    if (/^[0-9]{6}$/.test(pastedData)) {
+      const newOtp = pastedData.split('');
+      setOtp(newOtp);
+      inputRefs.current[5]?.focus();
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (resendCooldown > 0 || loading) return;
+
+    setError('');
+    setSuccessMsg('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'send_code', email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Gửi lại mã xác minh thất bại.');
+        setLoading(false);
+        return;
+      }
+
+      setResendCooldown(60);
+      setOtp(Array(6).fill(''));
+      if (data.devMode) {
+        setIsDevMode(true);
+        setDevCode(data.code || '');
+      } else {
+        setIsDevMode(false);
+        setDevCode('');
+      }
+      setSuccessMsg('Mã xác minh mới đã được gửi thành công đến email của bạn.');
+      setLoading(false);
+
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 50);
+    } catch (err) {
+      console.error(err);
+      setError('Có lỗi xảy ra khi gửi lại mã xác minh.');
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +241,8 @@ export default function LoginWall() {
       }
 
       setForgotStep(2);
+      setOtp(Array(6).fill(''));
+      setResendCooldown(60);
       if (data.devMode) {
         setIsDevMode(true);
         setDevCode(data.code || '');
@@ -157,8 +261,8 @@ export default function LoginWall() {
 
   const handleForgotVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!code) {
-      setError('Vui lòng nhập mã xác minh.');
+    if (code.length < 6) {
+      setError('Vui lòng nhập đầy đủ mã xác minh 6 chữ số.');
       return;
     }
 
@@ -232,7 +336,7 @@ export default function LoginWall() {
       setNewPassword('');
       setConfirmNewPassword('');
       setPassword('');
-      setCode('');
+      setOtp(Array(6).fill(''));
       setForgotStep(1);
       setLoading(false);
     } catch (err) {
@@ -490,20 +594,44 @@ export default function LoginWall() {
                     <strong>Dev Mode:</strong> Mã xác minh cho {email} là: <strong className="text-sm bg-amber-200 px-2 py-0.5 rounded border border-amber-400">{devCode}</strong> (mã này cũng được ghi vào tệp log).
                   </div>
                 )}
-                <div className="flex flex-col gap-1">
-                  <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+                <div className="flex flex-col gap-3">
+                  <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase text-center">
                     Nhập mã xác minh (6 chữ số)
                   </label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    disabled={loading}
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder="123456"
-                    className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all text-center tracking-widest text-lg font-black"
-                  />
+                  <div className="flex justify-between gap-2 md:gap-3">
+                    {otp.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        ref={(el) => {
+                          inputRefs.current[idx] = el;
+                        }}
+                        type="text"
+                        required
+                        disabled={loading}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(e.target.value, idx)}
+                        onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                        onPaste={idx === 0 ? handleOtpPaste : undefined}
+                        className="w-12 h-14 md:w-14 md:h-16 border-4 border-black font-mono font-black text-center text-2xl rounded-xl bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 focus:shadow-[4px_4px_0_#000] shadow-[2px_2px_0_#000] transition-all"
+                        maxLength={1}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                      />
+                    ))}
+                  </div>
+
+                  <div className="text-center mt-1">
+                    <button
+                      type="button"
+                      disabled={resendCooldown > 0 || loading}
+                      onClick={handleResendCode}
+                      className={`text-xs font-bold font-mono uppercase tracking-wider underline underline-offset-4 cursor-pointer hover:text-[var(--blue)] transition-colors ${
+                        resendCooldown > 0 ? 'text-[var(--muted)] no-underline cursor-not-allowed opacity-75' : 'text-[var(--ink)]'
+                      }`}
+                    >
+                      {resendCooldown > 0 ? `Gửi lại mã (${resendCooldown}s)` : 'Gửi lại mã xác minh'}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex gap-3 mt-2">

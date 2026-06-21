@@ -44,7 +44,7 @@ export async function POST(req: Request) {
           data: {
             identifier: email.toLowerCase(),
             token: verificationCode,
-            expires: new Date(Date.now() + 15 * 60 * 1000) // Hết hạn trong 15 phút
+            expires: new Date(Date.now() + 5 * 60 * 1000) // Hết hạn trong 5 phút
           }
         });
 
