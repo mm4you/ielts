@@ -90,7 +90,7 @@ export default async function WordDetailPage({
             <div>
               <p className="text-sm text-[var(--muted)] mb-1">Từ đồng nghĩa</p>
               <div className="flex flex-wrap gap-2">
-                {word.synonyms.split(',').map((s, i) => (
+                {word.synonyms.split(',').map((s: string, i: number) => (
                   <span
                     key={i}
                     className="chip text-sm font-medium"

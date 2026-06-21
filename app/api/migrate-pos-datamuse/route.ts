@@ -20,7 +20,7 @@ export async function GET() {
     }
 
     // 2. Lấy thông tin POS từ Datamuse API (Concurrency)
-    const updates = await Promise.all(words.map(async (w) => {
+    const updates = await Promise.all(words.map(async (w: any) => {
       let finalPos = 'Không phân loại';
       try {
         const res = await fetch(`https://api.datamuse.com/words?sp=${encodeURIComponent(w.word)}&md=p&max=1`);

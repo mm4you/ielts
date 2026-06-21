@@ -78,7 +78,7 @@ export async function GET(request: Request) {
     const addedWords = [];
 
     for (const item of basicWords) {
-      const exists = existingWords.some(w => w.word.toLowerCase() === item.word.toLowerCase() && w.pos === item.pos);
+      const exists = existingWords.some((w: any) => w.word.toLowerCase() === item.word.toLowerCase() && w.pos === item.pos);
       if (!exists) {
         await prisma.word.create({
           data: item

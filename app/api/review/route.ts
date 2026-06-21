@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     include: { word: true },
   });
 
-  let words = progressList.map(p => ({
+  let words = progressList.map((p: any) => ({
     ...p.word,
     ease_factor: p.ease_factor,
     interval_days: p.interval_days,
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
     
     const shuffled = selected.sort(() => 0.5 - Math.random());
 
-    words = selected.map(w => ({
+    words = selected.map((w: any) => ({
       ...w,
       ease_factor: 2.5,
       interval_days: 0,

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const savedCollectionIds = savedRelations.map(r => r.collectionId);
+    const savedCollectionIds = savedRelations.map((r: any) => r.collectionId);
     return NextResponse.json({ savedCollectionIds });
   } catch (error) {
     console.error('[QUICK_ADD_GET]', error);

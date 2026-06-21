@@ -41,7 +41,7 @@ async function main() {
   let added = 0;
   for (const item of cambridgeWords) {
     // Check if word with same POS already exists
-    const exists = existingWords.some(w => w.word.toLowerCase() === item.word.toLowerCase() && w.pos === item.pos);
+    const exists = existingWords.some((w: any) => w.word.toLowerCase() === item.word.toLowerCase() && w.pos === item.pos);
     if (!exists) {
       await prisma.word.create({
         data: item

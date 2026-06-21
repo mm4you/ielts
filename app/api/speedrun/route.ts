@@ -41,12 +41,12 @@ export async function GET(request: Request) {
     const shuffledWords = words.sort(() => 0.5 - Math.random());
     
     // Extract meanings for distractors from the selected words
-    const selectedMeanings = shuffledWords.map(w => w.meaning_vi);
+    const selectedMeanings = shuffledWords.map((w: any) => w.meaning_vi);
 
-    const questions = shuffledWords.map(word => {
+    const questions = shuffledWords.map((word: any) => {
       // Pick 3 random distractors that are not the correct meaning
       const distractors = selectedMeanings
-        .filter(m => m !== word.meaning_vi)
+        .filter((m: any) => m !== word.meaning_vi)
         .sort(() => 0.5 - Math.random())
         .slice(0, 3);
         

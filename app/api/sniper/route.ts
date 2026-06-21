@@ -38,12 +38,12 @@ export async function GET(request: Request) {
 
     // Shuffle words to pick 50 random questions
     const shuffledWords = words.sort(() => 0.5 - Math.random());
-    const selectedEnglishWords = shuffledWords.map(w => w.word);
+    const selectedEnglishWords = shuffledWords.map((w: any) => w.word);
 
-    const questions = shuffledWords.map(word => {
+    const questions = shuffledWords.map((word: any) => {
       // Target is the meaning, choices are English words
       const distractors = selectedEnglishWords
-        .filter(w => w !== word.word)
+        .filter((w: any) => w !== word.word)
         .sort(() => 0.5 - Math.random())
         .slice(0, 3);
         

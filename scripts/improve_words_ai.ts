@@ -144,7 +144,7 @@ async function main() {
     orderBy: { id: 'asc' }
   });
 
-  const wordsToImprove = allWords.filter(w => {
+  const wordsToImprove = allWords.filter((w: any) => {
     const needsIpa = !w.ipa || w.ipa.trim() === '';
     const needsExample = !w.example || w.example.trim() === '' || !w.example.includes('///');
     
@@ -162,7 +162,7 @@ async function main() {
   let successCount = 0;
   let failCount = 0;
 
-  const tasks = wordsToImprove.map((w, index) => async () => {
+  const tasks = wordsToImprove.map((w: any, index: number) => async () => {
     // Stagger start times slightly
     await new Promise(r => setTimeout(r, Math.random() * 800));
     

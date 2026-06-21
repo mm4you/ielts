@@ -34,7 +34,7 @@ export async function GET(
       orderBy: { createdAt: 'desc' }
     });
 
-    const words = collectionWords.map(cw => cw.word);
+    const words = collectionWords.map((cw: any) => cw.word);
     return NextResponse.json({ collection, words });
   } catch (error) {
     console.error('[COLLECTION_WORDS_GET]', error);

@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       const batch = wordsToImprove.slice(i, i + batchSize);
 
       await Promise.all(
-        batch.map(async (word) => {
+        batch.map(async (word: any) => {
           // Extract the English part from the old meaning
           const enMeaning = word.meaning_vi.split('|||')[0].trim();
           

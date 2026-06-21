@@ -215,9 +215,9 @@ async function main() {
   }
 
   console.log('Quét database và phân tích từ vựng...');
-  const words = await withRetry(() => prisma.word.findMany({
+  const words = (await withRetry(() => prisma.word.findMany({
     orderBy: { id: 'asc' }
-  }));
+  }))) as any[];
 
   const incorrectWords: WordRecord[] = [];
 
