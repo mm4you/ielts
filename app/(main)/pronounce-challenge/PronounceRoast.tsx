@@ -467,10 +467,12 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
                 window.speechSynthesis.speak(utter);
               }
             }}
-            className="text-2xl hover:scale-125 transition-transform"
+            className="text-2xl hover:scale-125 transition-transform flex items-center justify-center text-[var(--blue)] shrink-0"
             title="Nghe cách đọc chuẩn"
           >
-            🔊
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
           </button>
         </div>
       </div>
@@ -479,7 +481,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         <button
           onClick={isRecording ? stopRecording : startRecording}
           disabled={loading || isTranscribing}
-          className={`btn-brutal w-24 h-24 rounded-full flex items-center justify-center text-4xl shadow-[6px_6px_0_var(--line)] transition-transform ${
+          className={`btn-brutal w-24 h-24 rounded-full flex items-center justify-center shadow-[6px_6px_0_var(--line)] transition-transform ${
             isRecording 
               ? 'bg-[var(--red)] animate-pulse scale-110 border-[var(--line)] shadow-[2px_2px_0_var(--line)]' 
               : (loading || isTranscribing)
@@ -490,12 +492,29 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           } ${loading || isTranscribing ? 'cursor-not-allowed' : ''}`}
         >
           {isRecording 
-            ? '🔴' 
+            ? (
+              <svg className="w-10 h-10 animate-ping text-white shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8" />
+              </svg>
+            )
             : (loading || isTranscribing)
-              ? '⏳'
+              ? (
+                <svg className="w-10 h-10 animate-spin text-[var(--ink)] shrink-0" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+              )
               : result 
-                ? '🟢' 
-                : '🎤'}
+                ? (
+                  <svg className="w-10 h-10 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )
+                : (
+                  <svg className="w-10 h-10 text-[var(--ink)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                )}
         </button>
       </div>
 
@@ -536,9 +555,12 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => speakRoast(result.roast)}
-                className={`text-sm px-3 py-1 rounded border-2 border-[var(--line)] font-bold shrink-0 ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
+                className={`text-sm px-3 py-1.5 rounded border-2 border-[var(--line)] font-bold shrink-0 flex items-center gap-1.5 ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
               >
-                {isPlaying ? '🔊 Đang la...' : '🔊 Nghe la'}
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <span>{isPlaying ? 'Đang la...' : 'Nghe la'}</span>
               </button>
             </div>
           </div>
@@ -547,8 +569,11 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           {/* Chi tiết từ vựng gốc */}
           {result.wordDetails && (
             <div className="mt-4 pt-4 border-t-2 border-dashed border-[var(--line)] text-left">
-              <span className="inline-block bg-[var(--yellow)] text-[var(--ink)] text-xs font-black px-2.5 py-1 border-2 border-[var(--line)] uppercase tracking-wider mb-3 rotate-[-1.5deg]">
-                📖 CHI TIẾT TỪ VỰNG:
+              <span className="inline-flex items-center gap-1.5 bg-[var(--yellow)] text-[var(--ink)] text-xs font-black px-2.5 py-1 border-2 border-[var(--line)] uppercase tracking-wider mb-3 rotate-[-1.5deg]">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span>CHI TIẾT TỪ VỰNG:</span>
               </span>
               <div className="flex flex-wrap items-baseline gap-2 mb-2">
                 <span className="text-2xl font-black uppercase text-[var(--blue)] tracking-wider">{result.wordDetails.word}</span>

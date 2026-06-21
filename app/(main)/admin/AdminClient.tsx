@@ -309,9 +309,12 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     alert('Lỗi kết nối AI');
                   }
                 }}
-                className="btn-brutal bg-[#a855f7] text-white text-xs py-2 px-4 shadow-[2px_2px_0_var(--line)]"
+                className="btn-brutal bg-[#a855f7] text-white text-xs py-2 px-4 shadow-[2px_2px_0_var(--line)] flex items-center justify-center gap-1.5"
               >
-                ✨ AI Sửa Nghĩa Tự Động (50 từ)
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+                <span>AI Sửa Nghĩa Tự Động (50 từ)</span>
               </button>
             </div>
           </div>

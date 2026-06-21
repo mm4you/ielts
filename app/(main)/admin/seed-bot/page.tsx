@@ -97,7 +97,14 @@ export default function SeedBotPage() {
           onClick={isRunning ? stopBot : startBot} 
           className={`btn-brutal w-full py-4 text-xl uppercase text-white mb-8 ${isRunning ? 'bg-[var(--red)]' : 'bg-[var(--blue)]'}`}
         >
-          {isRunning ? 'Dừng Bot Ngay!' : 'Khởi Động Bot 🚀'}
+          {isRunning ? 'Dừng Bot Ngay!' : (
+            <span className="flex items-center justify-center gap-2">
+              <span>Khởi Động Bot</span>
+              <svg className="w-5 h-5 animate-bounce shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </span>
+          )}
         </button>
 
         <div className="bg-[var(--paper)] border-[3px] border-[var(--line)] rounded-xl p-4 h-64 overflow-y-auto font-mono text-sm">

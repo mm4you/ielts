@@ -25,9 +25,12 @@ export default function WordPronounceChallenge({ wordId, wordText }: WordPronoun
           <div className="flex justify-end mb-2">
             <button
               onClick={() => setIsOpen(false)}
-              className="text-xs font-black bg-[var(--red)] text-white border-2 border-[var(--line)] px-2.5 py-1 uppercase shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-[0_0_0_var(--line)] transition-all"
+              className="text-xs font-black bg-[var(--red)] text-white border-2 border-[var(--line)] px-2.5 py-1.5 uppercase shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-[0_0_0_var(--line)] transition-all flex items-center gap-1"
             >
-              ✕ Đóng luyện tập
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span>Đóng luyện tập</span>
             </button>
           </div>
           <PronounceRoast wordId={wordId} wordText={wordText} />

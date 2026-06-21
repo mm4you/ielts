@@ -545,7 +545,15 @@ export default function BlockBlastClient() {
               <span className="block text-sm font-bold text-[var(--muted)] uppercase">Điểm của bạn</span>
               <span className="block text-4xl font-black text-[var(--blue)]">{score}</span>
               {score >= highScore && score > 0 && (
-                <span className="block mt-2 text-xs font-black text-[var(--red)] animate-pulse uppercase">🎉 Kỷ lục mới! 🎉</span>
+                <span className="inline-flex items-center gap-1 justify-center mt-2 text-xs font-black text-[var(--red)] animate-pulse uppercase w-full">
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                  <span>Kỷ lục mới!</span>
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </span>
               )}
             </div>
             <button 
