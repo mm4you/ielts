@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import Card from '@/components/Card';
 import RecentWordsList from './RecentWordsList';
@@ -94,7 +95,7 @@ function LibraryContent() {
 
   return (
     <div>
-      <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b-4 border-[var(--line)] pb-4">
         <div>
           <div className="flex items-baseline gap-4 mb-2">
             <h1 className="text-4xl font-bold font-serif">Thư viện từ vựng</h1>
@@ -104,6 +105,13 @@ function LibraryContent() {
           </div>
           <p className="text-[var(--muted)]">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
         </div>
+        <Link 
+          href="/" 
+          className="w-10 h-10 md:w-12 md:h-12 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-base md:text-lg self-start md:self-auto select-none"
+          title="Về Trang Chủ"
+        >
+          X
+        </Link>
       </div>
 
       <RecentWordsList />
