@@ -64,7 +64,7 @@ export default async function WordDetailPage({
             </div>
             {word.ipa && <p className="text-xl text-[var(--muted)] mt-1">{word.ipa}</p>}
           </div>
-          <span className="px-3 py-1 bg-[var(--primary)] text-white rounded-full text-sm font-medium">
+          <span className="chip bg-[var(--yellow)] text-[#111827]">
             {word.level}
           </span>
         </div>

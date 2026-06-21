@@ -344,8 +344,10 @@ function CollectionsContent() {
                         <h3 className="text-xl font-extrabold text-[var(--ink)] line-clamp-1">
                           {col.name}
                         </h3>
-                        <span className={`font-mono text-[9px] px-2 py-0.5 rounded border border-[var(--line)] ${
-                          col.isPublic ? 'bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                        <span className={`font-mono text-[10px] px-2 py-0.5 rounded-md border border-[var(--line)] font-bold uppercase ${
+                          col.isPublic 
+                            ? 'bg-[var(--green)] text-white shadow-[1px_1px_0_var(--line)]' 
+                            : 'bg-[var(--red)] text-white shadow-[1px_1px_0_var(--line)]'
                         }`}>
                           {col.isPublic ? 'Công khai' : 'Riêng tư'}
                         </span>
@@ -425,8 +427,10 @@ function CollectionsContent() {
                     <h2 className="text-2xl font-black text-[var(--ink)] uppercase truncate">
                       {selectedCollection.name}
                     </h2>
-                    <span className={`font-mono text-[9px] px-2 py-0.5 rounded border border-[var(--line)] shrink-0 ${
-                      selectedCollection.isPublic ? 'bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                    <span className={`font-mono text-[10px] px-2 py-0.5 rounded-md border border-[var(--line)] shrink-0 font-bold uppercase ${
+                      selectedCollection.isPublic 
+                        ? 'bg-[var(--green)] text-white shadow-[1px_1px_0_var(--line)]' 
+                        : 'bg-[var(--red)] text-white shadow-[1px_1px_0_var(--line)]'
                     }`}>
                       {selectedCollection.isPublic ? 'Công khai' : 'Riêng tư'}
                     </span>
@@ -503,7 +507,7 @@ function CollectionsContent() {
                                 {word.ipa}
                               </span>
                             )}
-                            <span className="text-[9px] bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-[var(--line)] px-1 py-0.2 rounded font-mono uppercase font-bold">
+                            <span className="chip bg-[var(--yellow)] text-[#111827] text-[10px] px-2 py-0.5 shrink-0">
                               {word.level}
                             </span>
                           </div>
