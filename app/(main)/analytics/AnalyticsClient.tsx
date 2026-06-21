@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+interface LeaderboardUser {
+  name: string;
+  score: number;
+}
+
 interface AnalyticsClientProps {
   totalWords: number;
   learnedWords: number;
@@ -18,6 +23,12 @@ interface AnalyticsClientProps {
     sniper: number;
   };
   userName: string;
+  leaderboard: {
+    blockblast: LeaderboardUser[];
+    speedrun: LeaderboardUser[];
+    sniper: LeaderboardUser[];
+    mastered: LeaderboardUser[];
+  };
 }
 
 export default function AnalyticsClient({
@@ -30,8 +41,11 @@ export default function AnalyticsClient({
   hasActivityToday,
   heatmapData,
   highScores,
-  userName
+  userName,
+  leaderboard
 }: AnalyticsClientProps) {
+  const [activeTab, setActiveTab] = useState<'blockblast' | 'speedrun' | 'sniper' | 'mastered'>('mastered');
+
   // Tính tỷ lệ phần trăm
   const masteredPercent = totalWords > 0 ? Math.round((masteredCount / totalWords) * 100) : 0;
   const learningPercent = totalWords > 0 ? Math.round((learningCount / totalWords) * 100) : 0;
@@ -320,6 +334,94 @@ export default function AnalyticsClient({
               <p className="text-xl font-black text-[var(--ink)]">{highScores.sniper} điểm</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Community Leaderboard Panel */}
+      <div className="panel p-6 mt-8 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl bg-[var(--paper)] w-full flex flex-col select-none">
+        {/* Title */}
+        <div className="flex items-center gap-2 mb-6 border-b-2 border-dashed border-[var(--line)] pb-3">
+          <div className="w-9 h-9 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-lg shadow-[1.5px_1.5px_0_var(--line)] flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-[var(--ink)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-black uppercase text-[var(--ink)]">Bảng Xếp Hạng Cộng Đồng</h2>
+        </div>
+
+        {/* Tabs */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6 p-1 bg-[var(--bg)] rounded-xl border-2 border-[var(--line)]">
+          {[
+            { id: 'mastered', label: 'Chăm chỉ', color: 'bg-[var(--green)] text-white' },
+            { id: 'speedrun', label: 'Tốc chiến', color: 'bg-[var(--red)] text-white' },
+            { id: 'blockblast', label: 'Xếp hình', color: 'bg-[#8b5cf6] text-white' },
+            { id: 'sniper', label: 'Thiện xạ', color: 'bg-[var(--ink)] text-[var(--paper)]' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                activeTab === tab.id
+                  ? `${tab.color} border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] scale-102`
+                  : 'text-[var(--muted)] hover:text-[var(--ink)] bg-transparent border-2 border-transparent'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* List */}
+        <div className="space-y-3.5">
+          {leaderboard[activeTab].length === 0 ? (
+            <div className="text-center py-10 font-bold text-sm text-[var(--muted)]">
+              Chưa có dữ liệu xếp hạng...
+            </div>
+          ) : (
+            leaderboard[activeTab].map((user, idx) => {
+              const getRankStyle = (index: number) => {
+                switch (index) {
+                  case 0:
+                    return 'bg-[var(--yellow)] text-[var(--ink)] border-[var(--line)] scale-[1.01] shadow-[2px_2px_0_var(--line)]';
+                  case 1:
+                    return 'bg-gray-100 text-[var(--ink)] border-[var(--line)]';
+                  case 2:
+                    return 'bg-[#ffca28]/20 text-[var(--ink)] border-[var(--line)]';
+                  default:
+                    return 'bg-[var(--bg)] text-[var(--muted)] border-[var(--line)]';
+                }
+              };
+
+              return (
+                <div
+                  key={idx}
+                  className={`flex items-center justify-between p-3.5 border-2 rounded-xl transition-all ${getRankStyle(idx)}`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {/* Rank Badge */}
+                    <span className="w-7 h-7 rounded-full border-2 border-[var(--line)] flex items-center justify-center text-xs font-black shrink-0 bg-[var(--paper)] text-[var(--ink)]">
+                      {idx + 1}
+                    </span>
+
+                    {/* Avatar Letter */}
+                    <div className="w-8 h-8 rounded-full border-2 border-[var(--line)] flex items-center justify-center font-extrabold text-sm shrink-0 bg-[var(--paper)] text-[var(--ink)]">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+
+                    {/* Username */}
+                    <span className="font-extrabold text-sm truncate text-[var(--ink)]">
+                      {user.name}
+                    </span>
+                  </div>
+
+                  {/* Score */}
+                  <span className="font-black text-sm text-right shrink-0 text-[var(--ink)] ml-2">
+                    {user.score.toLocaleString()} {activeTab === 'mastered' ? 'từ đã thuộc' : 'điểm'}
+                  </span>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

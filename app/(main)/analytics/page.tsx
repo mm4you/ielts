@@ -102,6 +102,81 @@ export default async function AnalyticsPage() {
     heatmapData[key] = (heatmapData[key] || 0) + a.wordsLearned;
   });
 
+  // 1. Top 5 Block Blast
+  const topBlockblastRaw = await prisma.user.findMany({
+    where: { blockblastHighScore: { gt: 0 } },
+    orderBy: { blockblastHighScore: 'desc' },
+    take: 5,
+    select: { name: true, email: true, blockblastHighScore: true }
+  });
+
+  // 2. Top 5 Speedrun
+  const topSpeedrunRaw = await prisma.user.findMany({
+    where: { speedrunHighScore: { gt: 0 } },
+    orderBy: { speedrunHighScore: 'desc' },
+    take: 5,
+    select: { name: true, email: true, speedrunHighScore: true }
+  });
+
+  // 3. Top 5 Sniper
+  const topSniperRaw = await prisma.user.findMany({
+    where: { sniperHighScore: { gt: 0 } },
+    orderBy: { sniperHighScore: 'desc' },
+    take: 5,
+    select: { name: true, email: true, sniperHighScore: true }
+  });
+
+  // 4. Top 5 Mastered (từ đã thuộc lòng: interval_days > 15)
+  const masteredGroups = await prisma.userProgress.groupBy({
+    by: ['userId'],
+    _count: {
+      id: true
+    },
+    where: {
+      interval_days: { gt: 15 }
+    },
+    take: 10
+  });
+
+  const userIds = masteredGroups.map((g: any) => g.userId);
+  const users = await prisma.user.findMany({
+    where: { id: { in: userIds } },
+    select: { id: true, name: true, email: true }
+  });
+
+  const topMasteredRaw = masteredGroups
+    .map((g: any) => {
+      const u = users.find((user: any) => user.id === g.userId);
+      return {
+        name: u?.name || null,
+        email: u?.email || null,
+        score: g._count.id
+      };
+    })
+    .sort((a: any, b: any) => b.score - a.score)
+    .slice(0, 5);
+
+  // Helper ẩn thông tin email để bảo mật
+  const formatUser = (uObj: { name: string | null; email: string | null; score: number }) => {
+    let displayName = 'Ẩn danh';
+    if (uObj.name) {
+      displayName = uObj.name;
+    } else if (uObj.email) {
+      displayName = uObj.email.split('@')[0];
+    }
+    return {
+      name: displayName,
+      score: uObj.score
+    };
+  };
+
+  const leaderboard = {
+    blockblast: topBlockblastRaw.map((u: any) => formatUser({ name: u.name, email: u.email, score: u.blockblastHighScore })),
+    speedrun: topSpeedrunRaw.map((u: any) => formatUser({ name: u.name, email: u.email, score: u.speedrunHighScore })),
+    sniper: topSniperRaw.map((u: any) => formatUser({ name: u.name, email: u.email, score: u.sniperHighScore })),
+    mastered: topMasteredRaw.map((u: any) => formatUser({ name: u.name, email: u.email, score: u.score }))
+  };
+
   return (
     <AnalyticsClient
       totalWords={totalWords}
@@ -118,6 +193,7 @@ export default async function AnalyticsPage() {
         sniper: user?.sniperHighScore || 0
       }}
       userName={user?.name || user?.email || 'Học viên'}
+      leaderboard={leaderboard}
     />
   );
 }
