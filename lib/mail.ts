@@ -26,7 +26,7 @@ export async function sendResetPasswordEmail(email: string, code: string) {
       from: smtpFrom,
       to: email,
       subject: 'Reset Password Verification Code - IELTS Vocab',
-      text: `Mã xác minh đặt lại mật khẩu của bạn là: ${code} (Hiệu lực 15 phút).\nYour password reset verification code is: ${code} (Valid for 15 minutes).`,
+      text: `Mã xác minh đặt lại mật khẩu của bạn là: ${code} (Hiệu lực 5 phút).\nYour password reset verification code is: ${code} (Valid for 5 minutes).`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 3px solid #111827; border-radius: 12px; background-color: #fffdf8; box-shadow: 6px 6px 0 #111827;">
           <h2 style="font-family: serif; color: #111827; border-bottom: 2px dashed #111827; padding-bottom: 10px; margin-top: 0;">IELTS Vocab Studio</h2>
@@ -40,10 +40,10 @@ export async function sendResetPasswordEmail(email: string, code: string) {
             ${code}
           </div>
           <p style="font-size: 12px; color: #5b6474; margin-bottom: 4px; margin-top: 20px;">
-            Mã xác minh này có hiệu lực trong vòng <strong>15 phút</strong>. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email.
+            Mã xác minh này có hiệu lực trong vòng <strong>5 phút</strong>. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email.
           </p>
           <p style="font-size: 11px; color: #9ca3af; margin-top: 0; font-style: italic;">
-            This verification code is valid for 15 minutes. If you did not request this, please ignore this email.
+            This verification code is valid for 5 minutes. If you did not request this, please ignore this email.
           </p>
         </div>
       `,
