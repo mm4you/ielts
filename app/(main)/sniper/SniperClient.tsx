@@ -299,7 +299,7 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
         </div>
         <button 
           onClick={() => router.push(exitRoute)} 
-          className="w-10 h-10 md:w-12 md:h-12 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 pointer-events-auto cursor-pointer"
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 pointer-events-auto cursor-pointer text-sm md:text-base"
           title="Thoát game"
         >
           X

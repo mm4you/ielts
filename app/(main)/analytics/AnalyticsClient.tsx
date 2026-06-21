@@ -108,7 +108,7 @@ export default function AnalyticsClient({
         </div>
         <Link 
           href="/" 
-          className="w-10 h-10 md:w-12 md:h-12 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-base md:text-lg self-start md:self-auto select-none"
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base self-start md:self-auto select-none"
           title="Về Trang Chủ"
         >
           X
