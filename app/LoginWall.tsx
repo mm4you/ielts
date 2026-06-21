@@ -598,7 +598,7 @@ export default function LoginWall() {
                   <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase text-center">
                     Nhập mã xác minh (6 chữ số)
                   </label>
-                  <div className="flex justify-between gap-2 md:gap-3">
+                  <div className="flex justify-center gap-2 md:gap-3">
                     {otp.map((digit, idx) => (
                       <input
                         key={idx}
@@ -612,7 +612,7 @@ export default function LoginWall() {
                         onChange={(e) => handleOtpChange(e.target.value, idx)}
                         onKeyDown={(e) => handleOtpKeyDown(e, idx)}
                         onPaste={idx === 0 ? handleOtpPaste : undefined}
-                        className="w-12 h-14 md:w-14 md:h-16 border-4 border-black font-mono font-black text-center text-2xl rounded-xl bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 focus:shadow-[4px_4px_0_#000] shadow-[2px_2px_0_#000] transition-all"
+                        className="w-12 h-14 md:w-14 md:h-16 flex-shrink-0 min-w-0 border-4 border-black font-mono font-black text-center text-2xl rounded-xl bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 focus:shadow-[4px_4px_0_#000] shadow-[2px_2px_0_#000] transition-all"
                         maxLength={1}
                         inputMode="numeric"
                         pattern="[0-9]*"
