@@ -96,16 +96,16 @@ function LibraryContent() {
   return (
     <div>
       <div className="mb-8 border-b-4 border-[var(--line)] pb-4">
-        <div className="flex items-center justify-between w-full gap-4">
-          <div className="flex items-baseline gap-4">
-            <h1 className="text-4xl font-bold font-serif">Thư viện từ vựng</h1>
-            <span className="text-xl text-[var(--ink)] font-bold bg-[var(--paper)] px-3 py-1 rounded-full border-2 border-[var(--line)]">
+        <div className="flex items-start justify-between w-full gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4 flex-1 min-w-0">
+            <h1 className="text-3xl md:text-4xl font-bold font-serif leading-tight">Thư viện từ vựng</h1>
+            <span className="inline-block text-sm md:text-base text-[var(--ink)] font-bold bg-[var(--paper)] px-3 py-1 rounded-full border-2 border-[var(--line)] whitespace-nowrap shrink-0 self-start sm:self-auto">
               {totalCount} từ
             </span>
           </div>
           <Link 
             href="/" 
-            className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base select-none"
+            className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base select-none mt-1"
             title="Về Trang Chủ"
           >
             X
