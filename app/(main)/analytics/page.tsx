@@ -135,6 +135,11 @@ export default async function AnalyticsPage() {
     where: {
       interval_days: { gt: 15 }
     },
+    orderBy: {
+      _count: {
+        id: 'desc'
+      }
+    },
     take: 10
   });
 
