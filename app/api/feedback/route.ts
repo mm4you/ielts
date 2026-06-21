@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import nodemailer from 'nodemailer';
+import { feedbackSchema } from '@/lib/validations/feedback';
+import { logger } from '@/lib/logger';
 
 // Helper function to safely escape HTML special characters
 function escapeHtml(str: string): string {
@@ -16,27 +18,22 @@ function escapeHtml(str: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const { type, message, contact } = body;
+    const validation = feedbackSchema.safeParse(body);
 
-    // A08:2021 - Server-side validation of inputs
-    if (!message || typeof message !== 'string' || message.trim() === '') {
-      return NextResponse.json({ error: 'Nội dung góp ý không được để trống' }, { status: 400 });
+    if (!validation.success) {
+      const errorMessage = validation.error.issues[0]?.message || 'Dữ liệu không hợp lệ';
+      logger.warn({ errors: validation.error.format() }, 'Validation failed for feedback submission');
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    if (message.length > 2000) {
-      return NextResponse.json({ error: 'Nội dung góp ý vượt quá giới hạn 2000 ký tự' }, { status: 400 });
-    }
-
-    if (contact && typeof contact === 'string' && contact.length > 300) {
-      return NextResponse.json({ error: 'Thông tin liên hệ vượt quá giới hạn 300 ký tự' }, { status: 400 });
-    }
+    const { type, message, contact } = validation.data;
 
     const smtpUser = process.env.SMTP_USER;
     const smtpPassword = process.env.SMTP_PASSWORD;
     const receiverEmail = process.env.FEEDBACK_RECEIVER_EMAIL || smtpUser;
 
     if (!smtpUser || !smtpPassword) {
-      console.error('[SECURITY WARNING] SMTP credentials are not configured in environment variables');
+      logger.error('[SECURITY WARNING] SMTP credentials are not configured in environment variables');
       return NextResponse.json(
         { error: 'Tính năng góp ý qua email chưa được thiết lập cấu hình SMTP trên server.' },
         { status: 500 }
@@ -124,11 +121,11 @@ IELTS Vocab Mailer`,
     };
 
     await transporter.sendMail(mailOptions);
+    logger.info({ type: rawTypeLabel, userDisplay }, 'Feedback email sent successfully');
 
     return NextResponse.json({ success: true, message: 'Góp ý của bạn đã được gửi đi thành công!' });
   } catch (error: any) {
-    // A09:2021 / A05:2021 - Log detailed errors server-side only, return generic message to client to avoid information disclosure
-    console.error('Lỗi khi gửi email góp ý:', error);
+    logger.error({ error }, 'Lỗi khi gửi email góp ý');
     return NextResponse.json(
       { 
         error: 'Không thể gửi email góp ý. Vui lòng thử lại sau.'

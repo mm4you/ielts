@@ -1,6 +1,8 @@
-import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { CollectionService } from '@/services/collection.service';
+import { updateCollectionSchema } from '@/lib/validations/collection';
+import { logger } from '@/lib/logger';
 
 export async function PATCH(
   request: NextRequest,
@@ -9,45 +11,36 @@ export async function PATCH(
   try {
     const session = await auth();
     if (!session?.user?.id) {
+      logger.warn({ path: '/api/collections/[id]', method: 'PATCH' }, 'Unauthorized collection patch attempt');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
-    const collection = await prisma.collection.findUnique({
-      where: { id }
-    });
+    const body = await request.json().catch(() => ({}));
+    const validation = updateCollectionSchema.safeParse(body);
 
-    if (!collection) {
-      return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
-    }
-
-    if (collection.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!validation.success) {
+      const errorMessage = validation.error.issues[0]?.message || 'Dữ liệu không hợp lệ';
+      logger.warn({ userId: session.user.id, collectionId: id, errors: validation.error.format() }, 'Validation failed for collection patch');
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const { name, description, isPublic } = await request.json();
-    const data: any = {};
-    if (name !== undefined) {
-      if (typeof name !== 'string' || !name.trim()) {
-        return NextResponse.json({ error: 'Name cannot be empty' }, { status: 400 });
-      }
-      data.name = name.trim();
-    }
-    if (description !== undefined) {
-      data.description = description?.trim() || null;
-    }
-    if (isPublic !== undefined) {
-      data.isPublic = !!isPublic;
-    }
-
-    const updatedCollection = await prisma.collection.update({
-      where: { id },
-      data
-    });
+    logger.info({ userId: session.user.id, collectionId: id }, 'Updating collection');
+    const updatedCollection = await CollectionService.updateCollection(
+      session.user.id,
+      id,
+      validation.data
+    );
 
     return NextResponse.json(updatedCollection);
-  } catch (error) {
-    console.error('[COLLECTIONS_PATCH]', error);
+  } catch (error: any) {
+    logger.error({ error, path: '/api/collections/[id]', method: 'PATCH' }, 'Error in PATCH /api/collections/[id]');
+    if (error.message === 'Collection not found') {
+      return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
+    }
+    if (error.message === 'Forbidden') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -59,29 +52,23 @@ export async function DELETE(
   try {
     const session = await auth();
     if (!session?.user?.id) {
+      logger.warn({ path: '/api/collections/[id]', method: 'DELETE' }, 'Unauthorized collection delete attempt');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
-    const collection = await prisma.collection.findUnique({
-      where: { id }
-    });
-
-    if (!collection) {
-      return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
-    }
-
-    if (collection.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    await prisma.collection.delete({
-      where: { id }
-    });
+    logger.info({ userId: session.user.id, collectionId: id }, 'Deleting collection');
+    await CollectionService.deleteCollection(session.user.id, id);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('[COLLECTIONS_DELETE]', error);
+  } catch (error: any) {
+    logger.error({ error, path: '/api/collections/[id]', method: 'DELETE' }, 'Error in DELETE /api/collections/[id]');
+    if (error.message === 'Collection not found') {
+      return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
+    }
+    if (error.message === 'Forbidden') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -6,14 +6,13 @@ import { auth } from '@/auth';
 import RecentWordTracker from './RecentWordTracker';
 import { parseMeaning } from '@/lib/parse';
 import WordPronounceChallenge from './WordPronounceChallenge';
+import { WordService } from '@/services/word.service';
 
 import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 async function getWordAndProgress(id: string) {
   const session = await auth();
-  const word = await prisma.word.findUnique({
-    where: { id: parseInt(id) },
-  });
+  const word = await WordService.getWordById(parseInt(id));
 
   if (!word) return { word: null, progress: null };
 
