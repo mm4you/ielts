@@ -466,141 +466,125 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
             />
           </div>
 
-          {/* Cards Grid */}
+          {/* Users Table */}
           {paginatedUsers.length === 0 ? (
             <div className="panel text-center py-20">
               <p className="text-[var(--muted)] font-bold text-lg">Không tìm thấy học viên nào phù hợp!</p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginatedUsers.map((user) => {
-                  const isAdmin = user.email === 'ungnhutkhang53@gmail.com' || user.role === 'admin';
-                  return (
-                    <div key={user.id} className="panel flex flex-col hover:-translate-y-1 transition-transform bg-[var(--paper)] h-full relative group">
-                      <div className="absolute top-0 right-0 w-16 h-16 bg-[var(--yellow)] rounded-bl-full opacity-5"></div>
-                      
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="w-12 h-12 rounded-full bg-[var(--yellow)] border-[3px] border-[var(--line)] flex items-center justify-center font-black text-[var(--ink)] text-lg shadow-[2px_2px_0_var(--line)] select-none">
-                          {user.name?.charAt(0).toUpperCase() || 'U'}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-black text-md text-[var(--ink)] truncate" title={user.name || 'Người dùng ẩn danh'}>
-                              {user.name || 'Người dùng ẩn danh'}
-                            </h3>
+              <div className="overflow-x-auto border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl bg-[var(--paper)]">
+                <table className="w-full text-left border-collapse min-w-[650px] md:min-w-0">
+                  <thead>
+                    <tr className="border-b-[3px] border-[var(--line)] bg-[var(--bg)] text-[var(--ink)] select-none">
+                      <th className="p-4 font-black text-sm uppercase tracking-wider">Học viên</th>
+                      <th className="p-4 font-black text-sm uppercase tracking-wider w-[120px]">Vai trò</th>
+                      <th className="p-4 font-black text-sm uppercase tracking-wider w-[140px]">Từ đang học</th>
+                      <th className="p-4 font-black text-sm uppercase tracking-wider hidden md:table-cell w-[160px]">Ngày tham gia</th>
+                      <th className="p-4 font-black text-sm text-right uppercase tracking-wider w-[180px]">Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedUsers.map((user) => {
+                      const isAdmin = user.email === 'ungnhutkhang53@gmail.com' || user.role === 'admin';
+                      return (
+                        <tr key={user.id} className="border-b-2 border-[var(--line)] last:border-b-0 hover:bg-[var(--bg)]/10 transition-colors">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              <span className="w-10 h-10 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-black text-[var(--ink)] text-sm shadow-[1.5px_1.5px_0_var(--line)] select-none shrink-0">
+                                {user.name?.charAt(0).toUpperCase() || 'U'}
+                              </span>
+                              <div className="min-w-0">
+                                <span className="font-bold text-[var(--ink)] truncate block" title={user.name || 'Người dùng ẩn danh'}>
+                                  {user.name || 'Người dùng ẩn danh'}
+                                </span>
+                                <span className="text-xs text-[var(--muted)] font-mono block truncate" title={user.email}>{user.email}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4">
                             {isAdmin ? (
-                              <span className="bg-[var(--yellow)] text-[var(--ink)] text-[9px] px-2 py-0.5 rounded-full font-bold border border-[var(--line)] select-none">
+                              <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] px-2 py-0.5 rounded-md font-black border border-[var(--line)] select-none">
                                 ADMIN
                               </span>
                             ) : (
-                              <span className="bg-[var(--blue)] text-white border border-[var(--line)] text-[9px] px-2 py-0.5 rounded-full font-bold select-none">
+                              <span className="bg-[var(--blue)] text-white text-[10px] px-2 py-0.5 rounded-md font-black border border-[var(--line)] select-none">
                                 Học viên
                               </span>
                             )}
-                          </div>
-                          <p className="text-xs text-[var(--muted)] font-mono truncate" title={user.email}>{user.email}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 space-y-3 mb-4">
-                        <div className="flex justify-between items-center bg-[var(--bg)] p-2.5 border-2 border-[var(--line)] rounded-xl shadow-[2px_2px_0_var(--line)]">
-                          <span className="text-xs font-bold text-[var(--muted)]">Từ đang học:</span>
-                          <span className="font-black text-[var(--blue)] text-lg">{user._count.progress} từ</span>
-                        </div>
-                        
-                        <div className="text-[11px] text-[var(--muted)] font-medium">
-                          Tham gia: {new Date(user.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}
-                        </div>
-                      </div>
-
-                      {user.email !== 'ungnhutkhang53@gmail.com' && (
-                        <div className="mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] flex gap-2">
-                          <button 
-                            onClick={async () => {
-                              const newRole = user.role === 'admin' ? 'user' : 'admin';
-                              const confirmMsg = newRole === 'admin' 
-                                ? `Bạn có chắc muốn cấp quyền ADMIN cho học viên ${user.name || user.email}?` 
-                                : `Bạn có chắc muốn hạ quyền quản trị của ${user.name || user.email} xuống học viên thường không?`;
-                              if (confirm(confirmMsg)) {
-                                try {
-                                  const res = await fetch(`/api/users/${user.id}`, {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ role: newRole })
-                                  });
-                                  if (res.ok) {
-                                    alert('Cập nhật vai trò thành công!');
-                                    window.location.reload();
-                                  } else {
-                                    const data = await res.json();
-                                    alert(data.error || 'Cập nhật thất bại.');
-                                  }
-                                } catch (e) {
-                                  alert('Có lỗi xảy ra.');
-                                }
-                              }
-                            }}
-                            className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-[10px] py-1.5 px-2 font-bold flex-1 shadow-[2px_2px_0_var(--line)] cursor-pointer"
-                          >
-                            {user.role === 'admin' ? 'Hạ quyền' : 'Lên Admin'}
-                          </button>
-                          <button 
-                            onClick={async () => {
-                              const newPass = prompt(`Nhập mật khẩu mới cho ${user.name || user.email}:`, "123456");
-                              if (newPass) {
-                                if (newPass.length < 6) {
-                                  alert('Mật khẩu phải chứa ít nhất 6 ký tự.');
-                                  return;
-                                }
-                                try {
-                                  const res = await fetch(`/api/users/${user.id}`, {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ password: newPass })
-                                  });
-                                  if (res.ok) {
-                                    alert('Đặt lại mật khẩu thành công!');
-                                  } else {
-                                    const data = await res.json();
-                                    alert(data.error || 'Lỗi khi đặt lại mật khẩu.');
-                                  }
-                                } catch (e) {
-                                  alert('Có lỗi xảy ra.');
-                                }
-                              }
-                            }}
-                            className="btn-brutal bg-[var(--blue)] text-white text-[10px] py-1.5 px-2 font-bold flex-1 shadow-[2px_2px_0_var(--line)] cursor-pointer"
-                          >
-                            Đổi Pass
-                          </button>
-                          <button 
-                            onClick={async () => {
-                              if (confirm(`Bạn có chắc muốn xóa học viên ${user.name || user.email}? Hành động này không thể hoàn tác!`)) {
-                                try {
-                                  const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
-                                  if (res.ok) {
-                                    window.location.reload();
-                                  } else {
-                                    alert('Không thể xóa người dùng này.');
-                                  }
-                                } catch (e) {
-                                  alert('Có lỗi xảy ra.');
-                                }
-                              }
-                            }}
-                            className="btn-brutal bg-[var(--red)] text-white text-[10px] py-1.5 px-2 font-bold shadow-[2px_2px_0_var(--line)] cursor-pointer"
-                          >
-                            Xóa
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                          </td>
+                          <td className="p-4">
+                            <span className="font-bold text-[var(--ink)] text-sm">
+                              {user._count.progress} từ
+                            </span>
+                          </td>
+                          <td className="p-4 text-xs font-mono text-[var(--muted)] hidden md:table-cell">
+                            {new Date(user.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' })}
+                          </td>
+                          <td className="p-4 text-right">
+                            {user.email !== 'ungnhutkhang53@gmail.com' ? (
+                              <div className="flex justify-end gap-2">
+                                <button 
+                                  onClick={async () => {
+                                    const newPass = prompt(`Nhập mật khẩu mới cho ${user.name || user.email}:`, "123456");
+                                    if (newPass) {
+                                      if (newPass.length < 6) {
+                                        alert('Mật khẩu phải chứa ít nhất 6 ký tự.');
+                                        return;
+                                      }
+                                      try {
+                                        const res = await fetch(`/api/users/${user.id}`, {
+                                          method: 'PATCH',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ password: newPass })
+                                        });
+                                        if (res.ok) {
+                                          alert('Đặt lại mật khẩu thành công!');
+                                        } else {
+                                          const data = await res.json();
+                                          alert(data.error || 'Lỗi khi đặt lại mật khẩu.');
+                                        }
+                                      } catch (e) {
+                                        alert('Có lỗi xảy ra.');
+                                      }
+                                    }
+                                  }}
+                                  className="btn-brutal bg-[var(--blue)] text-white text-[10px] py-1 px-2.5 font-bold shadow-[1.5px_1.5px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_var(--line)] active:translate-y-0.5 active:shadow-[0.5px_0.5px_0_var(--line)] cursor-pointer transition-all shrink-0"
+                                >
+                                  Đổi Pass
+                                </button>
+                                <button 
+                                  onClick={async () => {
+                                    if (confirm(`Bạn có chắc muốn xóa học viên ${user.name || user.email}? Hành động này không thể hoàn tác!`)) {
+                                      try {
+                                        const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
+                                        if (res.ok) {
+                                          window.location.reload();
+                                        } else {
+                                          alert('Không thể xóa người dùng này.');
+                                        }
+                                      } catch (e) {
+                                        alert('Có lỗi xảy ra.');
+                                      }
+                                    }
+                                  }}
+                                  className="btn-brutal bg-[var(--red)] text-white text-[10px] py-1 px-2.5 font-bold shadow-[1.5px_1.5px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_var(--line)] active:translate-y-0.5 active:shadow-[0.5px_0.5px_0_var(--line)] cursor-pointer transition-all shrink-0"
+                                >
+                                  Xóa
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-[var(--muted)] font-bold italic">Bảo vệ</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-
-              {/* User Pagination */}
+              
+{/* User Pagination */}
               {totalUserPages > 1 && (
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-12 bg-[var(--paper)] p-5 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl w-full">
                   <p className="text-sm font-bold text-[var(--muted)]">
