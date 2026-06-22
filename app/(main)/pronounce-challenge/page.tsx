@@ -2,7 +2,12 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import PronounceRoast from './PronounceRoast';
+import dynamic from 'next/dynamic';
+
+const PronounceRoast = dynamic(() => import('./PronounceRoast'), {
+  ssr: false,
+  loading: () => <div className="text-center py-6 font-bold text-lg animate-pulse text-[var(--muted)]">Đang tải giọng nói AI...</div>
+});
 
 export default function RoastDemoPage() {
   return (

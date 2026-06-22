@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import BlockBlastClient from './BlockBlastClient';
+import BlockBlastWrapper from './BlockBlastWrapper';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default function BlockBlastPage() {
         </div>
       </div>
     }>
-      <BlockBlastClient />
+      <BlockBlastWrapper />
     </Suspense>
   );
 }

@@ -1,4 +1,4 @@
-import SniperClient from './SniperClient';
+import SniperWrapper from './SniperWrapper';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 
 export default async function SniperPage({ searchParams }: { searchParams: Promise<{ collectionId?: string }> }) {
   const resolvedParams = await searchParams;
-  return <SniperClient collectionId={resolvedParams.collectionId} />;
+  return <SniperWrapper collectionId={resolvedParams.collectionId} />;
 }
