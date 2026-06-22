@@ -76,7 +76,7 @@ export default async function HomePage() {
                 <span className="font-bold text-lg text-center min-[380px]:text-left">
                   {!session ? 'Cần đăng nhập' : (dueWords > 0 ? `${dueWords.toLocaleString('vi-VN')} thẻ cần ôn` : 'Đã ôn xong')}
                 </span>
-                <Link href="/review" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
+                <Link href="/review" className="btn-brutal bg-[var(--green)] text-[var(--ink)] text-center w-full min-[380px]:w-auto select-none">
                   Bắt đầu
                 </Link>
               </div>
@@ -92,7 +92,7 @@ export default async function HomePage() {
                 <span className="font-bold text-lg text-[var(--green)] text-center min-[380px]:text-left">
                   {collectionsCount} sổ tay / {savedWordsCount} từ
                 </span>
-                <Link href="/collections" className="btn-brutal bg-[var(--green)] text-white text-center w-full min-[380px]:w-auto select-none">
+                <Link href="/collections" className="btn-brutal bg-[var(--green)] text-[var(--ink)] text-center w-full min-[380px]:w-auto select-none">
                   Quản lý bộ
                 </Link>
               </div>
@@ -143,7 +143,7 @@ export default async function HomePage() {
               </p>
               <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
                 <span className="font-bold text-lg text-[var(--blue)] text-center min-[380px]:text-left">Nhẹ nhàng</span>
-                <Link href="/match" className="btn-brutal bg-[var(--blue)] text-white text-center w-full min-[380px]:w-auto select-none">
+                <Link href="/match" className="btn-brutal bg-[var(--blue)] text-[var(--ink)] text-center w-full min-[380px]:w-auto select-none">
                   Chơi ngay
                 </Link>
               </div>
@@ -157,7 +157,7 @@ export default async function HomePage() {
               </p>
               <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
                 <span className="font-bold text-lg text-[#8b5cf6] text-center min-[380px]:text-left">Gây nghiện</span>
-                <Link href="/blockblast" className="btn-brutal bg-[#8b5cf6] text-white text-center w-full min-[380px]:w-auto select-none">
+                <Link href="/blockblast" className="btn-brutal bg-[#8b5cf6] text-[var(--ink)] text-center w-full min-[380px]:w-auto select-none">
                   Xếp hình
                 </Link>
               </div>
@@ -188,7 +188,7 @@ export default async function HomePage() {
               </p>
               <div className="w-full flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[var(--line)] gap-2">
                 <span className="font-bold text-lg text-[#ff3b30] text-center min-[380px]:text-left">Hài hước</span>
-                <Link href="/pronounce-challenge" className="btn-brutal bg-[#ff3b30] text-white text-center w-full min-[380px]:w-auto select-none">
+                <Link href="/pronounce-challenge" className="btn-brutal bg-[#ff3b30] text-[var(--ink)] text-center w-full min-[380px]:w-auto select-none">
                   Khịa AI
                 </Link>
               </div>
