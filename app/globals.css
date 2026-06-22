@@ -89,6 +89,13 @@ body {
     box-shadow: 8px 8px 0 var(--line);
   }
   
+  @media (min-width: 768px) {
+    .panel {
+      @apply flex flex-col justify-between;
+      min-height: 220px;
+    }
+  }
+  
   .btn-brutal {
     @apply border-[3px] border-[var(--line)] rounded-xl font-bold px-6 py-3 transition-transform bg-[var(--paper)] text-[var(--ink)] cursor-pointer;
     box-shadow: 4px 4px 0 var(--line);
