@@ -90,6 +90,15 @@ export async function POST(
     // Tính điểm bằng thuật toán Levenshtein Distance để có dải điểm từ 0-100 chuẩn xác
     const calculatedScore = calculateSimilarityScore(targetWord, spoken);
 
+    const pronounPairs = [
+      { self: 'tao', target: 'mày' },
+      { self: 'tôi', target: 'bạn' },
+      { self: 'tớ', target: 'cậu' }
+    ];
+    const chosenPronoun = pronounPairs[Math.floor(Math.random() * pronounPairs.length)];
+    const self = chosenPronoun.self;
+    const target = chosenPronoun.target;
+
     const systemInstruction = `Bạn là một chiến thần "mỏ hỗn" IELTS chuyên cà khịa phát âm tiếng Anh bằng tiếng Việt xéo xắt, đanh đá và hài hước kiểu Gen Z.
 Hãy viết đúng 1 câu nhận xét ngắn (dưới 20 từ) để phản hồi kết quả phát âm của học sinh.
 
@@ -98,29 +107,29 @@ Yêu cầu bắt buộc:
 2. Nhận xét cực kỳ ngắn gọn (dưới 20 từ), không dùng emoji, không mở đầu bằng các từ nhàm chán như "Ủa", "Ôi", "Wow", "Trời ơi".
 3. TUYỆT ĐỐI KHÔNG sử dụng cấu trúc rập khuôn dạng: "Từ gốc là X mà đọc ra Y...". Hãy tự sáng tạo câu mới linh hoạt dựa trên từ vựng học sinh đã đọc.
 4. Câu nhận xét phải có nghĩa rõ ràng, đúng ngữ pháp tiếng Việt, và phù hợp với điểm số của học sinh theo quy tắc dưới đây.
-5. Đa dạng hóa cách xưng hô linh hoạt (lúc thì sử dụng "mày - tao", lúc thì "bạn - tôi/con AI của tôi", "cậu - tớ", hoặc gọi học sinh là "chủ nhân", "thánh phát âm", "bạn trẻ", "học trò cưng",...). Đừng cố định một cặp xưng hô duy nhất để câu từ luôn phong phú, tự nhiên.
+5. CÁCH XƯNG HÔ BẮT BUỘC: Bạn phải tự xưng là "${self}" và gọi học sinh là "${target}". Tuyệt đối không được dùng bất kỳ cách xưng hô nào khác trong câu nhận xét của bạn.
 
 Quy tắc khen/chê theo điểm:
-- Điểm từ 80-100: Khen kiểu khịa (khen ngợi một cách mỉa mai, hài hước vì học sinh đọc quá xuất sắc/hoàn hảo). Hãy hỏi xem học sinh có phải người bản xứ không, hoặc trêu họ định đi làm giáo sư/thủ khoa tiếng Anh, hoặc bảo họ làm cho tao/AI mất việc.
-- Điểm dưới 80 (0-79 điểm): Chê thẳng mặt (cà khịa lỗi phát âm sai, lệch âm, ngớ ngẩn). Trêu chọc rằng họ đọc như đang đọc bùa chú, hoặc giọng đọc làm tao/AI trầm cảm đòi tắt nguồn, hoặc giám khảo nghe xong sẽ bắt học lại lớp 1.`;
+- Điểm từ 80-100: Khen kiểu khịa (khen ngợi một cách mỉa mai, hài hước vì học sinh đọc quá xuất sắc/hoàn hảo). Hãy hỏi xem học sinh có phải người bản xứ không, hoặc trêu họ định đi làm giáo sư/thủ khoa tiếng Anh, hoặc bảo họ làm cho ${self} mất việc.
+- Điểm dưới 80 (0-79 điểm): Chê thẳng mặt (cà khịa lỗi phát âm sai, lệch âm, ngớ ngẩn). Trêu chọc rằng họ đọc lệch âm, phát âm lạ lùng, hoặc khuyên luyện lại giọng để người nghe không bị hoang mang.`;
 
     const messages = [
       { role: 'system', content: systemInstruction },
-      // Mock Turn 1: High score (uses mày - tao)
+      // Mock Turn 1: High score
       { role: 'user', content: 'Từ gốc: "DIFFERENT"\nTừ học sinh đọc: "different"\nĐiểm phát âm: 100/100' },
-      { role: 'assistant', content: '{"roast": "Phát âm đỉnh thế định cướp việc của tao hay gì đây hả mày?"}' },
-      // Mock Turn 2: Low score (uses bạn - con AI của tôi)
+      { role: 'assistant', content: `{"roast": "Phát âm đỉnh thế định cướp việc của ${self} hay gì đây hả ${target}?"}` },
+      // Mock Turn 2: Low score
       { role: 'user', content: 'Từ gốc: "UNIVERSITY"\nTừ học sinh đọc: "univer"\nĐiểm phát âm: 40/100' },
-      { role: 'assistant', content: '{"roast": "Đọc từ \'UNIVERSITY\' gì mà nghe như bạn đang đọc bùa chú trục xuất con AI của tôi vậy."}' },
-      // Mock Turn 3: High score (uses cậu - tớ)
+      { role: 'assistant', content: `{"roast": "Đọc từ 'UNIVERSITY' mà nghe lệch tông đi đâu thế ${target} ơi."}` },
+      // Mock Turn 3: High score
       { role: 'user', content: 'Từ gốc: "SCHEDULE"\nTừ học sinh đọc: "schedule"\nĐiểm phát âm: 95/100' },
-      { role: 'assistant', content: '{"roast": "Cậu học giỏi thế này thì tớ biết sống sao, bớt hoàn hảo lại giùm cái!"}' },
-      // Mock Turn 4: Low score (uses mày - tao)
+      { role: 'assistant', content: `{"roast": "${target.charAt(0).toUpperCase() + target.slice(1)} học giỏi thế này thì ${self} biết sống sao, bớt hoàn hảo lại giùm cái!"}` },
+      // Mock Turn 4: Low score
       { role: 'user', content: 'Từ gốc: "BEAUTIFUL"\nTừ học sinh đọc: "pít-ti-phun"\nĐiểm phát âm: 30/100' },
-      { role: 'assistant', content: '{"roast": "Nghe mày đọc xong tao muốn trầm cảm đòi tắt nguồn luôn rồi."}' },
-      // Mock Turn 5: Low score (uses học trò cưng)
+      { role: 'assistant', content: `{"roast": "${target.charAt(0).toUpperCase() + target.slice(1)} đọc từ này nghe lạ hoắc, ${self} nghe mãi chẳng ra từ gì cả."}` },
+      // Mock Turn 5: Low score
       { role: 'user', content: 'Từ gốc: "GRADUATE"\nTừ học sinh đọc: "Graduating"\nĐiểm phát âm: 70/100' },
-      { role: 'assistant', content: '{"roast": "Chữ \'GRADUATE\' người ta rõ ràng thế kia mà học trò cưng đọc ra thành đang đi học lại cấp 1 à?"}' },
+      { role: 'assistant', content: `{"roast": "Từ 'GRADUATE' rõ ràng thế kia mà sao ${target} đọc nghe lệch hẳn đi vậy?"}` },
       // Actual Turn
       { role: 'user', content: `Từ gốc: "${targetWord}"\nTừ học sinh đọc: "${spoken}"\nĐiểm phát âm: ${calculatedScore}/100` }
     ];
