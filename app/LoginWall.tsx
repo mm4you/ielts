@@ -19,7 +19,34 @@ export default function LoginWall() {
   const [devCode, setDevCode] = useState('');
   const [isDevMode, setIsDevMode] = useState(false);
   
-  const [error, setError] = useState('');
+  const [error, _setError] = useState('');
+  const [shouldShake, setShouldShake] = useState(false);
+  const [motivationalText, setMotivationalText] = useState('');
+
+  const ROAST_QUOTES = [
+    "Học từ vựng không khó, cái khó là bạn có chịu nổi AI mỏ hỗn khịa không.",
+    "Phát âm sai là AI chửi thẳng mặt, không nể nang nhé.",
+    "Hôm nay bạn đã đọc bùa chú trục xuất AI chưa.",
+    "Điểm Speaking dưới trung bình thì đừng mơ đi du học.",
+    "Luyện từ vựng mỗi ngày để thoát kiếp nạn mất gốc tiếng Anh."
+  ];
+
+  useEffect(() => {
+    const randomQuote = ROAST_QUOTES[Math.floor(Math.random() * ROAST_QUOTES.length)];
+    setMotivationalText(randomQuote);
+  }, []);
+
+  const triggerShake = () => {
+    setShouldShake(true);
+    setTimeout(() => setShouldShake(false), 500);
+  };
+
+  const setError = (msg: string) => {
+    _setError(msg);
+    if (msg) {
+      triggerShake();
+    }
+  };
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
@@ -347,11 +374,57 @@ export default function LoginWall() {
   };
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] flex items-center justify-center relative overflow-hidden py-12 px-4">
-      <div className="bg-orb orb-1"></div>
-      <div className="bg-orb orb-2"></div>
-      
-      <div className="panel max-w-md w-full relative z-10 flex flex-col p-8 md:p-10 hover:-translate-y-1 transition-transform duration-300 bg-[var(--paper)]">
+    <main className="min-h-screen bg-[var(--bg)] flex flex-col md:flex-row relative overflow-hidden">
+      {/* Left side: Branding & Motivation (Only on desktop) */}
+      <div className="hidden md:flex md:w-1/2 bg-[var(--yellow)] border-r-4 border-black flex-col justify-between p-12 relative overflow-hidden">
+        {/* Grid pattern background */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#000_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
+        
+        {/* Top Header */}
+        <div className="z-10">
+          <div className="inline-block border-4 border-black bg-white rounded-lg px-3 py-1.5 font-mono font-black text-xs uppercase shadow-[2px_2px_0_#000]">
+            IELTS Vocabulary Studio
+          </div>
+        </div>
+
+        {/* Central Illustration and Title */}
+        <div className="z-10 my-auto flex flex-col gap-6 max-w-md">
+          {/* Neo-brutalist SVG Illustration */}
+          <div className="mb-4">
+            <svg className="w-48 h-48 text-[var(--ink)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40 110 L140 110 L120 150 L20 150 Z" fill="black" />
+              <path d="M50 90 L150 90 L140 110 L40 110 Z" fill="black" />
+              <rect x="30" y="100" width="100" height="30" rx="4" fill="var(--paper)" stroke="black" strokeWidth="4" />
+              <line x1="30" y1="115" x2="130" y2="115" stroke="black" strokeWidth="4" />
+              <rect x="45" y="75" width="95" height="25" rx="4" fill="var(--blue)" stroke="black" strokeWidth="4" />
+              <line x1="45" y1="87.5" x2="140" y2="87.5" stroke="black" strokeWidth="4" />
+              <path d="M150 35 L155 50 L170 55 L155 60 L150 75 L145 60 L130 55 L145 50 Z" fill="var(--yellow)" stroke="black" strokeWidth="3" />
+              <path d="M25 50 L28 58 L36 60 L28 62 L25 70 L22 62 L14 60 L22 58 Z" fill="var(--red)" stroke="black" strokeWidth="2" />
+            </svg>
+          </div>
+          
+          <h2 className="text-4xl lg:text-5xl font-serif font-black text-[var(--ink)] leading-tight">
+            Lò Luyện Từ Vựng Khắc Nghiệt
+          </h2>
+          <p className="text-[var(--ink)] font-bold leading-relaxed border-l-4 border-black pl-4">
+            Học tập thông minh qua phương pháp lặp lại ngắt quãng tối ưu và rèn luyện phản xạ cực đỉnh cùng chiến thần AI mỏ hỗn.
+          </p>
+        </div>
+
+        {/* Footer with roast motivational quote (no emoji) */}
+        <div className="z-10 pt-6 border-t-4 border-black border-dashed">
+          <p className="text-xs font-mono font-black text-[var(--ink)] uppercase tracking-wider">
+            {motivationalText}
+          </p>
+        </div>
+      </div>
+
+      {/* Right side: Form (Takes full screen on mobile, 50% on desktop) */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10 min-h-screen">
+        <div className="bg-orb orb-1 opacity-10"></div>
+        <div className="bg-orb orb-2 opacity-10"></div>
+
+        <div className={`panel max-w-md w-full relative z-10 flex flex-col p-8 md:p-10 hover:-translate-y-1 transition-transform duration-300 bg-[var(--paper)] ${shouldShake ? 'animate-shake' : ''}`}>
 
         
         {/* Title */}
@@ -424,7 +497,7 @@ export default function LoginWall() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@example.com"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
               />
             </div>
 
@@ -439,7 +512,7 @@ export default function LoginWall() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="******"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
               />
               <div className="text-right mt-1">
                 <button
@@ -482,7 +555,7 @@ export default function LoginWall() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nguyễn Văn A"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
               />
             </div>
 
@@ -497,7 +570,7 @@ export default function LoginWall() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@example.com"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
               />
             </div>
 
@@ -512,7 +585,7 @@ export default function LoginWall() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Tối thiểu 6 ký tự"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
               />
             </div>
 
@@ -527,7 +600,7 @@ export default function LoginWall() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Tối thiểu 6 ký tự"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
               />
             </div>
 
@@ -558,7 +631,7 @@ export default function LoginWall() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@example.com"
-                    className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                    className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
                   />
                 </div>
                 
@@ -672,7 +745,7 @@ export default function LoginWall() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Tối thiểu 6 ký tự"
-                    className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                    className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
                   />
                 </div>
 
@@ -687,7 +760,7 @@ export default function LoginWall() {
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
                     placeholder="Nhập lại mật khẩu mới"
-                    className="w-full border-4 border-black p-3 font-mono font-bold text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                    className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
                   />
                 </div>
 
@@ -754,6 +827,7 @@ export default function LoginWall() {
           </svg>
           Đăng nhập bằng Google
         </button>
+      </div>
       </div>
     </main>
   );
