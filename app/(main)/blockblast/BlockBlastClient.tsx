@@ -162,6 +162,12 @@ export default function BlockBlastClient() {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'vocab' | 'gameover'>('setup');
+  const [previewCoords, setPreviewCoords] = useState<{r: number, c: number}[]>([]);
+  const [isBumped, setIsBumped] = useState(false);
+  const [clearingCells, setClearingCells] = useState<{r: number, c: number}[]>([]);
+  const [particles, setParticles] = useState<{ id: string; x: number; y: number; vx: number; vy: number; color: string }[]>([]);
+  const [comboText, setComboText] = useState('');
+  const [fallingCells, setFallingCells] = useState<{r: number, c: number}[]>([]);
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -264,6 +270,54 @@ export default function BlockBlastClient() {
     }
   }, [board, shapes, gameState]);
 
+  // Update drag preview shadow coordinates
+  useEffect(() => {
+    if (!dragState) {
+      setPreviewCoords([]);
+      return;
+    }
+    const gridEl = document.getElementById('block-blast-grid');
+    if (!gridEl) return;
+    const rect = gridEl.getBoundingClientRect();
+    const cellSize = rect.width / 8;
+    const shapeRows = dragState.shape.grid.length;
+    const shapeCols = dragState.shape.grid[0].length;
+    
+    const dropX = dragState.currX - rect.left - (shapeCols * cellSize) / 2;
+    const dropY = dragState.currY - rect.top - (shapeRows * cellSize) / 2;
+    
+    const targetC = Math.round(dropX / cellSize);
+    const targetR = Math.round(dropY / cellSize);
+    
+    if (canPlace(board, dragState.shape.grid, targetR, targetC)) {
+      const coords = [];
+      for (let r = 0; r < shapeRows; r++) {
+        for (let c = 0; c < shapeCols; c++) {
+          if (dragState.shape.grid[r][c] === 1) {
+            coords.push({ r: targetR + r, c: targetC + c });
+          }
+        }
+      }
+      setPreviewCoords(coords);
+    } else {
+      setPreviewCoords([]);
+    }
+  }, [dragState, board]);
+
+  // Update particles movement animation
+  useEffect(() => {
+    if (particles.length === 0) return;
+    const interval = setInterval(() => {
+      setParticles(prev => prev.map(p => ({
+        ...p,
+        x: p.x + p.vx,
+        y: p.y + p.vy,
+        vy: p.vy + 0.35 // Gravity pull
+      })).filter(p => p.x >= -10 && p.x <= 110 && p.y >= -10 && p.y <= 110));
+    }, 16);
+    return () => clearInterval(interval);
+  }, [particles]);
+
   // Handle Global Drag Events
   useEffect(() => {
     if (!dragState) return;
@@ -303,8 +357,14 @@ export default function BlockBlastClient() {
   const placeShape = (boardR: number, boardC: number, shape: Shape, trayIdx: number) => {
     if (gameState !== 'playing') return;
 
+    // Rung bàn cờ nhịp nhẹ
+    setIsBumped(true);
+    setTimeout(() => setIsBumped(false), 150);
+
     const newBoard = board.map(row => [...row]);
     let pointsEarned = 0;
+    
+    // Đặt tạm thời trên board mới để tính toán nổ
     for (let r = 0; r < shape.grid.length; r++) {
       for (let c = 0; c < shape.grid[0].length; c++) {
         if (shape.grid[r][c] === 1) {
@@ -329,23 +389,86 @@ export default function BlockBlastClient() {
       if (isFull) colsToClear.push(c);
     }
 
+    // Các ô sẽ bị nổ
+    const cellsToClear: {r: number, c: number}[] = [];
     rowsToClear.forEach(r => {
       for (let c = 0; c < 8; c++) {
-        if (newBoard[r][c] === 1) newBoard[r][c] = 0;
+        if (newBoard[r][c] === 1) cellsToClear.push({ r, c });
       }
     });
     colsToClear.forEach(c => {
       for (let r = 0; r < 8; r++) {
-        if (newBoard[r][c] === 1) newBoard[r][c] = 0;
+        if (newBoard[r][c] === 1 && !cellsToClear.some(cell => cell.r === r && cell.c === c)) {
+          cellsToClear.push({ r, c });
+        }
       }
     });
 
     const linesCleared = rowsToClear.length + colsToClear.length;
     if (linesCleared > 0) {
       pointsEarned += linesCleared * 100 * linesCleared;
+      
+      // Hiển thị banner combo
+      let comboMsg = "CLEARED!";
+      if (linesCleared === 2) comboMsg = "DOUBLE BLAST!";
+      else if (linesCleared === 3) comboMsg = "TRIPLE BLAST!";
+      else if (linesCleared >= 4) comboMsg = "MEGA BLAST!!!";
+      setComboText(comboMsg);
+      setTimeout(() => setComboText(''), 800);
     }
 
-    setBoard(newBoard);
+    // Xử lý nổ có hiệu ứng hoạt ảnh
+    if (cellsToClear.length > 0) {
+      setClearingCells(cellsToClear);
+      
+      // Tạo hạt bụi vỡ vụn
+      const newParticles: { id: string; x: number; y: number; vx: number; vy: number; color: string }[] = [];
+      cellsToClear.forEach(cell => {
+        for (let i = 0; i < 4; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 1.0 + Math.random() * 2.0;
+          newParticles.push({
+            id: Math.random().toString(),
+            x: (cell.c * 12.5) + 6.25,
+            y: (cell.r * 12.5) + 6.25,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1.5,
+            color: shape.color
+          });
+        }
+      });
+      setParticles(prev => [...prev, ...newParticles].slice(-100));
+
+      // Chờ hoạt ảnh flash kết thúc rồi mới xóa chính thức
+      setTimeout(() => {
+        const finalBoard = board.map(row => [...row]);
+        // Áp dụng đặt gạch
+        for (let r = 0; r < shape.grid.length; r++) {
+          for (let c = 0; c < shape.grid[0].length; c++) {
+            if (shape.grid[r][c] === 1) {
+              finalBoard[boardR + r][boardC + c] = 1;
+            }
+          }
+        }
+        // Xóa thực tế trên board
+        rowsToClear.forEach(r => {
+          for (let c = 0; c < 8; c++) {
+            if (finalBoard[r][c] === 1) finalBoard[r][c] = 0;
+          }
+        });
+        colsToClear.forEach(c => {
+          for (let r = 0; r < 8; r++) {
+            if (finalBoard[r][c] === 1) finalBoard[r][c] = 0;
+          }
+        });
+        
+        setBoard(finalBoard);
+        setClearingCells([]);
+      }, 250);
+    } else {
+      setBoard(newBoard);
+    }
+
     setScore(s => s + pointsEarned);
 
     const newShapes = [...shapes];
@@ -355,10 +478,9 @@ export default function BlockBlastClient() {
     if (newShapes.every(s => s === null)) {
       setTimeout(() => {
         setGameState('vocab');
-      }, 500);
+      }, 700); // Thêm chút thời gian chờ hiệu ứng nổ kết thúc hẳn
     }
   };
-
   const handleVocabAnswer = (choiceIdx: number) => {
     if (questions.length === 0 || answerStatus) return;
     const currentQ = questions[currentQIndex];
@@ -387,22 +509,30 @@ export default function BlockBlastClient() {
             if (newBoard[r][c] === 0) emptyCells.push({r,c});
           }
         }
+        
+        const dropped: {r: number, c: number}[] = [];
         if (emptyCells.length > 0) {
           for (let i=0; i<Math.min(2, emptyCells.length); i++) {
             const rIdx = Math.floor(Math.random() * emptyCells.length);
             const target = emptyCells.splice(rIdx, 1)[0];
             newBoard[target.r][target.c] = 2; // Dead block
+            dropped.push(target);
           }
         }
-        setBoard(newBoard);
-        setShapes(getSmartShapes(3, newBoard));
-        setGameState('playing');
-        setCurrentQIndex(c => (c + 1) % questions.length);
-        setAnswerStatus(null);
+        
+        setFallingCells(dropped);
+        
+        setTimeout(() => {
+          setBoard(newBoard);
+          setFallingCells([]);
+          setShapes(getSmartShapes(3, newBoard));
+          setGameState('playing');
+          setCurrentQIndex(c => (c + 1) % questions.length);
+          setAnswerStatus(null);
+        }, 600);
       }, 1500);
     }
   };
-
   if (gameState === 'setup') {
     return (
       <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
@@ -476,30 +606,70 @@ export default function BlockBlastClient() {
       </div>
 
       {/* Board */}
-      <div className="relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 touch-none">
-        <div id="block-blast-grid" className="grid grid-cols-8 gap-1 bg-[var(--line)] w-fit mx-auto">
+      <div className={`relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 touch-none ${isBumped ? 'animate-[bump_0.15s_ease-in-out]' : ''}`}>
+        <div id="block-blast-grid" className="grid grid-cols-8 gap-1 bg-[var(--line)] w-fit mx-auto relative">
           {board.map((row, r) => (
-            row.map((cell, c) => (
-              <div 
-                key={`${r}-${c}`}
-                className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-sm border-2 transition-colors duration-200 ${
-                  cell === 1 ? 'bg-[var(--blue)] border-[rgba(0,0,0,0.2)] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]' : 
-                  cell === 2 ? 'bg-[var(--ink)] border-[var(--ink)] shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center after:content-["X"] after:text-gray-500 after:font-black' : 
-                  'bg-[#2d3748] border-[#1a202c]'
-                }`}
-              />
-            ))
+            row.map((cell, c) => {
+              const isPreview = previewCoords.some(coord => coord.r === r && coord.c === c);
+              const previewColor = dragState?.shape.color;
+              const isClearing = clearingCells.some(cell => cell.r === r && cell.c === c);
+              const isFalling = fallingCells.some(cell => cell.r === r && cell.c === c);
+              
+              return (
+                <div 
+                  key={`${r}-${c}`}
+                  className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-sm border-2 transition-all duration-200 ${
+                    isClearing ? 'bg-white border-white scale-95 animate-[clearFlash_0.25s_ease-out] z-10 shadow-[0_0_15px_rgba(255,255,255,0.8)]' :
+                    isFalling ? 'bg-[var(--ink)] border-[var(--ink)] animate-[fallDown_0.6s_ease-out] flex items-center justify-center after:content-["X"] after:text-red-500 after:font-black' :
+                    cell === 1 ? 'bg-[var(--blue)] border-[rgba(0,0,0,0.2)] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]' : 
+                    cell === 2 ? 'bg-[var(--ink)] border-[var(--ink)] shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center after:content-["X"] after:text-gray-500 after:font-black' : 
+                    'bg-[#2d3748] border-[#1a202c]'
+                  }`}
+                  style={isPreview ? {
+                    backgroundColor: previewColor,
+                    opacity: 0.35,
+                    borderStyle: 'dashed',
+                    borderColor: 'rgba(255,255,255,0.5)'
+                  } : undefined}
+                />
+              );
+            })
           ))}
         </div>
+
+        {/* Particles Overlay */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+          {particles.map(p => (
+            <div 
+              key={p.id}
+              className="absolute w-2.5 h-2.5 rounded-sm border border-black/30 shadow-sm"
+              style={{
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                backgroundColor: p.color,
+                transform: 'translate(-50%, -50%)',
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Combo Text Pop-up Overlay */}
+        {comboText && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+            <div className="bg-[var(--yellow)] border-[4px] border-[var(--ink)] shadow-[6px_6px_0_var(--ink)] px-6 py-3 rounded-xl rotate-[-5deg] animate-[comboPop_0.6s_ease-out]">
+              <span className="text-2xl md:text-3xl font-black text-[var(--ink)] uppercase tracking-wider">{comboText}</span>
+            </div>
+          </div>
+        )}
 
         {/* Vocab Overlay */}
         {gameState === 'vocab' && questions.length > 0 && (
           <div className={`fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-4 ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
-            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] w-full max-w-md max-h-[90vh] flex flex-col relative pt-10">
+            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] w-full max-w-md max-h-[90vh] flex flex-col relative pt-10 animate-[comboPop_0.3s_ease-out]">
               <div className="absolute top-4 right-4">
                 <SaveToCollection wordId={questions[currentQIndex].id} wordText={questions[currentQIndex].word} />
               </div>
-              <span className="text-[var(--red)] font-black uppercase text-sm mb-2 block animate-pulse text-center shrink-0">Hết Gạch! Hãy trả lời:</span>
+              <span className="text-[var(--red)] font-black uppercase text-sm mb-2 block text-center shrink-0 tracking-widest animate-pulse">Hết Gạch! Hãy trả lời:</span>
               <h2 className="text-3xl md:text-4xl font-serif font-black mb-4 text-[var(--ink)] text-center shrink-0">{questions[currentQIndex].word}</h2>
               <div className="grid grid-cols-1 gap-3 overflow-y-auto p-1">
                 {questions[currentQIndex].choices.map((choice, idx) => {
@@ -532,7 +702,7 @@ export default function BlockBlastClient() {
 
         {/* Game Over Overlay */}
         {gameState === 'gameover' && (
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl relative">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl">
             <button
               onClick={() => router.push(exitRoute)}
               className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
@@ -540,7 +710,7 @@ export default function BlockBlastClient() {
             >
               X
             </button>
-            <h2 className="text-5xl font-serif font-black text-[var(--red)] mb-4">GAME OVER</h2>
+            <h2 className="text-5xl font-serif font-black text-[var(--red)] mb-4 animate-[comboPop_0.4s_ease-out]">GAME OVER</h2>
             <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] rounded-xl mb-6 text-center w-full max-w-[200px] shadow-[4px_4px_0_var(--ink)]">
               <span className="block text-sm font-bold text-[var(--muted)] uppercase">Điểm của bạn</span>
               <span className="block text-4xl font-black text-[var(--blue)]">{score}</span>
@@ -558,14 +728,13 @@ export default function BlockBlastClient() {
             </div>
             <button 
               onClick={() => setGameState('setup')}
-              className="btn-brutal bg-[var(--yellow)] w-full"
+              className="btn-brutal bg-[var(--yellow)] w-full shadow-[3px_3px_0_var(--ink)]"
             >
               Chơi Lại
             </button>
           </div>
         )}
       </div>
-
       {/* Shapes tray */}
       <div className="w-full h-32 panel flex justify-between items-center gap-4 shrink-0 touch-none p-3 bg-[var(--paper)]">
         {shapes.map((shape, idx) => {
@@ -660,6 +829,26 @@ export default function BlockBlastClient() {
           50% { transform: translateX(10px) rotate(2deg); }
           75% { transform: translateX(-10px) rotate(-2deg); }
           100% { transform: translateX(0); }
+        }
+        @keyframes bump {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.02); }
+          100% { transform: scale(1); }
+        }
+        @keyframes clearFlash {
+          0% { background-color: #fff; transform: scale(1); opacity: 1; filter: brightness(2); }
+          100% { background-color: transparent; transform: scale(0); opacity: 0; }
+        }
+        @keyframes fallDown {
+          0% { transform: translateY(-400px) rotate(-15deg); opacity: 0; }
+          60% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          80% { transform: translateY(-12px); }
+          100% { transform: translateY(0); }
+        }
+        @keyframes comboPop {
+          0% { transform: scale(0.3) rotate(-12deg); opacity: 0; }
+          50% { transform: scale(1.1) rotate(-5deg); opacity: 1; }
+          100% { transform: scale(1) rotate(-5deg); opacity: 1; }
         }
       `}</style>
     </div>
