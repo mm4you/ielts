@@ -6,27 +6,37 @@ export async function GET(request: Request) {
   const level = searchParams.get('level');
 
   try {
-    const words = await prisma.word.findMany({
-      where: {
-        ...(level && level !== 'all' ? { level } : {})
-      }
+    const whereClause = {
+      ...(level && level !== 'all' ? { level } : {})
+    };
+
+    const totalCount = await prisma.word.count({
+      where: whereClause
     });
 
-    if (words.length < 4) {
+    if (totalCount < 4) {
       return NextResponse.json({ error: 'Not enough words to generate quiz' }, { status: 400 });
     }
 
-    // Shuffle and pick 100
-    const shuffled = [...words].sort(() => 0.5 - Math.random());
-    const selectedWords = shuffled.slice(0, 100);
+    const take = Math.min(100, totalCount);
+    const skip = totalCount > take ? Math.floor(Math.random() * (totalCount - take + 1)) : 0;
 
-    const questions = selectedWords.map((word) => {
-      // Lấy 3 đáp án sai ngẫu nhiên
-      const wrongAnswers = shuffled
-        .filter((w) => w.id !== word.id)
+    const words = await prisma.word.findMany({
+      where: whereClause,
+      skip: skip,
+      take: take
+    });
+
+    // Shuffle words to pick random questions
+    const shuffledWords = [...words].sort(() => 0.5 - Math.random());
+    const selectedMeanings = shuffledWords.map((w) => w.meaning_vi);
+
+    const questions = shuffledWords.map((word) => {
+      // Lấy 3 đáp án sai ngẫu nhiên từ danh sách các từ đã chọn
+      const wrongAnswers = selectedMeanings
+        .filter((m) => m !== word.meaning_vi)
         .sort(() => 0.5 - Math.random())
-        .slice(0, 3)
-        .map((w) => w.meaning_vi);
+        .slice(0, 3);
 
       const options = [word.meaning_vi, ...wrongAnswers].sort(() => 0.5 - Math.random());
 
