@@ -48,6 +48,7 @@ function SpeedrunContent() {
   const [flashColor, setFlashColor] = useState<'green' | 'red' | null>(null);
   const [answerStatus, setAnswerStatus] = useState<{ selectedIdx: number, isCorrect: boolean } | null>(null);
   const [explosions, setExplosions] = useState<{id: string, x: number, y: number}[]>([]);
+  const [scorePops, setScorePops] = useState<{ id: string; text: string; color: string; x: number; y: number }[]>([]);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -70,6 +71,7 @@ function SpeedrunContent() {
     setTimeLeft(45);
     setCurrentIndex(0);
     setStreak(0);
+    setScorePops([]);
     await fetchQuestions();
   };
 
@@ -93,11 +95,23 @@ function SpeedrunContent() {
     };
   }, [gameState, questions]);
 
-  const handleAnswer = (choiceIdx: number) => {
+  const handleAnswer = (choiceIdx: number, e: React.MouseEvent<HTMLDivElement>) => {
     if (questions.length === 0 || answerStatus) return;
     
     const currentQ = questions[currentIndex];
     const isCorrect = choiceIdx === currentQ.correctIndex;
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const popId = Date.now().toString() + Math.random().toString();
+    const scoreVal = 10 + (streak * 2);
+    const popText = isCorrect ? `+${scoreVal} pts | +2s` : `-3s`;
+    const popColor = isCorrect ? 'text-green-600' : 'text-red-600';
+
+    setScorePops(prev => [...prev, { id: popId, text: popText, color: popColor, x, y }]);
+    setTimeout(() => {
+      setScorePops(prev => prev.filter(p => p.id !== popId));
+    }, 800);
 
     setAnswerStatus({ selectedIdx: choiceIdx, isCorrect });
 
@@ -114,7 +128,7 @@ function SpeedrunContent() {
         }, 600);
       }
 
-      setScore(s => s + 10 + (streak * 2));
+      setScore(s => s + scoreVal);
       setTimeLeft(t => t + 2);
       setStreak(s => s + 1);
       setFlashColor('green');
@@ -221,33 +235,48 @@ function SpeedrunContent() {
       flashColor === 'green' ? 'bg-green-100' : flashColor === 'red' ? 'bg-red-100' : ''
     }`}>
       {/* Top Bar */}
-      <div className="flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl relative shrink-0 gap-4">
+      <div className={`flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 pb-5 md:pb-6 border-[3px] rounded-xl relative shrink-0 gap-4 transition-all duration-300 ${
+        timeLeft <= 10 ? 'border-[var(--red)] shadow-[4px_4px_0_var(--red)] shadow-[0_0_15px_rgba(239,68,68,0.5)] animate-pulse' : 'border-[var(--line)] shadow-[4px_4px_0_var(--line)]'
+      }`}>
         <div className="text-xl md:text-2xl font-black text-[var(--ink)] flex-1">
           Điểm: <span className="text-[var(--blue)]">{score}</span>
         </div>
         {streak >= 3 && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl md:text-3xl font-black text-[var(--red)] animate-bounce whitespace-nowrap drop-shadow-md flex items-center gap-1">
-            <svg className="w-6 h-6 md:w-8 md:h-8 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+            <svg className="w-6 h-6 md:w-8 md:h-8 shrink-0 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
             </svg>
-            <span>x{streak}</span>
+            <span>x{streak} FLAME</span>
           </div>
         )}
-        <div className={`transition-all duration-300 font-black ${timeLeft <= 10 ? 'text-4xl md:text-6xl text-[var(--red)] animate-pulse drop-shadow-lg' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
+        <div className={`transition-all duration-300 font-black ${timeLeft <= 10 ? 'text-4xl md:text-5xl text-[var(--red)] drop-shadow-lg' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
           {timeLeft}s
         </div>
         <button 
           onClick={() => router.push(exitRoute)} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 cursor-pointer"
+          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 cursor-pointer z-10"
           title="Thoát game"
         >
           X
         </button>
+
+        {/* Progress Bar */}
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gray-200 rounded-b-lg overflow-hidden border-t-2 border-[var(--line)]">
+          <div 
+            className={`h-full transition-all duration-200 ${
+              timeLeft <= 10 ? 'bg-[var(--red)]' : 'bg-[var(--green)]'
+            }`}
+            style={{ width: `${Math.min(100, (timeLeft / 45) * 100)}%` }}
+          />
+        </div>
       </div>
 
       {/* Question Card */}
-      <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
+      <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative transition-all duration-300 ${
+        isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''
+      } ${
+        streak >= 3 ? 'animate-fire-glow border-[#ef4444]' : ''
+      }`}>
         <div className="absolute top-4 left-4">
           <span className="bg-[#0ea5e9] text-[#111827] border-2 border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] font-black text-xs px-2.5 py-1 rounded-md uppercase tracking-wider">{currentIndex + 1} / {questions.length}</span>
         </div>
@@ -266,7 +295,7 @@ function SpeedrunContent() {
           return (
             <div 
               key={idx}
-              onClick={() => handleAnswer(idx)}
+              onClick={(e) => handleAnswer(idx, e)}
               className={`btn-brutal text-left block w-full h-auto min-h-[60px] md:min-h-[80px] py-3 px-4 md:py-6 md:px-6 cursor-pointer transition-colors active:scale-95 ${
                 !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] group' :
                 (idx === currentQ.correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' :
@@ -300,6 +329,31 @@ function SpeedrunContent() {
           0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
           100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(720deg); opacity: 0; }
         }
+        @keyframes score-pop {
+          0% { transform: translate(-50%, 0) scale(0.6); opacity: 0; }
+          20% { transform: translate(-50%, -20px) scale(1.1); opacity: 1; }
+          100% { transform: translate(-50%, -80px) scale(0.8); opacity: 0; }
+        }
+        .animate-score-pop {
+          animation: score-pop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes fire-glow {
+          0% {
+            box-shadow: 6px 6px 0 var(--ink), 0 0 10px rgba(239, 68, 68, 0.4), 0 0 20px rgba(249, 115, 22, 0.4);
+            border-color: #ef4444;
+          }
+          50% {
+            box-shadow: 6px 6px 0 var(--ink), 0 0 20px rgba(239, 68, 68, 0.8), 0 0 35px rgba(249, 115, 22, 0.8);
+            border-color: #f97316;
+          }
+          100% {
+            box-shadow: 6px 6px 0 var(--ink), 0 0 12px rgba(239, 68, 68, 0.4), 0 0 24px rgba(249, 115, 22, 0.4);
+            border-color: #ef4444;
+          }
+        }
+        .animate-fire-glow {
+          animation: fire-glow 1s ease-in-out infinite alternate;
+        }
       `}</style>
       
       {/* Explosions layer */}
@@ -325,6 +379,17 @@ function SpeedrunContent() {
               </div>
             );
           })}
+        </div>
+      ))}
+
+      {/* Score Pops Layer */}
+      {scorePops.map(pop => (
+        <div
+          key={pop.id}
+          className={`fixed pointer-events-none z-50 text-xl md:text-3xl font-black bg-[var(--paper)] px-3 py-1.5 border-[3px] border-[var(--line)] shadow-[3px_3px_0_var(--ink)] rounded-xl animate-score-pop ${pop.color}`}
+          style={{ left: pop.x, top: pop.y }}
+        >
+          {pop.text}
         </div>
       ))}
     </div>

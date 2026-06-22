@@ -40,6 +40,7 @@ function MatchContent() {
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [matchedIndices, setMatchedIndices] = useState<number[]>([]);
+  const [mismatchIndices, setMismatchIndices] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [playedWords, setPlayedWords] = useState<Word[]>([]);
@@ -84,6 +85,7 @@ function MatchContent() {
     setMoves(0);
     setFlippedIndices([]);
     setMatchedIndices([]);
+    setMismatchIndices([]);
     await fetchAndSetupCards();
   };
 
@@ -110,8 +112,10 @@ function MatchContent() {
         }, 500);
       } else {
         // No match
+        setMismatchIndices(newFlipped);
         setTimeout(() => {
           setFlippedIndices([]);
+          setMismatchIndices([]);
           setIsLocked(false);
         }, 1000);
       }
@@ -254,23 +258,58 @@ function MatchContent() {
         {cards.map((card, idx) => {
           const isFlipped = flippedIndices.includes(idx) || matchedIndices.includes(idx);
           const isMatched = matchedIndices.includes(idx);
+          const isMismatched = mismatchIndices.includes(idx);
 
           return (
-            <div 
+            <div
               key={idx}
-              className={`relative h-24 md:h-40 cursor-pointer transform-style-3d transition-transform duration-500 ${isFlipped ? 'rotate-y-180' : ''} ${isMatched ? 'scale-95' : 'hover:-translate-y-2'}`}
-              onClick={() => handleCardClick(idx)}
+              className="w-full h-full animate-[card-deal_0.5s_cubic-bezier(0.175,_0.885,_0.32,_1.275)_both]"
+              style={{ animationDelay: `${idx * 45}ms` }}
             >
-              {/* Back of card (Face down) */}
-              <div className="absolute inset-0 bg-[var(--blue)] border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center">
-                <span className="text-4xl text-white/50 font-black">?</span>
-              </div>
+              <div 
+                className={`relative h-24 md:h-40 cursor-pointer transform-style-3d transition-transform duration-500 ${isFlipped ? 'rotate-y-180' : ''} ${isMatched ? 'scale-95' : 'hover:-translate-y-2'} ${isMismatched ? 'animate-mismatch-shake' : ''}`}
+                onClick={() => handleCardClick(idx)}
+              >
+                {/* Back of card (Face down) */}
+                <div className="absolute inset-0 bg-[var(--blue)] border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center">
+                  <span className="text-4xl text-white/50 font-black">?</span>
+                </div>
 
-              {/* Front of card (Face up) */}
-              <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-2 text-center rotate-y-180 leading-tight overflow-y-auto ${isMatched ? 'bg-green-500 border-green-700 shadow-none' : 'bg-[var(--paper)] border-[var(--line)]'}`}>
-                <span className={`font-black break-words block w-full my-auto ${isMatched ? 'text-green-950' : (card.type === 'en' ? 'text-sm md:text-2xl text-[var(--ink)]' : 'text-[10px] md:text-sm text-[var(--muted)]')}`}>
-                  {card.content}
-                </span>
+                {/* Front of card (Face up) */}
+                <div className={`absolute inset-0 border-[3px] shadow-[4px_4px_0_var(--line)] rounded-xl backface-hidden flex items-center justify-center p-2 text-center rotate-y-180 leading-tight overflow-y-auto ${
+                  isMatched ? 'bg-green-500 border-green-700 shadow-none' : 
+                  isMismatched ? 'bg-red-100 border-red-500 shadow-none' : 
+                  'bg-[var(--paper)] border-[var(--line)]'
+                }`}>
+                  <span className={`font-black break-words block w-full my-auto ${isMatched ? 'text-green-950' : isMismatched ? 'text-red-950' : (card.type === 'en' ? 'text-sm md:text-2xl text-[var(--ink)]' : 'text-[10px] md:text-sm text-[var(--muted)]')}`}>
+                    {card.content}
+                  </span>
+                </div>
+
+                {/* Sparkles Layer */}
+                {isMatched && (
+                  <div className="absolute inset-0 pointer-events-none overflow-visible z-30">
+                    {Array.from({ length: 8 }).map((_, i) => {
+                      const angle = (i * Math.PI * 2) / 8;
+                      const dist = 30 + Math.random() * 40;
+                      const tx = Math.cos(angle) * dist;
+                      const ty = Math.sin(angle) * dist;
+                      return (
+                        <div
+                          key={i}
+                          className="absolute w-2 h-2 md:w-3 md:h-3 bg-yellow-400 border border-yellow-600 rounded-full animate-sparkle"
+                          style={{
+                            left: '50%',
+                            top: '50%',
+                            '--tx': `${tx}px`,
+                            '--ty': `${ty}px`,
+                            animationDelay: `${Math.random() * 0.1}s`,
+                          } as any}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -290,6 +329,41 @@ function MatchContent() {
         }
         .rotate-y-180 {
           transform: rotateY(180deg);
+        }
+        @keyframes card-deal {
+          0% {
+            opacity: 0;
+            transform: scale(0.3) translateY(100px) rotate(10deg);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0) rotate(0deg);
+          }
+        }
+        @keyframes mismatch-shake {
+          0%, 100% { transform: translateX(0) rotateY(180deg); }
+          20%, 60% { transform: translateX(-8px) rotate(-1deg) rotateY(180deg); }
+          40%, 80% { transform: translateX(8px) rotate(1deg) rotateY(180deg); }
+        }
+        .animate-mismatch-shake {
+          animation: mismatch-shake 0.4s ease-in-out;
+        }
+        @keyframes sparkle {
+          0% {
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            opacity: 0;
+          }
+          20% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
+          }
+          100% {
+            transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(180deg);
+            opacity: 0;
+          }
+        }
+        .animate-sparkle {
+          animation: sparkle 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
       `}</style>
     </div>
