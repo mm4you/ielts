@@ -158,3 +158,29 @@ h1, h2, h3, h4 {
 .animate-shake {
   animation: shake 0.5s ease-in-out;
 }
+
+@keyframes neo-box-swap-1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(2rem, 2rem) rotate(180deg);
+  }
+}
+
+@keyframes neo-box-swap-2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-2rem, -2rem) rotate(-180deg);
+  }
+}
+
+.animate-neo-swap-1 {
+  animation: neo-box-swap-1 2s infinite cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.animate-neo-swap-2 {
+  animation: neo-box-swap-2 2s infinite cubic-bezier(0.77, 0, 0.175, 1);
+}
