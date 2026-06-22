@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 config();
 
 function getIpv4ConnectionStringSync(url: string | undefined): string | undefined {
-  if (!url) return url;
+  if (!url || process.env.VERCEL === '1') return url;
   const match = url.match(/postgresql:\/\/([^:]+):([^@]+)@([^/?#]+)(.*)/);
   if (!match) return url;
   const hostAndPort = match[3];

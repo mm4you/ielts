@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { auth } from "@/auth";
 
 const fraunces = Fraunces({
   subsets: ["latin", "vietnamese"],
@@ -27,19 +28,18 @@ export const viewport: Viewport = {
   themeColor: "#ef4444",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className={`${spaceGrotesk.variable} ${fraunces.variable} font-sans`}>
-        <Providers>
+        <Providers session={session}>
           {children}
         </Providers>
       </body>

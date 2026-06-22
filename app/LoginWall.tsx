@@ -347,7 +347,7 @@ export default function LoginWall() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center relative overflow-hidden py-12 px-4">
+    <main className="min-h-screen bg-[var(--bg)] flex items-center justify-center relative overflow-hidden py-12 px-4">
       <div className="bg-orb orb-1"></div>
       <div className="bg-orb orb-2"></div>
       
@@ -755,6 +755,6 @@ export default function LoginWall() {
           Đăng nhập bằng Google
         </button>
       </div>
-    </div>
+    </main>
   );
 }
