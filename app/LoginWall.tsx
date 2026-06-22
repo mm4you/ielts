@@ -21,20 +21,6 @@ export default function LoginWall() {
   
   const [error, _setError] = useState('');
   const [shouldShake, setShouldShake] = useState(false);
-  const [motivationalText, setMotivationalText] = useState('');
-
-  const ROAST_QUOTES = [
-    "Học từ vựng không khó, cái khó là bạn có chịu nổi AI mỏ hỗn khịa không.",
-    "Phát âm sai là AI chửi thẳng mặt, không nể nang nhé.",
-    "Hôm nay bạn đã đọc bùa chú trục xuất AI chưa.",
-    "Điểm Speaking dưới trung bình thì đừng mơ đi du học.",
-    "Luyện từ vựng mỗi ngày để thoát kiếp nạn mất gốc tiếng Anh."
-  ];
-
-  useEffect(() => {
-    const randomQuote = ROAST_QUOTES[Math.floor(Math.random() * ROAST_QUOTES.length)];
-    setMotivationalText(randomQuote);
-  }, []);
 
   const triggerShake = () => {
     setShouldShake(true);
@@ -411,10 +397,10 @@ export default function LoginWall() {
           </p>
         </div>
 
-        {/* Footer with roast motivational quote (no emoji) */}
+        {/* Footer copyright */}
         <div className="z-10 pt-6 border-t-4 border-black border-dashed">
           <p className="text-xs font-mono font-black text-[var(--ink)] uppercase tracking-wider">
-            {motivationalText}
+            © 2026 IELTS VOCABULARY STUDIO. ALL RIGHTS RESERVED.
           </p>
         </div>
       </div>

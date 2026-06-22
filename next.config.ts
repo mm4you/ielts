@@ -6,6 +6,7 @@ const cspValue = `default-src 'self'; ${scriptSrc}; style-src 'self' 'unsafe-inl
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  devIndicators: false,
   async headers() {
     return [
       {
