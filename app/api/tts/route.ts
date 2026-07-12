@@ -12,6 +12,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const text = searchParams.get('text');
+  const langParam = searchParams.get('lang') || 'vi';
 
   if (!text) {
     return new NextResponse('Missing text parameter', { status: 400 });
@@ -21,10 +22,15 @@ export async function GET(request: Request) {
     return new NextResponse('Text parameter exceeds maximum length of 200 characters', { status: 400 });
   }
 
+  const isEn = langParam.toLowerCase() === 'en';
+  const voice = isEn ? 'en-US-AvaNeural' : 'vi-VN-HoaiMyNeural';
+  const lang = isEn ? 'en-US' : 'vi-VN';
+  const fallbackLang = isEn ? 'en' : 'vi';
+
   try {
     const tts = new EdgeTTS({
-      voice: 'vi-VN-HoaiMyNeural', // Giọng Nữ Miền Nam (Hoài My)
-      lang: 'vi-VN'
+      voice,
+      lang
     });
 
     // Tạo file tạm trong thư mục /tmp (được Vercel hỗ trợ cho serverless)
@@ -57,7 +63,7 @@ export async function GET(request: Request) {
     console.error('TTS Proxy Error:', error);
     // Fallback về Google TTS nếu Edge bị lỗi
     try {
-      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(text)}`;
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${fallbackLang}&client=tw-ob&q=${encodeURIComponent(text)}`;
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',

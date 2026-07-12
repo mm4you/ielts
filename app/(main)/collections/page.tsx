@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -44,6 +44,57 @@ function CollectionsContent() {
   const [words, setWords] = useState<Word[]>([]);
   const [loadingWords, setLoadingWords] = useState(false);
   const [wordSearchQuery, setWordSearchQuery] = useState(initialQ);
+
+  const [playingWordId, setPlayingWordId] = useState<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
+  // Dừng phát âm khi chuyển đổi bộ sưu tập
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setPlayingWordId(null);
+  }, [selectedCollection]);
+
+  const handlePlayAudio = (wordId: number, wordText: string) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    if (playingWordId === wordId) {
+      setPlayingWordId(null);
+      return;
+    }
+
+    const audio = new Audio(`/api/tts?text=${encodeURIComponent(wordText)}&lang=en`);
+    audioRef.current = audio;
+    setPlayingWordId(wordId);
+
+    audio.play().catch(err => {
+      console.warn("Audio play failed:", err);
+      setPlayingWordId(null);
+    });
+
+    audio.onended = () => {
+      setPlayingWordId(null);
+      audioRef.current = null;
+    };
+
+    audio.onerror = () => {
+      setPlayingWordId(null);
+      audioRef.current = null;
+    };
+  };
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -502,6 +553,29 @@ function CollectionsContent() {
                             >
                               {word.word}
                             </Link>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handlePlayAudio(word.id, word.word);
+                              }}
+                              className={`p-1 rounded-md border-2 border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none relative z-20
+                                ${playingWordId === word.id 
+                                  ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' 
+                                  : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] shadow-[1.5px_1.5px_0_var(--line)] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none'
+                                }`}
+                              title="Phát âm"
+                            >
+                              {playingWordId === word.id ? (
+                                <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                </svg>
+                              ) : (
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                                </svg>
+                              )}
+                            </button>
                             {word.ipa && (
                               <span className="text-xs text-[var(--muted)] font-mono">
                                 {word.ipa}

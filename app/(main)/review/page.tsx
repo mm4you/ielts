@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ReviewWord, ReviewRating, RATING_LABELS, LEVELS } from '@/types';
 import { calculateSRS } from '@/lib/srs';
@@ -35,6 +35,57 @@ function ReviewContent() {
   const [gameState, setGameState] = useState<'setup' | 'playing'>('setup');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [selectedLimit, setSelectedLimit] = useState<string>('50');
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
+  // Dừng phát âm khi chuyển từ khác
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setIsPlaying(false);
+  }, [currentIndex]);
+
+  const handlePlayAudio = (wordText: string) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    if (isPlaying) {
+      setIsPlaying(false);
+      return;
+    }
+
+    const audio = new Audio(`/api/tts?text=${encodeURIComponent(wordText)}&lang=en`);
+    audioRef.current = audio;
+    setIsPlaying(true);
+
+    audio.play().catch(err => {
+      console.warn("Audio play failed:", err);
+      setIsPlaying(false);
+    });
+
+    audio.onended = () => {
+      setIsPlaying(false);
+      audioRef.current = null;
+    };
+
+    audio.onerror = () => {
+      setIsPlaying(false);
+      audioRef.current = null;
+    };
+  };
 
   const fetchWords = useCallback(async () => {
     setLoading(true);
@@ -227,9 +278,34 @@ function ReviewContent() {
           <SaveToCollection wordId={currentWord.id} wordText={currentWord.word} />
         </div>
         
-        <h2 className={`text-4xl md:text-6xl font-serif font-bold text-[var(--ink)] mb-4 ${showMeaning ? 'mt-8' : ''}`}>
-          {currentWord.word}
-        </h2>
+        <div className="flex items-center gap-3 justify-center mb-4 relative z-20">
+          <h2 className={`text-4xl md:text-6xl font-serif font-bold text-[var(--ink)] ${showMeaning ? 'mt-8' : ''}`}>
+            {currentWord.word}
+          </h2>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handlePlayAudio(currentWord.word);
+            }}
+            className={`p-2 rounded-lg border-2 border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none
+              ${isPlaying 
+                ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' 
+                : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] shadow-[2.5px_2.5px_0_var(--line)] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none'
+              }`}
+            title="Phát âm"
+          >
+            {isPlaying ? (
+              <svg className="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+              </svg>
+            )}
+          </button>
+        </div>
         
         {currentWord.ipa && (
           <p className="text-lg md:text-xl text-[var(--muted)] mb-4 md:mb-8 font-mono bg-[var(--bg)] px-4 py-1 rounded-md border-2 border-[var(--line)]">
