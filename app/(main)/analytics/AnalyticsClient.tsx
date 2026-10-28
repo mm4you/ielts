@@ -133,8 +133,8 @@ export default function AnalyticsClient({
               {hasActivityToday ? 'Đã học hôm nay' : 'Chưa học hôm nay'}
             </p>
           </div>
-          <div className="w-12 h-12 bg-[var(--red)] border border-[var(--line)] rounded-xl flex items-center justify-center shrink-0">
-            <FluentFireRegular aria-hidden="true" className="w-6 h-6 text-white" />
+          <div className="decorative-icon">
+            <FluentFireRegular aria-hidden="true" className="w-6 h-6" />
           </div>
         </div>
 
@@ -149,8 +149,8 @@ export default function AnalyticsClient({
               Đã học {overallPercent}% kho từ vựng
             </p>
           </div>
-          <div className="w-12 h-12 bg-[var(--blue)] border border-[var(--line)] rounded-xl flex items-center justify-center shrink-0">
-            <BookOpenRegular aria-hidden="true" className="w-6 h-6 text-white" />
+          <div className="decorative-icon">
+            <BookOpenRegular aria-hidden="true" className="w-6 h-6" />
           </div>
         </div>
 
@@ -165,8 +165,8 @@ export default function AnalyticsClient({
               Ôn tập đều để ghi nhớ lâu hơn
             </p>
           </div>
-          <div className="w-12 h-12 bg-[var(--green)] border border-[var(--line)] rounded-xl flex items-center justify-center shrink-0">
-            <CheckmarkCircleRegular aria-hidden="true" className="w-6 h-6 text-white" />
+          <div className="decorative-icon">
+            <CheckmarkCircleRegular aria-hidden="true" className="w-6 h-6" />
           </div>
         </div>
       </div>
@@ -295,8 +295,8 @@ export default function AnalyticsClient({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Block Blast */}
           <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-4">
-            <div className="w-10 h-10 bg-[var(--blue)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
-              <GridRegular aria-hidden="true" className="w-5 h-5 text-white" />
+            <div className="decorative-icon">
+              <GridRegular aria-hidden="true" className="w-5 h-5" />
             </div>
             <div>
               <p className="text-[10px] font-semibold text-[var(--muted)]">Xếp hình (Block Blast)</p>
@@ -306,8 +306,8 @@ export default function AnalyticsClient({
 
           {/* Speedrun */}
           <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-4">
-            <div className="w-10 h-10 bg-[var(--red)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
-              <FlashRegular aria-hidden="true" className="w-5 h-5 text-white" />
+            <div className="decorative-icon">
+              <FlashRegular aria-hidden="true" className="w-5 h-5" />
             </div>
             <div>
               <p className="text-[10px] font-semibold text-[var(--muted)]">Tốc chiến (Speedrun)</p>
@@ -317,8 +317,8 @@ export default function AnalyticsClient({
 
           {/* Sniper */}
           <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-4">
-            <div className="w-10 h-10 bg-[var(--ink)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
-              <TargetArrowRegular aria-hidden="true" className="w-5 h-5 text-[var(--paper)]" />
+            <div className="decorative-icon">
+              <TargetArrowRegular aria-hidden="true" className="w-5 h-5" />
             </div>
             <div>
               <p className="text-[10px] font-semibold text-[var(--muted)]">Thiện xạ (Sniper)</p>
@@ -332,8 +332,8 @@ export default function AnalyticsClient({
       <div className="panel p-6 mt-8 border border-[var(--line)] rounded-2xl bg-[var(--paper)] w-full flex flex-col select-none">
         {/* Title */}
         <div className="flex items-center gap-2 mb-6 border-b border-solid border-[var(--line)] pb-3">
-          <div className="w-9 h-9 bg-[var(--yellow)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
-            <TrophyRegular aria-hidden="true" className="w-5 h-5 text-[var(--ink)]" />
+          <div className="decorative-icon">
+            <TrophyRegular aria-hidden="true" className="w-5 h-5" />
           </div>
           <h2 className="text-lg font-semibold text-[var(--ink)]">Bảng xếp hạng</h2>
         </div>
