@@ -6,6 +6,7 @@ import { Button, Field, Input, MessageBar, Select, Spinner } from '@fluentui/rea
 import { AddRegular } from '@fluentui/react-icons/svg/add';
 import { ArrowRightRegular } from '@fluentui/react-icons/svg/arrow-right';
 import type { RoomView } from '@/lib/rooms/types';
+import { ROOM_QUESTION_COUNTS } from '@/lib/rooms/settings';
 
 export default function RoomEntry() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function RoomEntry() {
       <form className="panel room-form" onSubmit={e => enter('create', e)}><h2>Tạo phòng</h2>
         <Field label="Tên phòng" required><Input value={title} onChange={(_, d) => setTitle(d.value)} maxLength={60} required /></Field>
         <Field label="Cấp độ"><Select value={level} onChange={e => setLevel(e.target.value)}><option value="all">Tất cả cấp độ</option>{['A1','A2','B1','B2','C1','C2'].map(l => <option key={l}>{l}</option>)}</Select></Field>
-        <div className="room-form-pair"><Field label="Số câu"><Select value={questionCount} onChange={e => setQuestionCount(e.target.value)}>{[5,10,15].map(n => <option key={n} value={n}>{n} câu</option>)}</Select></Field><Field label="Thời gian mỗi câu"><Select value={seconds} onChange={e => setSeconds(e.target.value)}>{[10,15,20].map(n => <option key={n} value={n}>{n} giây</option>)}</Select></Field></div>
+        <div className="room-form-pair"><Field label="Số câu"><Select value={questionCount} onChange={e => setQuestionCount(e.target.value)}>{ROOM_QUESTION_COUNTS.map(n => <option key={n} value={n}>{n} câu</option>)}</Select></Field><Field label="Thời gian mỗi câu"><Select value={seconds} onChange={e => setSeconds(e.target.value)}>{[10,15,20].map(n => <option key={n} value={n}>{n} giây</option>)}</Select></Field></div>
         <Button type="submit" appearance="primary" size="large" disabled={!!busy || !title.trim()} icon={busy === 'create' ? <Spinner size="tiny" /> : <AddRegular />}>Tạo phòng</Button>
       </form>
       <div className="room-join-column"><form className="panel room-form" onSubmit={e => enter('join', e)}><h2>Tham gia phòng</h2><Field label="Mã phòng" hint="Nhập mã 6 ký tự do bạn bè chia sẻ." required><Input value={code} onChange={(_, d) => setCode(d.value.toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0, 6))} required maxLength={6} className="room-code-input" placeholder="ABC234" autoComplete="off" /></Field><Button type="submit" appearance="primary" size="large" disabled={!!busy || code.length !== 6} icon={busy === 'join' ? <Spinner size="tiny" /> : <ArrowRightRegular />}>Vào phòng</Button></form>

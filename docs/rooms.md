@@ -1,6 +1,6 @@
 # Phòng thi đấu từ vựng
 
-- Từ 2 đến 8 người, mã phòng 6 ký tự. Chọn 5/10/15 câu và 10/15/20 giây mỗi câu.
+- Từ 2 đến 8 người, mã phòng 6 ký tự. Chọn 5/10/15/20/30/50 câu và 10/15/20 giây mỗi câu.
 - Chủ phòng bắt đầu khi mọi người sẵn sàng. Cùng lịch câu hỏi theo đồng hồ máy chủ; có 3 giây công bố đáp án giữa các câu.
 - Trả lời đúng được 100 điểm và thêm tối đa 50 điểm theo thời gian còn lại. Mỗi người chỉ có một câu trả lời mỗi vòng; máy chủ tính điểm.
 - Bảng điểm công bố sau mỗi câu. API không gửi đáp án đúng hay điểm của câu đang diễn ra trước thời điểm công bố.

@@ -25,6 +25,7 @@ import { ArrowRepeatAllRegular } from '@fluentui/react-icons/svg/arrow-repeat-al
 import { ChartMultipleRegular } from '@fluentui/react-icons/svg/chart-multiple';
 import { FlashRegular } from '@fluentui/react-icons/svg/flash';
 import { PeopleTeamRegular } from '@fluentui/react-icons/svg/people-team';
+import { KeyboardRegular } from '@fluentui/react-icons/svg/keyboard';
 import ThemeToggle from './ThemeToggle';
 import BrandMark from './BrandMark';
 import { openFeedbackModal } from './FeedbackModal';
@@ -42,6 +43,7 @@ const gameLinks = [
   { href: '/match', label: 'Lật thẻ', icon: GamesRegular },
   { href: '/blockblast', label: 'Xếp hình', icon: GridRegular },
   { href: '/sniper', label: 'Thiện xạ', icon: TargetArrowRegular },
+  { href: '/typing', label: 'Bắn từ luyện gõ', icon: KeyboardRegular },
   { href: '/pronounce-challenge', label: 'Phát âm', icon: MicRegular },
 ];
 
@@ -49,7 +51,7 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
   const { data: session } = useSession();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [gamesOpen, setGamesOpen] = useState(() => gameLinks.slice(0, 4).some(item => pathname.startsWith(item.href)));
+  const [gamesOpen, setGamesOpen] = useState(() => gameLinks.filter(item => item.href !== '/pronounce-challenge').some(item => pathname.startsWith(item.href)));
   const isAdmin = (session?.user as { role?: string } | undefined)?.role === 'admin';
   const current = [...studyLinks, ...gameLinks].find(item => item.href === '/' ? pathname === '/' : pathname.startsWith(item.href));
   const title = pathname.startsWith('/admin') ? 'Quản trị' : pathname.startsWith('/word/') ? 'Chi tiết từ vựng' : current?.label || 'IELTS Vocab';
@@ -72,7 +74,7 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
         <div className="nav-group">{!compact && <p className="nav-section-label">Luyện tập</p>}
           {navLink(studyLinks[5])}
           {navLink({href:'/pronounce-challenge',label:'Phát âm',icon:MicRegular})}
-          {compact ? <Menu positioning="after"><MenuTrigger disableButtonEnhancement><Button appearance="subtle" className="nav-link" icon={<GamesRegular />} aria-label="Trò chơi" /></MenuTrigger><MenuPopover><MenuList>{gameLinks.slice(0,4).map(({href,label,icon:Icon})=><MenuItemLink href={href} key={href} icon={<Icon />}>{label}</MenuItemLink>)}</MenuList></MenuPopover></Menu> : <><button className="nav-link" onClick={()=>setGamesOpen(value=>!value)} aria-expanded={gamesOpen} aria-controls={gamesId}><GamesRegular /><span>Trò chơi</span><ChevronDownRegular className={`nav-chevron ${gamesOpen?'is-open':''}`} /></button><div id={gamesId} className="nav-subgroup" hidden={!gamesOpen}>{gameLinks.slice(0,4).map(navLink)}</div></>}
+          {compact ? <Menu positioning="after"><MenuTrigger disableButtonEnhancement><Button appearance="subtle" className="nav-link" icon={<GamesRegular />} aria-label="Trò chơi" /></MenuTrigger><MenuPopover><MenuList>{gameLinks.filter(item => item.href !== '/pronounce-challenge').map(({href,label,icon:Icon})=><MenuItemLink href={href} key={href} icon={<Icon />}>{label}</MenuItemLink>)}</MenuList></MenuPopover></Menu> : <><button className="nav-link" onClick={()=>setGamesOpen(value=>!value)} aria-expanded={gamesOpen} aria-controls={gamesId}><GamesRegular /><span>Trò chơi</span><ChevronDownRegular className={`nav-chevron ${gamesOpen?'is-open':''}`} /></button><div id={gamesId} className="nav-subgroup" hidden={!gamesOpen}>{gameLinks.filter(item => item.href !== '/pronounce-challenge').map(navLink)}</div></>}
         </div>
         <div className="nav-group">{navLink(studyLinks[4])}</div>
       </nav>

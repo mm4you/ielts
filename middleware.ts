@@ -40,6 +40,7 @@ export default auth((req) => {
     reqUrl.pathname.startsWith("/speedrun") ||
     reqUrl.pathname.startsWith("/blockblast") ||
     reqUrl.pathname.startsWith("/sniper") ||
+    reqUrl.pathname.startsWith("/typing") ||
     reqUrl.pathname.startsWith("/pronounce-challenge") ||
     reqUrl.pathname.startsWith("/word") ||
     reqUrl.pathname.startsWith("/rooms");
@@ -68,6 +69,7 @@ export const config = {
     "/speedrun/:path*",
     "/blockblast/:path*",
     "/sniper/:path*",
+    "/typing/:path*",
     "/pronounce-challenge/:path*",
     "/word/:path*",
     "/rooms/:path*",

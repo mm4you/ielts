@@ -12,8 +12,9 @@ import { TargetArrowRegular } from '@fluentui/react-icons/svg/target-arrow';
 import { CheckmarkRegular } from '@fluentui/react-icons/svg/checkmark';
 import { TrophyRegular } from '@fluentui/react-icons/svg/trophy';
 import { LEVELS } from '@/types';
-type Mode = 'review'|'speedrun'|'match'|'sniper'|'blockblast';
-const icons={review:ArrowRepeatAllRegular,speedrun:FlashRegular,match:GamesRegular,sniper:TargetArrowRegular,blockblast:GridRegular};
+import { KeyboardRegular } from '@fluentui/react-icons/svg/keyboard';
+type Mode = 'review'|'speedrun'|'match'|'sniper'|'blockblast'|'typing';
+const icons={review:ArrowRepeatAllRegular,speedrun:FlashRegular,match:GamesRegular,sniper:TargetArrowRegular,blockblast:GridRegular,typing:KeyboardRegular};
 type Props={mode:Mode;title:string;rules:string[];level:string;onLevelChange:(value:string)=>void;onStart:()=>void;exitRoute:string;loading?:boolean;highScore?:number;children?:React.ReactNode};
 export default function PracticeSetup({mode,title,rules,level,onLevelChange,onStart,exitRoute,loading,highScore,children}:Props){
   const Icon=icons[mode];
