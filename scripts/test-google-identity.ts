@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { canRecoverGoogleOrphan, googleIdentityAllowed } from '../lib/google-identity';
+const profile = { email: 'person@gmail.com', email_verified: true, sub: 'google-subject' };
+assert(googleIdentityAllowed(profile, 'google-subject'));
+assert(googleIdentityAllowed(profile, 'google-subject', 'PERSON@gmail.com'));
+assert(!googleIdentityAllowed(profile, 'different-subject'));
+assert(!googleIdentityAllowed(profile, 'google-subject', 'other@gmail.com'));
+assert(!googleIdentityAllowed({ ...profile, email_verified: false }, 'google-subject'));
+assert(!googleIdentityAllowed({ sub: 'google-subject' }, 'google-subject'));
+const orphan = { password: null, role: 'user', accounts: [], _count: { progress: 0, collections: 0 } };
+assert(canRecoverGoogleOrphan(profile.email, orphan));
+assert(!canRecoverGoogleOrphan('person@example.com', orphan));
+assert(!canRecoverGoogleOrphan(profile.email, { ...orphan, password: 'hash' }));
+assert(!canRecoverGoogleOrphan(profile.email, { ...orphan, role: 'admin' }));
+assert(!canRecoverGoogleOrphan(profile.email, { ...orphan, accounts: [{}] }));
+assert(!canRecoverGoogleOrphan(profile.email, { ...orphan, _count: { progress: 1, collections: 0 } }));
+assert(!canRecoverGoogleOrphan(profile.email, { ...orphan, _count: { progress: 0, collections: 1 } }));
+console.log('Google identity: verified subject/email matching, cross-account rejection and empty-profile recovery boundaries passed.');

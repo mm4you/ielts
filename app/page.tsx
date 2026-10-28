@@ -4,7 +4,9 @@ import LoginWall from './LoginWall';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
+  if (error) return <LoginWall initialError={error === 'GoogleAccountMismatch' ? 'Tài khoản Google không khớp hồ sơ đang liên kết. Đăng nhập lại và chọn đúng email Google.' : error === 'OAuthAccountNotLinked' ? 'Email này đã có tài khoản. Đăng nhập bằng phương thức đã dùng trước đó để xác nhận danh tính.' : 'Đăng nhập chưa thành công. Vui lòng thử lại.'} />;
   const session = await auth();
   if (!session?.user?.id) return <LoginWall />;
   const userId = session.user.id;

@@ -1,4 +1,5 @@
 'use client';
+import { signInWithGoogle } from '@/lib/google-sign-in';
 
 import { useConfirmation } from '@/components/ConfirmationProvider';
 import PageHeader from '@/components/PageHeader';
@@ -11,7 +12,7 @@ import LoadingState from '@/components/LoadingState';
 import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
 import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { parseMeaning } from '@/lib/parse';
@@ -321,7 +322,7 @@ function CollectionsContent() {
             Đăng nhập để tạo và quản lý các danh mục từ vựng cá nhân, lưu giữ các từ khó và luyện tập riêng biệt.
           </p>
           <button
-            onClick={() => signIn('google')}
+            onClick={() => signInWithGoogle()}
             className="btn-brutal bg-[var(--blue)] text-white w-full py-3 text-sm font-semibold "
           >
             Đăng Nhập Bằng Google

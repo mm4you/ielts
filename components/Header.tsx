@@ -1,9 +1,10 @@
 "use client";
+import { signInWithGoogle } from '@/lib/google-sign-in';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { Avatar, Button, DrawerBody, DrawerHeader, DrawerHeaderTitle, Input, Menu, MenuItem, MenuItemLink, MenuList, MenuPopover, MenuTrigger, OverlayDrawer, Tooltip } from '@fluentui/react-components';
 import { ArrowExitRegular } from '@fluentui/react-icons/svg/arrow-exit';
 import { BookOpenRegular } from '@fluentui/react-icons/svg/book-open';
@@ -105,7 +106,7 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
             <MenuItem icon={<ChatHelpRegular />} onClick={() => openFeedbackModal()}>Góp ý hệ thống</MenuItem>
             <MenuItem icon={<ArrowExitRegular />} onClick={() => signOut({ callbackUrl: '/' })}>Đăng xuất</MenuItem>
           </MenuList></MenuPopover>
-        </Menu> : <Button appearance="primary" onClick={() => signIn('google')}>Đăng nhập</Button>}
+        </Menu> : <Button appearance="primary" onClick={() => signInWithGoogle()}>Đăng nhập</Button>}
       </div>
     </header>
     <OverlayDrawer position="start" open={mobileOpen} onOpenChange={(_, data) => setMobileOpen(data.open)} size="small">

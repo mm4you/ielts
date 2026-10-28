@@ -8,9 +8,10 @@ import { GamesRegular } from '@fluentui/react-icons/svg/games';
 import { Button } from '@fluentui/react-components';
 import BrandMark from '@/components/BrandMark';
 import { signIn } from 'next-auth/react';
+import { signInWithGoogle } from '@/lib/google-sign-in';
 import { useRouter } from 'next/navigation';
 
-export default function LoginWall() {
+export default function LoginWall({ initialError = '' }: { initialError?: string }) {
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
   const [forgotStep, setForgotStep] = useState<1 | 2 | 3>(1);
 
@@ -25,7 +26,7 @@ export default function LoginWall() {
   const [devCode, setDevCode] = useState('');
   const [isDevMode, setIsDevMode] = useState(false);
 
-  const [error, _setError] = useState('');
+  const [error, _setError] = useState(initialError);
   const [shouldShake, setShouldShake] = useState(false);
 
   const triggerShake = () => {
@@ -750,7 +751,8 @@ export default function LoginWall() {
           size="large"
           onClick={() => {
             if (loading) return;
-            signIn('google');
+            setLoading(true);
+            signInWithGoogle().catch(() => { setLoading(false); setError('Chưa mở được đăng nhập Google. Vui lòng thử lại.'); });
           }}
           disabled={loading}
           className="google-login-button"
