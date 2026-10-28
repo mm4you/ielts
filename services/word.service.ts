@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { unstable_cache } from 'next/cache';
+import type { Word } from '@prisma/client';
+import { BoundedCache } from '@/lib/bounded-cache';
 
 const getCachedWordById = unstable_cache(
   async (id: number) => {
@@ -11,13 +13,12 @@ const getCachedWordById = unstable_cache(
   { tags: ['words'], revalidate: 86400 } // Cache for 24 hours
 );
 
-const memoryWordCache = new Map<number, any>();
+const memoryWordCache = new BoundedCache<number, Word>(256, 60_000);
 
 export class WordService {
   static async getWordById(id: number) {
-    if (memoryWordCache.has(id)) {
-      return memoryWordCache.get(id);
-    }
+    const cached = memoryWordCache.get(id);
+    if (cached) return cached;
 
     let word;
     // Standalone CLI scripts don't have Next.js incremental cache context, so bypass

@@ -6,7 +6,7 @@ import AdminClient from './AdminClient';
 export default async function AdminPage() {
   const session = await auth();
 
-  if (!session || (session.user as any)?.role !== 'admin') {
+  if (!session || (session.user as { role?: string })?.role !== 'admin') {
     redirect('/');
   }
 
@@ -16,12 +16,18 @@ export default async function AdminPage() {
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+      createdAt: true,
       _count: {
         select: { progress: true }
       }
     }
   });
 
-  return <AdminClient initialWords={words} initialUsers={users as any} />;
+  return <AdminClient initialWords={words} initialUsers={users} />;
 }

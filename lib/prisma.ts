@@ -40,7 +40,12 @@ function getIpv4ConnectionStringSync(url: string | undefined): string | undefine
 const originalUrl = process.env.DATABASE_URL;
 const resolvedUrl = getIpv4ConnectionStringSync(originalUrl);
 
-const basePrisma = new PrismaClient({
+const globalForPrisma = globalThis as unknown as {
+  prismaBase?: PrismaClient;
+  prismaInstance: any | undefined;
+};
+
+const basePrisma = globalForPrisma.prismaBase ?? new PrismaClient({
   datasources: {
     db: {
       url: resolvedUrl,
@@ -48,9 +53,7 @@ const basePrisma = new PrismaClient({
   },
 });
 
-const globalForPrisma = globalThis as unknown as {
-  prismaInstance: any | undefined;
-};
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaBase = basePrisma;
 
 // Auth.js must resolve an identity before a user session exists. Keep this
 // transaction-local RLS context separate from normal application queries.
