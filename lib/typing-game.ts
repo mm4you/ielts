@@ -9,6 +9,11 @@ export type TypingState = {
 };
 export const TYPING_DURATION = 60_000;
 export function normalizeTyping(value: string) { return value.toLowerCase().replace(/[’‘]/g, "'"); }
+export function typingWordFeedback(word: string, input: string) {
+  let matched = 0;
+  while (matched < word.length && matched < input.length && word[matched] === input[matched]) matched++;
+  return { matched, wrong: !!input && !word.startsWith(input) };
+}
 export function newTypingGame(): TypingState {
   return { phase: 'playing', elapsed: 0, spawnIn: 0, serial: 0, targets: [], input: '', locked: null, score: 0, combo: 0, bestCombo: 0, lives: 3, hits: 0, hitCharacters: 0, typed: 0, correct: 0, lastHit: null, lastHitAt: 0, lastShot: null, lastShotAt: 0 };
 }

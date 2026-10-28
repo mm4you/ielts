@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { newTypingGame, normalizeTyping, typeIntoGame, typingTick, TYPING_DURATION, type TypingWord } from '../lib/typing-game';
+import { newTypingGame, normalizeTyping, typeIntoGame, typingTick, typingWordFeedback, TYPING_DURATION, type TypingWord } from '../lib/typing-game';
 const pool: TypingWord[] = ['cat', 'car', 'bird', 'train', 'apple'].map((word, id) => ({ id, word, meaning: word }));
 let state = typingTick(newTypingGame(), 100, pool);
 assert.equal(state.targets.length, 1);
@@ -18,6 +18,10 @@ assert.equal(state.score, 30);
 assert.equal(state.input, '', 'The final character completes the target without Space or Enter');
 assert(state.correct < state.typed, 'Wrong characters must reduce accuracy');
 assert.equal(normalizeTyping('It’s'), "it's");
+assert.deepEqual(typingWordFeedback('cat','c'), { matched:1, wrong:false });
+assert.deepEqual(typingWordFeedback('cat','cx'), { matched:1, wrong:true });
+assert.deepEqual(typingWordFeedback('cat','catx'), { matched:3, wrong:true });
+assert.deepEqual(typingWordFeedback('cat',''), { matched:0, wrong:false });
 const paused = { ...state, phase: 'paused' as const };
 assert.equal(typingTick(paused, 250, pool), paused);
 assert.equal(typeIntoGame(paused, 'cat'), paused);

@@ -64,7 +64,7 @@ input,select,textarea { color:var(--ink); }
 .topbar-actions .theme-toggle { width:36px; min-width:36px; height:36px; padding:0; flex:none; border:1px solid var(--line); border-radius:8px; background:var(--paper); color:var(--muted); transform:none; transition:background-color .15s,color .15s; }
 .topbar-actions .theme-toggle .fui-Button__icon { margin:0; pointer-events:none; }
 .topbar-actions .theme-toggle:hover { background:var(--surface-hover); color:var(--ink); }
-.typing-game { max-width:1100px; margin:0 auto; }
+.typing-game { width:100%; max-width:none; margin:0 auto; }
 .typing-game-v2 .page-heading { margin-bottom:18px; }
 .typing-game-v2 .page-heading h1 { font-size:24px; }
 .typing-console { --space-ink:#edf6ff; --space-muted:#94abc3; --laser:#65dfef; color:var(--space-ink); background:#0b1829; border:1px solid #233a51; border-radius:18px; overflow:hidden; box-shadow:0 12px 36px #06101c18; }
@@ -85,7 +85,7 @@ input,select,textarea { color:var(--ink); }
 .typing-pause-button svg { width:20px; height:20px; }
 .typing-time-track { height:3px; overflow:hidden; background:#1e334a; }
 .typing-time-track>span { display:block; height:100%; background:var(--laser); transform-origin:left; transition:transform .1s linear; }
-.typing-arena { position:relative; height:clamp(260px,40dvh,400px); overflow:hidden; isolation:isolate; background:radial-gradient(ellipse at 50% 115%,#18425d 0,transparent 60%),#0b1829; }
+.typing-arena { position:relative; height:clamp(380px,58dvh,700px); overflow:hidden; isolation:isolate; background:radial-gradient(ellipse at 50% 115%,#18425d 0,transparent 60%),#0b1829; }
 .typing-starfield { position:absolute; inset:0; opacity:.65; background-image:radial-gradient(circle,#6b8aa5 1px,transparent 1.3px),radial-gradient(circle,#bed8e9 1px,transparent 1.2px); background-size:103px 87px,181px 137px; background-position:27px 13px,64px 53px; pointer-events:none; }
 .typing-orbit { position:absolute; width:70%; height:120%; left:15%; top:-65%; border:1px solid #1e354b; border-radius:50%; opacity:.6; pointer-events:none; }
 .typing-sector-label { position:absolute; top:14px; left:20px; font-size:9px; letter-spacing:.18em; color:#8da5bd; pointer-events:none; }
@@ -97,7 +97,42 @@ input,select,textarea { color:var(--ink); }
 .typing-enemy.is-locked { color:#68e5f3; }
 .typing-enemy.is-locked .typing-word { background:#15384d; }
 .typing-enemy.is-danger { color:#ff9ba6; }
-.typing-lock-label { margin-top:7px; font-size:8px; letter-spacing:.16em; color:#68e5f3; }
+.typing-target-notice { display:block; min-height:20px; margin-bottom:4px; padding:1px 7px; visibility:hidden; color:#68e5f3; font-size:11px; line-height:18px; font-weight:600; white-space:nowrap; border-radius:4px; }
+.typing-target-notice.is-visible { visibility:visible; }
+.typing-enemy.is-mistyped { color:#ffb0bd; }
+.typing-enemy.is-mistyped .typing-target-notice { color:#ffe8ed; background:#743546; }
+.typing-enemy.is-mistyped .typing-word { background:#452333; }
+.typing-mismatch { color:#ffb0bd; text-decoration:underline wavy; text-underline-offset:4px; }
+.typing-fullscreen.fui-DialogSurface { position:fixed; inset:0; top:var(--typing-top,0px); width:100vw; height:var(--typing-height,100dvh); max-width:none; max-height:none; margin:0; padding:0; border:0; border-radius:0; box-shadow:none; background:#0b1829; overflow:hidden; }
+.typing-fullscreen .typing-console { height:100%; min-height:0; display:flex; flex-direction:column; border:0; border-radius:0; }
+.typing-fullscreen .typing-hud { flex:none; padding-top:calc(16px + env(safe-area-inset-top,0px)); }
+.typing-fullscreen-title { font-size:15px; font-weight:600; color:var(--space-ink); white-space:nowrap; }
+.typing-fullscreen .typing-hud { gap:clamp(16px,3vw,44px); }
+.typing-fullscreen .typing-time-track { flex:none; }
+.typing-fullscreen .typing-arena { flex:1; min-height:0; height:auto; }
+.typing-fullscreen .typing-command-dock { flex:none; padding-bottom:calc(12px + env(safe-area-inset-bottom,0px)); }
+.typing-fullscreen .typing-native-field input { border:0; border-radius:0; font-family:ui-monospace,Consolas,monospace; }
+.typing-fullscreen .typing-native-field input:focus { outline:none; box-shadow:none; }
+.typing-dock-receipt { display:flex; align-items:baseline; gap:10px; font-size:12px; line-height:1.5; margin:9px 0 0; color:var(--space-muted); }
+.typing-dock-receipt strong { color:var(--laser); flex:none; }
+.typing-dock-receipt>span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+@media(max-width:650px) {
+  .typing-fullscreen .typing-hud { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px; }
+  .typing-fullscreen-title { grid-column:1/3; grid-row:1; font-size:13px; white-space:normal; }
+  .typing-fullscreen .typing-hud-actions { grid-column:3/5; grid-row:1; justify-self:end; gap:6px; margin:0; }
+  .typing-fullscreen .typing-word { font-size:16px; }
+  .typing-fullscreen .typing-target-notice { font-size:11px; }
+  .typing-fullscreen .typing-command-dock { padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px)); }
+}
+.typing-fullscreen.is-keyboard-compact .typing-hud { padding-top:8px; padding-bottom:8px; gap:7px; }
+.typing-fullscreen.is-keyboard-compact .typing-command-dock { padding-top:8px; padding-bottom:8px; }
+.typing-fullscreen.is-keyboard-compact .typing-dock-footer,.typing-fullscreen.is-keyboard-compact .typing-dock-receipt { display:none; }
+.typing-fullscreen.is-keyboard-compact .typing-target-status { flex-direction:row; gap:6px; margin-bottom:6px; }
+.typing-fullscreen.is-keyboard-compact .typing-enemy>svg { display:none; }
+.typing-fullscreen.is-keyboard-compact .typing-enemy { transform:translate(-50%,-50%); }
+.typing-fullscreen.is-keyboard-compact .typing-player { width:42px; height:35px; }
+.typing-fullscreen.is-keyboard-compact .typing-player>svg { width:42px; height:35px; }
+.typing-fullscreen.is-keyboard-compact .typing-engine { left:17px; height:8px; width:7px; }
 .typing-ready-hint { position:absolute; top:40%; left:0; right:0; text-align:center; font-size:13px; color:var(--space-muted); padding:0 20px; }
 .typing-player { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:62px; height:58px; color:var(--laser); }
 .typing-player>svg { width:62px; height:54px; }
@@ -135,7 +170,7 @@ input,select,textarea { color:var(--ink); }
 .typing-results>div { display:flex; flex-direction:column; gap:5px; border:0 !important; padding:0 !important; background:none !important; }
 .typing-results dt { color:var(--muted); font-size:13px; }
 .typing-results dd { font-size:20px; font-weight:600; }
-@media(max-width:650px) { .typing-console { border-radius:12px; } .typing-hud { padding:14px; gap:15px; } .typing-hud-score { min-width:42px; } .typing-hud strong { font-size:20px; } .typing-hud>div>span { font-size:8px; letter-spacing:.07em; } .typing-shields strong { gap:1px; } .typing-shields svg { width:15px; } .typing-pause-button { width:30px; height:30px; } .typing-command-dock { padding:14px; } .typing-target-status { align-items:flex-start; flex-direction:column; gap:3px; font-size:11px; } .typing-arena { height:clamp(190px,36dvh,300px); } .typing-enemy>svg { width:28px; height:26px; } .typing-word { font-size:12px; padding:3px; letter-spacing:0; } .typing-sector-label { left:14px; font-size:8px; } .typing-dock-footer>span:last-child { display:none; } .typing-native-field { min-height:52px; gap:8px; padding:0 10px; } .typing-native-field input { font-size:18px; } .typing-auto-fire { font-size:8px; } .typing-game-v2 .page-heading h1 { font-size:22px; } }
+@media(max-width:650px) { .typing-console { border-radius:12px; } .typing-hud { padding:14px; gap:15px; } .typing-hud-score { min-width:42px; } .typing-hud strong { font-size:20px; } .typing-hud>div>span { font-size:8px; letter-spacing:.07em; } .typing-shields strong { gap:1px; } .typing-shields svg { width:15px; } .typing-pause-button { width:30px; height:30px; } .typing-command-dock { padding:14px; } .typing-target-status { align-items:flex-start; flex-direction:column; gap:3px; font-size:11px; } .typing-arena { height:clamp(330px,55dvh,520px); } .typing-enemy>svg { width:28px; height:26px; } .typing-word { font-size:12px; padding:3px; letter-spacing:0; } .typing-sector-label { left:14px; font-size:8px; } .typing-dock-footer>span:last-child { display:none; } .typing-native-field { min-height:52px; gap:8px; padding:0 10px; } .typing-native-field input { font-size:18px; } .typing-auto-fire { font-size:8px; } .typing-game-v2 .page-heading h1 { font-size:22px; } }
 @media (max-width:760px) { .topbar-actions { gap:8px; } }
 .topbar-location { font-size:14px; white-space:nowrap; }
 .topbar-location strong { font-weight:600; }

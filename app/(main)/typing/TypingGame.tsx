@@ -1,7 +1,10 @@
 'use client';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Button, MessageBar } from '@fluentui/react-components';
+import { Button, Dialog, DialogSurface, MessageBar } from '@fluentui/react-components';
+import { ArrowMaximizeRegular } from '@fluentui/react-icons/svg/arrow-maximize';
+import { ArrowMinimizeRegular } from '@fluentui/react-icons/svg/arrow-minimize';
+import { ArrowExitRegular } from '@fluentui/react-icons/svg/arrow-exit';
 import { KeyboardRegular } from '@fluentui/react-icons/svg/keyboard';
 import { PauseRegular } from '@fluentui/react-icons/svg/pause';
 import { PlayRegular } from '@fluentui/react-icons/svg/play';
@@ -12,7 +15,7 @@ import { TypingAudio } from '@/lib/typing-audio';
 import PageHeader from '@/components/PageHeader';
 import PracticeSetup from '@/components/PracticeSetup';
 import GameResult from '@/components/GameResult';
-import { newTypingGame, normalizeTyping, typeIntoGame, typingTick, TYPING_DURATION, type TypingState, type TypingWord } from '@/lib/typing-game';
+import { newTypingGame, normalizeTyping, typeIntoGame, typingTick, typingWordFeedback, TYPING_DURATION, type TypingState, type TypingWord } from '@/lib/typing-game';
 
 function Ship({ enemy = false }: { enemy?: boolean }) {
   return <svg viewBox="0 0 64 56" fill="none" aria-hidden="true">{enemy ? <><path d="m32 46-9-15H8l9-22 10 12h10L47 9l9 22H41L32 46Z" fill="currentColor" fillOpacity=".15" stroke="currentColor" strokeWidth="2" /><path d="M25 29h14l-7 10-7-10Z" fill="currentColor" /><path d="M17 15v9m30-9v9" stroke="currentColor" strokeWidth="3" /></> : <><path d="M32 4 43 26l15 14v8L38 40H26L6 48v-8l15-14L32 4Z" fill="currentColor" fillOpacity=".16" stroke="currentColor" strokeWidth="2" /><path d="m32 14 5 16H27l5-16Z" fill="currentColor" /><path d="M27 45v8m10-8v8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></>}</svg>;
@@ -35,6 +38,8 @@ export default function TypingGame() {
   const [level, setLevel] = useState('all');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [expanded, setExpanded] = useState(false);
+  const fullscreenSurface = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const composing = useRef(false);
   const completedComposition = useRef<string | null>(null);
@@ -44,6 +49,19 @@ export default function TypingGame() {
   const previousSound = useRef({ hits: 0, lives: 3, correct: 0 });
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => request.current?.abort(), []);
+  useEffect(() => {
+    if (!expanded || screen !== 'game' || state.phase === 'finished') return;
+    const viewport = window.visualViewport;
+    const resize = () => {
+      fullscreenSurface.current?.style.setProperty('--typing-height', `${viewport?.height ?? window.innerHeight}px`);
+      fullscreenSurface.current?.style.setProperty('--typing-top', `${viewport?.offsetTop ?? 0}px`);
+      fullscreenSurface.current?.classList.toggle('is-keyboard-compact', (viewport?.height ?? window.innerHeight) < 520);
+    };
+    resize();
+    viewport?.addEventListener('resize', resize); viewport?.addEventListener('scroll', resize);
+    window.addEventListener('resize', resize);
+    return () => { viewport?.removeEventListener('resize', resize); viewport?.removeEventListener('scroll', resize); window.removeEventListener('resize', resize); };
+  }, [expanded, screen, state.phase]);
   useEffect(() => () => { audio.current?.dispose(); audio.current = null; }, []);
   useEffect(() => { if (state.phase === 'paused') audio.current?.silence(); }, [state.phase]);
   useEffect(() => {
@@ -72,16 +90,12 @@ export default function TypingGame() {
     dispatch({ type: 'input', value });
     const complete = state.targets.some(target => target.word === normalized && (state.locked === null || target.key === state.locked));
     if (complete && input.current) {
-      const wasComposing = composing.current;
+      completedComposition.current = normalized;
+      skipCompositionEnd.current = true;
+      composing.current = false;
       input.current.value = '';
-      if (wasComposing) {
-        completedComposition.current = normalized;
-        skipCompositionEnd.current = true;
-        composing.current = false;
-        // End the IME word ourselves instead of waiting for Space/Enter to commit it.
-        input.current.blur(); input.current.focus({ preventScroll: true });
-        input.current.value = '';
-      }
+      // The input is keyed by hits below: a fresh native node drops the OS IME's
+      // committed-word buffer, so it cannot reinsert the previous target.
     }
   }
   useEffect(() => {
@@ -97,12 +111,12 @@ export default function TypingGame() {
   }, [screen, state.phase, pool]);
   useEffect(() => {
     if (screen === 'game' && state.phase === 'playing') input.current?.focus({ preventScroll: true });
-  }, [screen, state.phase]);
+  }, [screen, state.phase, expanded, state.hits]);
   // Keep in-progress IME text native; matching the final character commits a
   // target immediately, without waiting for the IME's Space/Enter confirmation.
   useEffect(() => {
     if (!composing.current && input.current && input.current.value !== state.input) input.current.value = state.input;
-  }, [state.input, state.hits]);
+  }, [state.input, state.hits, expanded]);
   useEffect(() => {
     if (screen !== 'game' || state.phase !== 'playing') return;
     const keydown = (event: KeyboardEvent) => {
@@ -130,7 +144,7 @@ export default function TypingGame() {
       if (!response.ok) throw new Error(data.error || 'Chưa tải được từ vựng.');
       const words = [...data] as TypingWord[];
       for (let i = words.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [words[i], words[j]] = [words[j], words[i]]; }
-      setPool(words); dispatch({ type: 'start' }); setScreen('game');
+      setPool(words); dispatch({ type: 'start' }); setExpanded(true); setScreen('game');
     } catch (e) { if (!controller.signal.aborted) setError(e instanceof Error && e.name !== 'TimeoutError' ? e.message : 'Kết nối chậm. Vui lòng thử lại.'); }
     finally { if (!controller.signal.aborted) setLoading(false); }
   }
@@ -138,24 +152,28 @@ export default function TypingGame() {
   const accuracy = state.typed ? Math.round(state.correct / state.typed * 100) : 100;
   const locked = state.targets.find(target => target.key === state.locked);
   const wrong = !!state.input && !locked?.word.startsWith(state.input);
+  const feedbackTarget = locked || (wrong ? [...state.targets].sort((a,b)=>b.y-a.y)[0] : undefined);
   if (screen === 'setup') return <>{error && <MessageBar intent="error">{error}</MessageBar>}<PracticeSetup mode="typing" title="Chíu chíu luyện gõ" level={level} onLevelChange={setLevel} onStart={start} exitRoute="/" loading={loading} rules={['Gõ từ đang rơi để khóa mục tiêu. Gõ đủ từ sẽ tự động bắn.', 'Xóa bằng Backspace để sửa; xóa hết để chọn mục tiêu khác.', 'Giữ combo để cộng điểm. Bỏ lỡ 3 từ hoặc hết 60 giây là kết thúc.', 'Chuyển sang tab khác sẽ tạm dừng. Có thể chơi bằng bàn phím điện thoại.']} /></>;
   if (state.phase === 'finished') return <><GameResult title="Hoàn thành lượt luyện gõ" value={state.score} onReplay={start} exitRoute="/" loading={loading}><dl className="typing-results"><div><dt>Từ đã bắn</dt><dd>{state.hits}</dd></div><div><dt>Tốc độ</dt><dd>{wpm} WPM</dd></div><div><dt>Độ chính xác</dt><dd>{accuracy}%</dd></div><div><dt>Combo cao nhất</dt><dd>{state.bestCombo}</dd></div></dl></GameResult>{error && <MessageBar intent="error">{error}</MessageBar>}</>;
-  return <section className="typing-game typing-game-v2">
-    <PageHeader title="Chíu chíu luyện gõ" actions={<Link href="/" className="back-link">Thoát lượt chơi</Link>} />
-    <div className="typing-console">
+  const consoleView = <div className="typing-console">
       <div className="typing-hud">
+        {expanded && <span className="typing-fullscreen-title">Chíu chíu luyện gõ</span>}
         <div className="typing-hud-score"><span>ĐIỂM</span><strong>{state.score.toLocaleString('vi-VN')}</strong></div>
         <div><span>COMBO</span><strong className={state.combo > 1 ? 'is-combo' : ''}>×{state.combo}</strong></div>
         <div><span>CÒN LẠI</span><strong>{Math.ceil((TYPING_DURATION - state.elapsed) / 1000)}<small>s</small></strong></div>
         <div className="typing-shields" aria-label={`Còn ${state.lives} lá chắn`}><span>LÁ CHẮN</span><strong>{[0,1,2].map(i => <ShieldRegular key={i} className={i < state.lives ? 'is-alive' : ''} aria-hidden="true" />)}</strong></div>
-        <div className="typing-hud-actions"><button type="button" className="typing-pause-button" aria-label={soundEnabled?'Tắt âm thanh':'Bật âm thanh'} aria-pressed={soundEnabled} title={soundEnabled?'Tắt âm thanh':'Bật âm thanh'} onClick={changeSound}>{soundEnabled?<Speaker2Regular />:<SpeakerOffRegular />}</button><button type="button" className="typing-pause-button" aria-label={state.phase === 'paused' ? 'Tiếp tục' : 'Tạm dừng'} title={state.phase === 'paused' ? 'Tiếp tục' : 'Tạm dừng (Esc)'} onClick={() => {unlockAudio(); dispatch({type:state.phase === 'paused' ? 'resume' : 'pause'});}}>{state.phase === 'paused' ? <PlayRegular /> : <PauseRegular />}</button></div>
+        <div className="typing-hud-actions"><button type="button" className="typing-pause-button" aria-label={soundEnabled?'Tắt âm thanh':'Bật âm thanh'} aria-pressed={soundEnabled} title={soundEnabled?'Tắt âm thanh':'Bật âm thanh'} onClick={changeSound}>{soundEnabled?<Speaker2Regular />:<SpeakerOffRegular />}</button><button type="button" className="typing-pause-button" aria-label={state.phase === 'paused' ? 'Tiếp tục' : 'Tạm dừng'} title={state.phase === 'paused' ? 'Tiếp tục' : 'Tạm dừng (Esc)'} onClick={() => {unlockAudio(); dispatch({type:state.phase === 'paused' ? 'resume' : 'pause'});}}>{state.phase === 'paused' ? <PlayRegular /> : <PauseRegular />}</button><button type="button" className="typing-pause-button" aria-label={expanded?'Thu nhỏ màn chơi':'Mở rộng màn chơi'} title={expanded?'Thu nhỏ màn chơi':'Mở rộng màn chơi'} onClick={()=>setExpanded(value=>!value)}>{expanded?<ArrowMinimizeRegular />:<ArrowMaximizeRegular />}</button>{expanded&&<button type="button" className="typing-pause-button" aria-label="Thoát lượt chơi" title="Thoát lượt chơi" onClick={()=>{dispatch({type:'pause'});setExpanded(false);setScreen('setup');}}><ArrowExitRegular /></button>}</div>
       </div>
       <div className="typing-time-track" role="progressbar" aria-label="Thời gian còn lại" aria-valuenow={Math.ceil((TYPING_DURATION-state.elapsed)/1000)} aria-valuemin={0} aria-valuemax={60}><span style={{transform:`scaleX(${1-state.elapsed/TYPING_DURATION})`}} /></div>
       <div className="typing-arena" aria-label="Mục tiêu luyện gõ" onClick={() => input.current?.focus({preventScroll:true})}>
         <div className="typing-starfield" aria-hidden="true" /><div className="typing-orbit" aria-hidden="true" />
         <div className="typing-sector-label" aria-hidden="true">VOCAB DEFENSE <span>01 / ORBIT</span></div>
         {state.lastShot && state.elapsed-state.lastShotAt<180 && <svg className="typing-shot" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="50" y1="88" x2={state.lastShot.lane*33.333+16.667} y2={state.lastShot.y*.78+7} /></svg>}
-        {state.targets.map(target => <div key={target.key} className={`typing-enemy ${locked?.key===target.key?'is-locked':''} ${target.y>70?'is-danger':''}`} style={{left:`${target.lane*33.333+16.667}%`,top:`${target.y*.78+7}%`}}><Ship enemy /><div className="typing-word"><b>{locked?.key===target.key?target.word.slice(0,Math.min(state.input.length,target.word.length)):''}</b>{locked?.key===target.key?target.word.slice(state.input.length):target.word}</div>{locked?.key===target.key&&<span className="typing-lock-label">ĐANG NHẮM</span>}</div>)}
+        {state.targets.map(target => {
+          const active = feedbackTarget?.key === target.key;
+          const feedback = typingWordFeedback(target.word, active ? state.input : '');
+          return <div key={target.key} className={`typing-enemy ${active?'is-locked':''} ${target.y>70?'is-danger':''} ${active&&feedback.wrong?'is-mistyped':''}`} style={{left:`${target.lane*33.333+16.667}%`,top:`${target.y*.78+7}%`}}><span className={`typing-target-notice ${active?'is-visible':''}`} aria-live="polite">{active ? feedback.wrong ? 'Sai ký tự' : 'Đang nhắm' : ''}</span><Ship enemy /><div className="typing-word"><b>{target.word.slice(0,feedback.matched)}</b>{feedback.wrong?<><span className="typing-mismatch">{target.word[feedback.matched]||'+'}</span>{target.word.slice(feedback.matched+1)}</>:target.word.slice(feedback.matched)}</div></div>;
+        })}
         {!state.targets.length && !state.lastHit && state.phase==='playing' && <p className="typing-ready-hint">Sẵn sàng bàn phím. Mục tiêu đang đến.</p>}
         <div className={`typing-player ${state.lastShot&&state.elapsed-state.lastShotAt<180?'is-firing':''}`} aria-hidden="true"><Ship /><span className="typing-engine" /></div>
         <div className="typing-horizon" aria-hidden="true" />
@@ -163,10 +181,14 @@ export default function TypingGame() {
       </div>
       <div className="typing-command-dock">
         <div className="typing-target-status"><span className={wrong?'is-error':''}>{state.phase==='paused'?'Đang tạm dừng':wrong?'Sai ký tự — Backspace để sửa':locked?`Mục tiêu: ${locked.word}`:'Gõ một từ trên màn hình để nhắm bắn'}</span><span>{wpm} WPM <i />{accuracy}% chính xác</span></div>
-        <label className={`typing-native-field ${wrong?'is-error':''}`}><KeyboardRegular aria-hidden="true" /><input ref={input} aria-label="Gõ từ để bắn" aria-invalid={wrong} readOnly={state.phase!=='playing'} placeholder={state.phase==='paused'?'Nhấn Tiếp tục chơi để gõ':'Gõ ở đây để bắn…'} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} maxLength={24} onChange={event=>changeInput(event.currentTarget.value)} onKeyDown={event=>{if(!event.nativeEvent.isComposing&&event.key!=='Process')completedComposition.current=null;}} onCompositionStart={()=>{composing.current=true;skipCompositionEnd.current=false;}} onCompositionEnd={event=>{composing.current=false;if(skipCompositionEnd.current){skipCompositionEnd.current=false;event.currentTarget.value='';return;}changeInput(event.currentTarget.value);}} /><span className="typing-auto-fire">TỰ BẮN</span></label>
+        <label className={`typing-native-field ${wrong?'is-error':''}`}><KeyboardRegular aria-hidden="true" /><input key={state.hits} ref={input} aria-label="Gõ từ để bắn" aria-invalid={wrong} readOnly={state.phase!=='playing'} placeholder={state.phase==='paused'?'Nhấn Tiếp tục chơi để gõ':'Gõ ở đây để bắn…'} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} maxLength={24} onChange={event=>changeInput(event.currentTarget.value)} onKeyDown={event=>{if(!event.nativeEvent.isComposing&&event.key!=='Process')completedComposition.current=null;}} onCompositionStart={()=>{composing.current=true;skipCompositionEnd.current=false;}} onCompositionEnd={event=>{composing.current=false;if(skipCompositionEnd.current){skipCompositionEnd.current=false;event.currentTarget.value='';return;}changeInput(event.currentTarget.value);}} /><span className="typing-auto-fire">TỰ BẮN</span></label>
         <div className="typing-dock-footer"><span>Gõ đủ từ để bắn <kbd>Backspace</kbd> sửa chữ</span><span><kbd>Esc</kbd> tạm dừng</span></div>
+        {expanded&&state.lastHit&&<p className="typing-dock-receipt" role="status"><strong>{state.lastHit.word}</strong><span>{state.lastHit.meaning}</span></p>}
       </div>
-    </div>
-    <div className="typing-word-receipt" role="status">{state.lastHit?<><span>Đã bắn</span><strong>{state.lastHit.word}</strong><p>{state.lastHit.meaning}</p></>:<><span>Sau mỗi lần bắn</span><p>Nghĩa của từ sẽ xuất hiện ở đây.</p></>}</div>
+    </div>;
+  return <section className="typing-game typing-game-v2">
+    {!expanded&&<PageHeader title="Chíu chíu luyện gõ" actions={<Link href="/" className="back-link">Thoát lượt chơi</Link>} />}
+    {expanded?<Dialog open onOpenChange={(_,data)=>{if(!data.open)dispatch({type:'pause'});}}><DialogSurface ref={fullscreenSurface} className="typing-fullscreen" aria-label="Chíu chíu luyện gõ — màn chơi mở rộng">{consoleView}</DialogSurface></Dialog>:consoleView}
+    {!expanded&&<div className="typing-word-receipt" role="status">{state.lastHit?<><span>Đã bắn</span><strong>{state.lastHit.word}</strong><p>{state.lastHit.meaning}</p></>:<><span>Sau mỗi lần bắn</span><p>Nghĩa của từ sẽ xuất hiện ở đây.</p></>}</div>}
   </section>;
 }
