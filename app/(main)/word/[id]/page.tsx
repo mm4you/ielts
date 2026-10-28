@@ -127,7 +127,7 @@ export default async function WordDetailPage({
             </div>
           </div>
 
-          <div className="border-t border-[var(--border)] pt-6">
+          <div className="border-t border-[var(--line)] pt-6">
             <p className="text-sm text-[var(--muted)] mb-3">Thống kê ôn tập</p>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="border border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 ">

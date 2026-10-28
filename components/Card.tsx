@@ -65,7 +65,7 @@ export default function Card({ word }: { word: Word }) {
             </Link>
             <button
               onClick={handlePlayAudio}
-              className={`audio-button relative z-20 ${isPlaying ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] active:shadow-none' }`}
+              className={`audio-button relative z-20 ${isPlaying ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--brand-soft)] text-[var(--blue)] active:shadow-none' }`}
               title="Phát âm"
             >
               {isPlaying ? (

@@ -1,11 +1,10 @@
 'use client';
 
+import PageHeader from '@/components/PageHeader';
 import AppLoading from '@/components/AppLoading';
 import LoadingState from '@/components/LoadingState';
-import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import Card from '@/components/Card';
 import RecentWordsList from './RecentWordsList';
@@ -105,23 +104,7 @@ function LibraryContent() {
 
   return (
     <div>
-      <div className="mb-8 border-b border-[var(--line)] pb-4">
-        <div className="flex items-start justify-between w-full gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4 flex-1 min-w-0">
-            <h1 className="text-3xl md:text-4xl font-semibold font-sans leading-tight">Thư viện từ vựng</h1>
-            <span className="inline-block text-sm md:text-base text-[var(--ink)] font-semibold bg-[var(--paper)] px-3 py-1 rounded-full border border-[var(--line)] whitespace-nowrap shrink-0 self-start sm:self-auto">
-              {totalCount} từ
-            </span>
-          </div>
-          <Link
-            href="/"
-            className="w-8 h-8 md:w-10 md:h-10 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base select-none mt-1"
-            title="Về Trang Chủ"
-           aria-label="Về Trang Chủ">
-            <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></Link>
-        </div>
-        <p className="text-[var(--muted)] mt-2">Khám phá và tra cứu toàn bộ từ vựng trong hệ thống.</p>
-      </div>
+      <PageHeader title="Thư viện từ vựng" description={loading?'Đang tải danh sách':totalCount.toLocaleString('vi-VN')+' từ'} />
 
       <RecentWordsList />
 
@@ -186,7 +169,7 @@ function LibraryContent() {
                         setCurrentPage(p as number);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className={`w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold transition-all cursor-pointer ${ isCurrent ? 'bg-[var(--blue)] text-white ' : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-[var(--yellow)]/10' }`}
+                      className={`w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold transition-all cursor-pointer ${ isCurrent ? 'bg-[var(--blue)] text-white ' : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-[var(--surface-hover)]' }`}
                     >
                       {p}
                     </button>

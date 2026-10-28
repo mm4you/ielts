@@ -41,7 +41,8 @@ export default auth((req) => {
     reqUrl.pathname.startsWith("/blockblast") ||
     reqUrl.pathname.startsWith("/sniper") ||
     reqUrl.pathname.startsWith("/pronounce-challenge") ||
-    reqUrl.pathname.startsWith("/word");
+    reqUrl.pathname.startsWith("/word") ||
+    reqUrl.pathname.startsWith("/rooms");
 
   if (isProtectedPath && !isAuthenticated) {
     // Redirect về trang chủ bằng 307 (mặc định của Response.redirect)
@@ -69,5 +70,6 @@ export const config = {
     "/sniper/:path*",
     "/pronounce-challenge/:path*",
     "/word/:path*",
+    "/rooms/:path*",
   ],
 };

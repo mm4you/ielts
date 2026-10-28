@@ -24,6 +24,7 @@ import { TargetArrowRegular } from '@fluentui/react-icons/svg/target-arrow';
 import { ArrowRepeatAllRegular } from '@fluentui/react-icons/svg/arrow-repeat-all';
 import { ChartMultipleRegular } from '@fluentui/react-icons/svg/chart-multiple';
 import { FlashRegular } from '@fluentui/react-icons/svg/flash';
+import { PeopleTeamRegular } from '@fluentui/react-icons/svg/people-team';
 import ThemeToggle from './ThemeToggle';
 import BrandMark from './BrandMark';
 import { openFeedbackModal } from './FeedbackModal';
@@ -34,6 +35,7 @@ const studyLinks = [
   { href: '/library', label: 'Thư viện', icon: LibraryRegular },
   { href: '/collections', label: 'Bộ sưu tập', icon: BookOpenRegular },
   { href: '/analytics', label: 'Thống kê', icon: ChartMultipleRegular },
+  { href: '/rooms', label: 'Phòng thi đấu', icon: PeopleTeamRegular },
 ];
 const gameLinks = [
   { href: '/speedrun', label: 'Tốc chiến', icon: FlashRegular },
@@ -68,6 +70,7 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
       <nav className="sidebar-navigation" aria-label="Điều hướng chính">
         <div className="nav-group">{!compact && <p className="nav-section-label">Học tập</p>}{studyLinks.slice(0,4).map(navLink)}</div>
         <div className="nav-group">{!compact && <p className="nav-section-label">Luyện tập</p>}
+          {navLink(studyLinks[5])}
           {navLink({href:'/pronounce-challenge',label:'Phát âm',icon:MicRegular})}
           {compact ? <Menu positioning="after"><MenuTrigger disableButtonEnhancement><Button appearance="subtle" className="nav-link" icon={<GamesRegular />} aria-label="Trò chơi" /></MenuTrigger><MenuPopover><MenuList>{gameLinks.slice(0,4).map(({href,label,icon:Icon})=><MenuItemLink href={href} key={href} icon={<Icon />}>{label}</MenuItemLink>)}</MenuList></MenuPopover></Menu> : <><button className="nav-link" onClick={()=>setGamesOpen(value=>!value)} aria-expanded={gamesOpen} aria-controls={gamesId}><GamesRegular /><span>Trò chơi</span><ChevronDownRegular className={`nav-chevron ${gamesOpen?'is-open':''}`} /></button><div id={gamesId} className="nav-subgroup" hidden={!gamesOpen}>{gameLinks.slice(0,4).map(navLink)}</div></>}
         </div>
@@ -93,10 +96,10 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
         <Input name="search" aria-label="Tìm từ trong thư viện" placeholder="Tìm từ vựng trong thư viện" contentBefore={<SearchRegular />} appearance="filled-lighter" />
       </form>
       <div className="topbar-actions">
+        <ThemeToggle />
         {session ? <Menu positioning="below-end">
           <MenuTrigger disableButtonEnhancement><Button appearance="transparent" className="profile-trigger" aria-label="Mở menu tài khoản"><Avatar name={session.user?.name || 'Bạn'} size={32} color="brand" /><span className="profile-name">{session.user?.name || 'Tài khoản'}</span></Button></MenuTrigger>
           <MenuPopover><div className="profile-summary"><strong>{session.user?.name}</strong><span>{session.user?.email}</span></div><MenuList>
-            <ThemeToggle />
             <MenuItem icon={<ChatHelpRegular />} onClick={() => openFeedbackModal()}>Góp ý hệ thống</MenuItem>
             <MenuItem icon={<ArrowExitRegular />} onClick={() => signOut({ callbackUrl: '/' })}>Đăng xuất</MenuItem>
           </MenuList></MenuPopover>

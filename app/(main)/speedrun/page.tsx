@@ -221,7 +221,7 @@ function SpeedrunContent() {
             <div
               key={idx}
               onClick={(e) => handleAnswer(idx, e)}
-              className={`btn-brutal text-left block w-full h-auto min-h-[60px] md:min-h-[80px] py-3 px-4 md:py-6 md:px-6 cursor-pointer transition-colors active:scale-95 ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] group' : (idx === currentQ.correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
+              className={`btn-brutal text-left block w-full h-auto min-h-[60px] md:min-h-[80px] py-3 px-4 md:py-6 md:px-6 cursor-pointer transition-colors active:scale-95 ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--brand-soft)] group' : (idx === currentQ.correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
             >
               <div className="flex flex-col h-full justify-center">
                 <span className={`block text-lg md:text-xl font-semibold mb-1 text-center ${ !answerStatus ? 'text-[var(--ink)] group-hover:text-[var(--ink)]' : (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]' : 'text-[var(--ink)]') }`}>{en}</span>

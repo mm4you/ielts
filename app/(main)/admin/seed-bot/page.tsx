@@ -77,7 +77,7 @@ export default function SeedBotPage() {
                 key={g.id}
                 disabled={isRunning}
                 onClick={() => setSelectedGroup(g.id)}
-                className={`p-3 border border-[var(--line)] rounded-xl font-semibold transition-all text-left flex flex-col justify-between active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed ${ selectedGroup === g.id ? 'bg-[var(--yellow)] text-[#111827] border-[var(--line)]' : 'bg-[var(--paper)] text-[var(--ink)]' }`}
+                className={`p-3 border border-[var(--line)] rounded-xl font-semibold transition-all text-left flex flex-col justify-between active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed ${ selectedGroup === g.id ? 'bg-[var(--brand-soft)] text-[var(--blue)] border-[var(--line)]' : 'bg-[var(--paper)] text-[var(--ink)]' }`}
               >
                 <span className="text-sm font-semibold ">{g.label}</span>
                 <span className="text-[10px] font-semibold opacity-75 mt-1">{g.desc}</span>

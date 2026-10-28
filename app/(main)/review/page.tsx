@@ -244,7 +244,7 @@ function ReviewContent() {
               e.stopPropagation();
               handlePlayAudio(currentWord.word);
             }}
-            className={`p-2 rounded-lg border border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none ${isPlaying ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] active:shadow-none' }`}
+            className={`p-2 rounded-lg border border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none ${isPlaying ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--brand-soft)] text-[var(--blue)] active:shadow-none' }`}
             title="Phát âm"
           >
             {isPlaying ? (
@@ -315,7 +315,7 @@ function ReviewContent() {
               <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 text-center leading-tight">Quên sạch</span>
               <span className="text-[9px] md:text-[10px] font-sans mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('forgot')}</span>
             </button>
-            <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
+            <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--brand-soft)] text-[var(--blue)] flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
               <span className="text-lg md:text-2xl">Khó</span>
               <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 text-center leading-tight">Nhớ mang máng</span>
               <span className="text-[9px] md:text-[10px] font-sans mt-1.5 opacity-90 bg-black/5 px-2 py-0.5 rounded-full">{getIntervalPreview('hard')}</span>

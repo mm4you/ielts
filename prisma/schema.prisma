@@ -41,6 +41,8 @@ model User {
   progress      UserProgress[]
   dailyActivity DailyActivity[]
   collections   Collection[]
+  battleRooms   BattleRoom[]
+  battleRoomRate BattleRoomRate?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -144,4 +146,22 @@ model CollectionWord {
   createdAt    DateTime   @default(now())
 
   @@id([collectionId, wordId])
+}
+
+model BattleRoom {
+  code       String   @id
+  hostUserId String
+  host       User     @relation(fields: [hostUserId], references: [id], onDelete: Cascade)
+  state      Json
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  expiresAt  DateTime @default(dbgenerated("(now() + '02:00:00'::interval)")) @db.Timestamptz(6)
+
+  @@index([hostUserId, expiresAt])
+}
+
+model BattleRoomRate {
+  userId      String   @id
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  windowStart DateTime @default(now()) @db.Timestamptz(6)
+  count       Int      @default(1)
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '@/components/PageHeader';
 import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { FireRegular as FluentFireRegular } from '@fluentui/react-icons/svg/fire';
 import { BookOpenRegular } from '@fluentui/react-icons/svg/book-open';
@@ -103,11 +104,11 @@ export default function AnalyticsClient({
 
   // Lấy màu sắc ô Heatmap dựa trên số từ học
   const getHeatmapColorClass = (count: number) => {
-    if (!count || count === 0) return 'bg-[var(--bg)] dark:bg-zinc-800/50 border border-[var(--border)] opacity-30';
-    if (count <= 5) return 'bg-[#dcfce7] dark:bg-[#064e3b] text-[#15803d] border border-[#bbf7d0] dark:border-[#065f46]';
-    if (count <= 15) return 'bg-[#bbf7d0] dark:bg-[#065f46] text-[#166534] border border-[#86efac] dark:border-[#047857]';
-    if (count <= 30) return 'bg-[#86efac] dark:bg-[#047857] text-[#15803d] border border-[#4ade80] dark:border-[#065f46]';
-    return 'bg-[#22c55e] dark:bg-[#10b981] text-white border border-[#16a34a] shadow-[0_0_8px_rgba(34,197,94,0.4)]';
+    if (!count || count === 0) return 'bg-[var(--bg)] dark:bg-zinc-800/50 border border-[var(--line)] opacity-30';
+    if (count <= 5) return 'bg-[#dcfce7] dark:bg-[#064e3b] text-[#15803d] dark:text-[#a7f3d0] border border-[#bbf7d0] dark:border-[#065f46]';
+    if (count <= 15) return 'bg-[#bbf7d0] dark:bg-[#065f46] text-[#166534] dark:text-[#a7f3d0] border border-[#86efac] dark:border-[#047857]';
+    if (count <= 30) return 'bg-[#86efac] dark:bg-[#047857] text-[#15803d] dark:text-white border border-[#4ade80] dark:border-[#065f46]';
+    return 'bg-[#22c55e] dark:bg-[#10b981] text-[#052e16] border border-[#16a34a] shadow-[0_0_8px_rgba(34,197,94,0.4)]';
   };
 
   // Phân chia danh sách ngày theo hàng Thứ (Chủ Nhật = hàng 0, Thứ Hai = hàng 1...)
@@ -118,7 +119,7 @@ export default function AnalyticsClient({
 
   return (
     <div className="analytics-page">
-      <header className="page-heading"><div><h1>Thống kê học tập</h1><p>{userName}</p></div></header>
+      <PageHeader title="Thống kê học tập" description={userName} />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
@@ -198,7 +199,7 @@ export default function AnalyticsClient({
           {newCount > 0 && (
             <div
               style={{ width: `${newPercent}%` }}
-              className="bg-[var(--yellow)] h-full flex items-center justify-center text-xs font-semibold text-[#111827]"
+              className="bg-[#946212] h-full flex items-center justify-center text-xs font-semibold text-white"
               title={`Chưa học: ${newCount} từ`}
             >
               {newPercent >= 10 && `${newPercent}%`}
@@ -240,7 +241,7 @@ export default function AnalyticsClient({
           <h2 className="text-lg font-semibold text-[var(--ink)]">Hoạt động học tập</h2>
           <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--muted)]">
             <span>Ít</span>
-            <div className="w-3 h-3 rounded-sm bg-[var(--bg)] border border-[var(--border)] opacity-30" />
+            <div className="w-3 h-3 rounded-sm bg-[var(--bg)] border border-[var(--line)] opacity-30" />
             <div className="w-3 h-3 rounded-sm bg-[#dcfce7] dark:bg-[#064e3b]" />
             <div className="w-3 h-3 rounded-sm bg-[#bbf7d0] dark:bg-[#065f46]" />
             <div className="w-3 h-3 rounded-sm bg-[#86efac] dark:bg-[#047857]" />
@@ -367,7 +368,7 @@ export default function AnalyticsClient({
               const getRankStyle = (index: number) => {
                 switch (index) {
                   case 0:
-                    return 'bg-[var(--yellow)] text-[var(--ink)] border-[var(--line)] ';
+                    return 'bg-[var(--brand-soft)] text-[var(--blue)] border-[var(--line)] ';
                   case 1:
                     return 'bg-[var(--surface-hover)] text-[var(--ink)] border-[var(--line)]';
                   case 2:

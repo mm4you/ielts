@@ -1,8 +1,10 @@
 'use client';
+import PageHeader from '@/components/PageHeader';
 
 
 import { Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, Button } from '@fluentui/react-components';
 import { DismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { useConfirmation } from '@/components/ConfirmationProvider';
 import { showToast } from '@/components/GlobalToast';
 import { WandRegular } from '@fluentui/react-icons/svg/wand';
 import { useState, useEffect } from 'react';
@@ -24,6 +26,7 @@ interface UserData {
 }
 
 export default function AdminClient({ initialWords, initialUsers }: { initialWords: Word[], initialUsers: UserData[] }) {
+  const { confirm, password: requestPassword } = useConfirmation();
   const [activeTab, setActiveTab] = useState<'words' | 'users'>('words');
   const [words, setWords] = useState<Word[]>(initialWords);
   const [users, setUsers] = useState<UserData[]>(initialUsers);
@@ -182,7 +185,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm('Bạn có chắc chắn muốn xóa từ này không? Hành động này sẽ xóa luôn dữ liệu ôn tập của người dùng.')) {
+    if (await confirm({title:'Xóa từ vựng',description:'Thao tác này cũng xóa dữ liệu ôn tập của từ này. Hành động không thể hoàn tác.',confirmLabel:'Xóa từ',danger:true})) {
       try {
         await deleteWord(id);
         setWords(words.filter(w => w.id !== id));
@@ -194,13 +197,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Title & Top Navigation */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-semibold font-sans text-[var(--ink)] ">Quản trị</h1>
-
-        </div>
-        <div className="flex gap-3 flex-wrap justify-end">
+      <PageHeader title="Quản trị" actions={<div className="flex gap-3 flex-wrap justify-end">
           {activeTab === 'words' && (
             <>
               <Link
@@ -217,14 +214,13 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
               </Link>
               <button
                 onClick={() => handleOpenModal()}
-                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-4 md:px-6 py-3 text-sm md:text-base whitespace-nowrap"
+                className="btn-brutal bg-[var(--brand-soft)] text-[var(--blue)] px-4 md:px-6 py-3 text-sm md:text-base whitespace-nowrap"
               >
                 Thêm từ
               </button>
             </>
           )}
-        </div>
-      </div>
+        </div>} />
 
       {/* Tabs */}
       <div className="flex gap-4 mb-8 border-b border-[var(--line)]">
@@ -288,13 +284,13 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                   try {
                     const res = await fetch('/api/seed-basic');
                     const data = await res.json();
-                    showMessage(data.message);
+                    showToast(data.message, true);
                     if (data.success) window.location.reload();
                   } catch (e) {
                     showMessage('Lỗi nạp từ cơ bản');
                   }
                 }}
-                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-xs py-2 px-4 "
+                className="btn-brutal bg-[var(--brand-soft)] text-[var(--blue)] text-xs py-2 px-4 "
               >
                 + Nạp 50 từ cơ bản (A1)
               </button>
@@ -309,7 +305,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     const data = await res.json();
                     if (data.error) showMessage('Lỗi: ' + data.error);
                     else {
-                      showMessage(data.message);
+                      showToast(data.message, true);
                       window.location.reload();
                     }
                   } catch (e) {
@@ -478,7 +474,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                 <table className="w-full text-left border-collapse min-w-[650px] md:min-w-0">
                   <thead>
                     <tr className="border-b-[3px] border-[var(--line)] bg-[var(--bg)] text-[var(--ink)] select-none">
-                      <th className="p-4 font-semibold text-sm ">Học viên</th>
+                      <th className="p-4 font-semibold text-sm ">Người dùng</th>
                       <th className="p-4 font-semibold text-sm w-[120px]">Vai trò</th>
                       <th className="p-4 font-semibold text-sm w-[140px]">Từ đang học</th>
                       <th className="p-4 font-semibold text-sm hidden md:table-cell w-[160px]">Ngày tham gia</th>
@@ -492,7 +488,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                         <tr key={user.id} className="border-b border-[var(--line)] last:border-b-0 hover:bg-[var(--bg)]/10 transition-colors">
                           <td className="p-4">
                             <div className="flex items-center gap-3">
-                              <span className="w-10 h-10 rounded-full bg-[var(--yellow)] border border-[var(--line)] flex items-center justify-center font-semibold text-[var(--ink)] text-sm select-none shrink-0">
+                              <span className="w-10 h-10 rounded-full bg-[var(--bg)] border border-[var(--line)] flex items-center justify-center font-semibold text-[var(--ink)] text-sm select-none shrink-0">
                                 {user.name?.charAt(0).toUpperCase() || 'U'}
                               </span>
                               <div className="min-w-0">
@@ -505,7 +501,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           </td>
                           <td className="p-4">
                             {isAdmin ? (
-                              <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] px-2 py-0.5 rounded-md font-semibold border border-[var(--line)] select-none">
+                              <span className="bg-[var(--brand-soft)] text-[var(--blue)] text-[10px] px-2 py-0.5 rounded-md font-semibold border border-[var(--line)] select-none">
                                 ADMIN
                               </span>
                             ) : (
@@ -527,7 +523,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                               <div className="flex justify-end gap-2">
                                 <button
                                   onClick={async () => {
-                                    const newPass = prompt(`Nhập mật khẩu mới cho ${user.name || user.email}:`, "123456");
+                                    const newPass = await requestPassword({title:'Đặt lại mật khẩu',description:`Nhập mật khẩu mới cho ${user.name || user.email}.`,confirmLabel:'Đặt lại mật khẩu'});
                                     if (newPass) {
                                       if (newPass.length < 6) {
                                         showMessage('Mật khẩu phải chứa ít nhất 6 ký tự.');
@@ -552,11 +548,11 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                   }}
                                   className="btn-brutal bg-[var(--blue)] text-white text-[10px] py-1 px-2.5 font-semibold cursor-pointer transition-all shrink-0"
                                 >
-                                  Đổi Pass
+                                  Đổi mật khẩu
                                 </button>
                                 <button
                                   onClick={async () => {
-                                    if (confirm(`Bạn có chắc muốn xóa học viên ${user.name || user.email}? Hành động này không thể hoàn tác!`)) {
+                                    if (await confirm({title:'Xóa người dùng',description:`Xóa tài khoản ${user.name || user.email}? Hành động này không thể hoàn tác.`,confirmLabel:'Xóa người dùng',danger:true})) {
                                       try {
                                         const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
                                         if (res.ok) {

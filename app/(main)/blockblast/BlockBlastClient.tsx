@@ -608,8 +608,8 @@ export default function BlockBlastClient() {
         {/* Combo Text Pop-up Overlay */}
         {comboText && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-            <div className="bg-[var(--yellow)] border border-[var(--ink)] px-6 py-3 rounded-xl animate-[comboPop_0.6s_ease-out]">
-              <span className="text-2xl md:text-3xl font-semibold text-[var(--ink)] ">{comboText}</span>
+            <div className="bg-[var(--brand-soft)] text-[var(--blue)] border border-[var(--line)] px-6 py-3 rounded-xl animate-[comboPop_0.6s_ease-out]">
+              <span className="text-2xl md:text-3xl font-semibold text-[var(--blue)] ">{comboText}</span>
             </div>
           </div>
         )}
@@ -630,7 +630,7 @@ export default function BlockBlastClient() {
                     <div
                       key={idx}
                       onClick={() => handleVocabAnswer(idx)}
-                      className={`btn-brutal py-3 px-4 text-sm text-left block w-full h-auto min-h-[60px] ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] cursor-pointer group' : (idx === questions[currentQIndex].correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
+                      className={`btn-brutal py-3 px-4 text-sm text-left block w-full h-auto min-h-[60px] ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--brand-soft)] cursor-pointer group' : (idx === questions[currentQIndex].correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
                     >
                       <span className={`block font-semibold text-base leading-tight mb-1 ${ !answerStatus ? 'text-[var(--ink)] group-hover:text-[var(--ink)]' : (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]' : 'text-[var(--ink)]') }`}>{en}</span>
                       {vi && <span className={`block font-semibold text-xs ${ !answerStatus ? 'text-[var(--muted)] group-hover:text-[var(--ink)]/80' : (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]/80' : 'text-[var(--muted)]') }`}>{vi}</span>}

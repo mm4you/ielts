@@ -488,7 +488,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           onClick={isRecording ? stopRecording : startRecording}
           aria-label={isRecording ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'}
           disabled={loading || isTranscribing}
-          className={`record-button w-20 h-20 rounded-full flex items-center justify-center transition-transform ${ isRecording ? 'bg-[var(--red)] animate-pulse scale-110 border-[var(--line)] ' : (loading || isTranscribing) ? 'bg-[var(--yellow)]/30 border-[var(--line)] ' : result ? 'bg-[var(--green)] border-[var(--line)] ' : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] ' } ${loading || isTranscribing ? 'cursor-not-allowed' : ''}`}
+          className={`record-button w-20 h-20 rounded-full flex items-center justify-center transition-transform ${ isRecording ? 'bg-[var(--red)] animate-pulse scale-110 border-[var(--line)] ' : (loading || isTranscribing) ? 'bg-[var(--brand-soft)] border-[var(--line)] ' : result ? 'bg-[var(--success-soft)] border-[var(--line)] ' : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] ' } ${loading || isTranscribing ? 'cursor-not-allowed' : ''}`}
         >
           {isRecording
             ? (
@@ -500,7 +500,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
               )
               : result
                 ? (
-                  <CheckmarkRegular aria-hidden="true" className="w-10 h-10 text-white shrink-0" />
+                  <CheckmarkRegular aria-hidden="true" className="w-10 h-10 text-[var(--green)] shrink-0" />
                 )
                 : (
                   <MicRegular aria-hidden="true" className="w-10 h-10 text-[var(--ink)] shrink-0" />
@@ -523,8 +523,8 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       )}
 
       {loading && (
-        <div className="panel bg-[var(--yellow)]/20 border-[var(--yellow)] text-center">
-          <p className="font-semibold text-[var(--yellow)] animate-pulse">Đang chấm điểm phát âm</p>
+        <div className="panel text-center" role="status">
+          <p className="text-[var(--muted)]">Đang chấm điểm phát âm</p>
         </div>
       )}
 
@@ -535,7 +535,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       )}
 
       {result && (
-        <div className={`panel mt-4 border ${result.score >= 80 ? 'bg-[var(--green)]/20 border-[var(--green)]' : 'bg-[var(--red)]/20 border-[var(--red)]'}`}>
+        <div className="panel mt-4 pronunciation-result">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
             <h4 className="font-semibold text-2xl">
               Điểm: <span className={result.score >= 80 ? 'text-[var(--green)]' : 'text-[var(--red)]'}>{result.score}/100</span>
@@ -555,10 +555,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
           {/* Chi tiết từ vựng gốc */}
           {result.wordDetails && (
             <div className="mt-4 pt-4 border-t border-solid border-[var(--line)] text-left">
-              <span className="inline-flex items-center gap-1.5 bg-[var(--yellow)] text-[var(--ink)] text-xs font-semibold px-2.5 py-1 border border-[var(--line)] mb-3 ">
-                <BookOpenRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
-                <span>CHI TIẾT TỪ VỰNG:</span>
-              </span>
+              <h5 className="word-details-heading"><BookOpenRegular aria-hidden="true" /><span>Chi tiết từ vựng</span></h5>
               <div className="flex flex-wrap items-baseline gap-2 mb-2">
                 <span className="text-2xl font-semibold text-[var(--blue)] ">{result.wordDetails.word}</span>
                 {result.wordDetails.ipa && (

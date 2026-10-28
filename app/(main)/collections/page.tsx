@@ -1,5 +1,7 @@
 'use client';
 
+import { useConfirmation } from '@/components/ConfirmationProvider';
+import PageHeader from '@/components/PageHeader';
 import { Button, Checkbox, Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, DialogActions, Field, Input, Textarea, MessageBar } from '@fluentui/react-components';
 import { AddRegular } from '@fluentui/react-icons/svg/add';
 import { FolderRegular } from '@fluentui/react-icons/svg/folder';
@@ -37,6 +39,7 @@ interface Word {
 }
 
 function CollectionsContent() {
+  const { confirm } = useConfirmation();
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -249,7 +252,7 @@ function CollectionsContent() {
 
   // Handle Delete Collection
   const handleDeleteCollection = async (col: Collection) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa bộ sưu tập "${col.name}"? Hành động này không thể hoàn tác.`)) {
+    if (!await confirm({ title: 'Xóa bộ sưu tập', description: `Xóa bộ sưu tập "${col.name}"? Hành động này không thể hoàn tác.`, confirmLabel: 'Xóa bộ sưu tập', danger: true })) {
       return;
     }
 
@@ -340,7 +343,7 @@ function CollectionsContent() {
 
   return (
     <div className="collections-page">
-      <header className="page-heading"><div><h1>Bộ sưu tập</h1><p>{collections.length} bộ từ vựng</p></div><Button appearance="primary" icon={<AddRegular />} onClick={() => openModal('create')}>Tạo bộ sưu tập</Button></header>
+      <PageHeader title="Bộ sưu tập" description={`${collections.length} bộ từ vựng`} actions={<Button appearance="primary" icon={<AddRegular />} onClick={() => openModal('create')}>Tạo bộ sưu tập</Button>} />
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left column: Collections list */}
         <div className="lg:col-span-5 space-y-6">
@@ -403,7 +406,7 @@ function CollectionsContent() {
                         </Link>
                         <Link
                           href={`/speedrun?collectionId=${col.id}`}
-                          className="text-[10px] font-sans font-semibold px-2 py-1 rounded bg-[var(--yellow)] text-[var(--ink)] hover:brightness-105 border border-[var(--line)]"
+                          className="text-[10px] font-sans font-semibold px-2 py-1 rounded bg-[var(--brand-soft)] text-[var(--blue)] hover:brightness-105 border border-[var(--line)]"
                         >
                           Tốc chiến
                         </Link>
@@ -475,7 +478,7 @@ function CollectionsContent() {
                   </Link>
                   <Link
                     href={`/speedrun?collectionId=${selectedCollection.id}`}
-                    className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-xs px-3 py-1.5 font-semibold "
+                    className="btn-brutal bg-[var(--brand-soft)] text-[var(--blue)] text-xs px-3 py-1.5 font-semibold "
                   >
                     Tốc chiến
                   </Link>
@@ -531,7 +534,7 @@ function CollectionsContent() {
                                 e.stopPropagation();
                                 handlePlayAudio(word.id, word.word);
                               }}
-                              className={`p-1 rounded-md border border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none relative z-20 ${playingWordId === word.id ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] active:shadow-none' }`}
+                              className={`p-1 rounded-md border border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none relative z-20 ${playingWordId === word.id ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--brand-soft)] text-[var(--blue)] active:shadow-none' }`}
                               title="Phát âm"
                             >
                               {playingWordId === word.id ? (
@@ -563,7 +566,7 @@ function CollectionsContent() {
                         {/* Remove Action */}
                         <button
                           onClick={() => handleRemoveWord(word.id, word.word)}
-                          className="font-sans text-xs text-[var(--red)] font-semibold border border-[var(--red)] px-2 py-1 rounded bg-red-50 hover:bg-red-100 select-none cursor-pointer"
+                          className="font-sans text-xs text-[var(--red)] font-semibold border border-[var(--red)] px-2 py-1 rounded bg-[var(--danger-soft)] hover:bg-[var(--danger-soft)] select-none cursor-pointer"
                         >
                           Gỡ
                         </button>

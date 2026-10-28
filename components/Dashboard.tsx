@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '@/components/PageHeader';
 import Link from 'next/link';
 import { Button } from '@fluentui/react-components';
 import { ArrowRightRegular } from '@fluentui/react-icons/svg/arrow-right';
@@ -13,9 +14,11 @@ import { GridRegular } from '@fluentui/react-icons/svg/grid';
 import { LibraryRegular } from '@fluentui/react-icons/svg/library';
 import { MicRegular } from '@fluentui/react-icons/svg/mic';
 import { TargetArrowRegular } from '@fluentui/react-icons/svg/target-arrow';
+import { PeopleTeamRegular } from '@fluentui/react-icons/svg/people-team';
 
 type DashboardProps = { name: string; totalWords: number; dueWords: number; collectionsCount: number; savedWordsCount: number };
 const games = [
+  {href:'/rooms',name:'Phòng thi đấu',description:'Thi từ vựng cùng bạn bè',icon:PeopleTeamRegular},
   {href:'/speedrun',name:'Tốc chiến',description:'Trả lời nhanh trong 45 giây',icon:FlashRegular},
   {href:'/match',name:'Lật thẻ',description:'Ghép từ với nghĩa tiếng Việt',icon:GamesRegular},
   {href:'/blockblast',name:'Xếp hình',description:'Học từ vựng qua Block Blast',icon:GridRegular},
@@ -31,7 +34,7 @@ export default function Dashboard({name,totalWords,dueWords,collectionsCount,sav
     {label:'Từ đã lưu',value:savedWordsCount,icon:CheckmarkCircleRegular,href:'/collections'},
   ];
   return <div className="dashboard">
-    <div className="page-heading"><div><h1>Tổng quan</h1><p>{name}</p></div><Button as="a" href="/library" appearance="secondary" icon={<LibraryRegular />}>Thư viện</Button></div>
+    <PageHeader title="Tổng quan" description={name} actions={<Button as="a" href="/library" appearance="secondary" icon={<LibraryRegular />}>Thư viện</Button>} />
     <section className="metrics-grid" aria-label="Tổng quan học tập">
       {metrics.map(({label,value,icon:Icon,href})=><Link className="metric" href={href} key={label}><div className="metric-label"><Icon /><span>{label}</span></div><strong>{value.toLocaleString('vi-VN')}</strong><ChevronRightRegular className="metric-arrow" /></Link>)}
     </section>
@@ -49,7 +52,7 @@ export default function Dashboard({name,totalWords,dueWords,collectionsCount,sav
           <Link href="/library" className="shortcut-card"><span className="shortcut-icon"><LibraryRegular /></span><div><h2>Thư viện từ vựng</h2><p>Tìm theo chủ đề và cấp độ A1–C2</p></div><ArrowRightRegular /></Link>
         </section>
       </div>
-      <section className="practice-panel" aria-labelledby="practice-title"><div className="section-heading"><h2 id="practice-title">Luyện tập</h2><span>5 chế độ</span></div><div className="practice-list">{games.map(({href,name,description,icon:Icon})=><Link href={href} key={href} className="practice-item"><span className="practice-icon"><Icon /></span><div><h3>{name}</h3><p>{description}</p></div><ChevronRightRegular /></Link>)}</div><Link href="/analytics" className="practice-footer">Xem thống kê học tập<ArrowRightRegular /></Link></section>
+      <section className="practice-panel" aria-labelledby="practice-title"><div className="section-heading"><h2 id="practice-title">Luyện tập</h2><span>{games.length} chế độ</span></div><div className="practice-list">{games.map(({href,name,description,icon:Icon})=><Link href={href} key={href} className="practice-item"><span className="practice-icon"><Icon /></span><div><h3>{name}</h3><p>{description}</p></div><ChevronRightRegular /></Link>)}</div><Link href="/analytics" className="practice-footer">Xem thống kê học tập<ArrowRightRegular /></Link></section>
     </div>
   </div>;
 }
