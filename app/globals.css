@@ -120,6 +120,8 @@ input,select,textarea { color:var(--ink); }
 .typing-native-field input { width:100%; min-width:0; outline:none; border:0; background:transparent; color:#f0f8ff; caret-color:#65dfef; font-family:ui-monospace,Consolas,monospace; font-size:20px; padding:14px 0; line-height:1.3; box-shadow:none; }
 .typing-native-field input::placeholder { color:#9bb0c6; font-family:var(--font-ui); font-size:16px; }
 .typing-native-field input:focus-visible { outline:none; }
+.app-content .typing-game .typing-console .typing-native-field input { border:0; border-radius:0; font-family:ui-monospace,Consolas,monospace; }
+.app-content .typing-game .typing-native-field input:focus { outline:none; box-shadow:none; }
 .typing-auto-fire { flex:none; font-size:9px; font-weight:600; letter-spacing:.12em; color:#65dfef; }
 .typing-dock-footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:10px; color:var(--space-muted); padding-top:11px; }
 .typing-dock-footer kbd { font-family:var(--font-ui); font-size:10px; border:1px solid #3e5269; border-radius:3px; padding:1px 4px; margin:0 4px; }
