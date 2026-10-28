@@ -19,7 +19,7 @@ export class TypingAudio {
         if (!ctx) return;
         this.context = ctx;
         this.master = ctx.createGain();
-        this.master.gain.value = .32;
+        this.master.gain.value = .96;
         this.master.connect(ctx.destination);
         this.noise = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * .32), ctx.sampleRate);
         const samples = this.noise.getChannelData(0);
