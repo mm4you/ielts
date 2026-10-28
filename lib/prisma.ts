@@ -52,6 +52,25 @@ const globalForPrisma = globalThis as unknown as {
   prismaInstance: any | undefined;
 };
 
+// Auth.js must resolve an identity before a user session exists. Keep this
+// transaction-local RLS context separate from normal application queries.
+export const authPrisma = basePrisma.$extends({
+  query: {
+    $allModels: {
+      async $allOperations({ model, args, query }) {
+        if (!['User', 'Account', 'Session', 'VerificationToken'].includes(model)) {
+          throw new Error('Model is not available to the authentication adapter');
+        }
+        const [, result] = await basePrisma.$transaction([
+          basePrisma.$executeRaw`SELECT set_config('app.bypass_rls', 'true', true)`,
+          query(args),
+        ]);
+        return result;
+      },
+    },
+  },
+});
+
 export const prisma = globalForPrisma.prismaInstance ?? basePrisma.$extends({
   query: {
     $allModels: {
