@@ -1,18 +1,15 @@
 'use client';
-
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useState } from 'react';
+import Header from './Header';
+import Footer from './Footer';
 
 export default function NavLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-[var(--bg)] flex flex-col pb-16 md:pb-0">
-      <div className="bg-orb orb-1"></div>
-      <div className="bg-orb orb-2"></div>
-      <Header />
-      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10 flex-1 relative z-10">
-        {children}
-      </main>
+  const [collapsed, setCollapsed] = useState(false);
+  return <div className="app-shell" data-collapsed={collapsed}>
+    <Header collapsed={collapsed} onCollapse={() => setCollapsed(value => !value)} />
+    <div className="app-workspace">
+      <main id="main-content" className="app-content" tabIndex={-1}>{children}</main>
       <Footer />
     </div>
-  );
+  </div>;
 }

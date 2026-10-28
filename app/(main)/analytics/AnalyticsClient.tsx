@@ -1,5 +1,15 @@
 'use client';
 
+
+
+import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { FireRegular as FluentFireRegular } from '@fluentui/react-icons/svg/fire';
+import { BookOpenRegular } from '@fluentui/react-icons/svg/book-open';
+import { CheckmarkCircleRegular } from '@fluentui/react-icons/svg/checkmark-circle';
+import { GridRegular } from '@fluentui/react-icons/svg/grid';
+import { FlashRegular } from '@fluentui/react-icons/svg/flash';
+import { TargetArrowRegular } from '@fluentui/react-icons/svg/target-arrow';
+import { TrophyRegular } from '@fluentui/react-icons/svg/trophy';
 import { useState } from 'react';
 import Link from 'next/link';
 
@@ -56,18 +66,18 @@ export default function AnalyticsClient({
   const getHeatmapDays = () => {
     const days: Date[] = [];
     const today = new Date();
-    
+
     // Tìm ngày Chủ Nhật cách đây 52 tuần
     const startDate = new Date(today);
     startDate.setDate(today.getDate() - 364);
     const startDayOfWeek = startDate.getDay();
     startDate.setDate(startDate.getDate() - startDayOfWeek); // Lùi về Chủ Nhật đầu tiên
-    
+
     // Ngày kết thúc là Thứ Bảy của tuần hiện tại để lưới vuông vức
     const endDate = new Date(today);
     const endDayOfWeek = endDate.getDay();
     endDate.setDate(today.getDate() + (6 - endDayOfWeek)); // Tiến tới Thứ Bảy cuối cùng
-    
+
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       days.push(new Date(currentDate));
@@ -109,105 +119,88 @@ export default function AnalyticsClient({
   const dayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="mb-10 border-b-4 border-[var(--line)] pb-4">
-        <div className="flex items-center justify-between w-full gap-4">
-          <h1 className="text-3xl font-black uppercase tracking-tight text-[var(--ink)]">
-            Thống kê học tập
-          </h1>
-          <Link 
-            href="/" 
-            className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base select-none"
-            title="Về Trang Chủ"
-          >
-            X
-          </Link>
-        </div>
-        <p className="text-[var(--muted)] font-bold mt-2">
-          Chào mừng trở lại, <span className="text-[var(--blue)]">{userName}</span>! Dưới đây là hành trình chinh phục từ vựng của bạn.
-        </p>
-      </div>
+    <div className="analytics-page">
+      <header className="page-heading"><div><h1>Thống kê học tập</h1><p>{userName}</p></div></header>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         {/* Streak Card */}
         <div className="panel flex items-center justify-between p-6">
           <div>
-            <p className="text-xs font-black uppercase text-[var(--muted)] mb-1">Chuỗi liên tục</p>
-            <p className="text-4xl font-black text-[var(--ink)] flex items-baseline gap-1">
-              {streak} <span className="text-base font-bold">ngày</span>
+            <p className="text-xs font-semibold text-[var(--muted)] mb-1">Chuỗi liên tục</p>
+            <p className="text-4xl font-semibold text-[var(--ink)] flex items-baseline gap-1">
+              {streak} <span className="text-base font-semibold">ngày</span>
             </p>
-            <p className="text-xs font-bold text-[var(--muted)] mt-2">
-              {hasActivityToday ? 'Hôm nay đã học!' : 'Học ngay hôm nay để giữ chuỗi!'}
+            <p className="text-xs font-semibold text-[var(--muted)] mt-2">
+              {hasActivityToday ? 'Đã học hôm nay' : 'Chưa học hôm nay'}
             </p>
           </div>
-          <div className="w-12 h-12 bg-[var(--red)] border-[3px] border-[var(--line)] rounded-xl shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>
+          <div className="w-12 h-12 bg-[var(--red)] border border-[var(--line)] rounded-xl flex items-center justify-center shrink-0">
+            <FluentFireRegular aria-hidden="true" className="w-6 h-6 text-white" />
           </div>
         </div>
 
         {/* Total Learned Card */}
         <div className="panel flex items-center justify-between p-6">
           <div>
-            <p className="text-xs font-black uppercase text-[var(--muted)] mb-1">Đã tương tác</p>
-            <p className="text-4xl font-black text-[var(--ink)] flex items-baseline gap-1">
-              {learnedWords} <span className="text-base font-bold">/ {totalWords} từ</span>
+            <p className="text-xs font-semibold text-[var(--muted)] mb-1">Đã tương tác</p>
+            <p className="text-4xl font-semibold text-[var(--ink)] flex items-baseline gap-1">
+              {learnedWords} <span className="text-base font-semibold">/ {totalWords} từ</span>
             </p>
-            <p className="text-xs font-bold text-[var(--muted)] mt-2">
-              Chinh phục được {overallPercent}% kho từ vựng
+            <p className="text-xs font-semibold text-[var(--muted)] mt-2">
+              Đã học {overallPercent}% kho từ vựng
             </p>
           </div>
-          <div className="w-12 h-12 bg-[var(--blue)] border-[3px] border-[var(--line)] rounded-xl shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          <div className="w-12 h-12 bg-[var(--blue)] border border-[var(--line)] rounded-xl flex items-center justify-center shrink-0">
+            <BookOpenRegular aria-hidden="true" className="w-6 h-6 text-white" />
           </div>
         </div>
 
         {/* Mastered Card */}
         <div className="panel flex items-center justify-between p-6">
           <div>
-            <p className="text-xs font-black uppercase text-[var(--muted)] mb-1">Đã thuộc lòng</p>
-            <p className="text-4xl font-black text-[var(--green)] flex items-baseline gap-1">
-              {masteredCount} <span className="text-base font-bold text-[var(--ink)]">từ</span>
+            <p className="text-xs font-semibold text-[var(--muted)] mb-1">Đã thuộc lòng</p>
+            <p className="text-4xl font-semibold text-[var(--green)] flex items-baseline gap-1">
+              {masteredCount} <span className="text-base font-semibold text-[var(--ink)]">từ</span>
             </p>
-            <p className="text-xs font-bold text-[var(--muted)] mt-2">
-              Đã ghi nhớ vào trí nhớ dài hạn
+            <p className="text-xs font-semibold text-[var(--muted)] mt-2">
+              Ôn tập đều để ghi nhớ lâu hơn
             </p>
           </div>
-          <div className="w-12 h-12 bg-[var(--green)] border-[3px] border-[var(--line)] rounded-xl shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="w-12 h-12 bg-[var(--green)] border border-[var(--line)] rounded-xl flex items-center justify-center shrink-0">
+            <CheckmarkCircleRegular aria-hidden="true" className="w-6 h-6 text-white" />
           </div>
         </div>
       </div>
 
       {/* Memory Progress Section */}
       <div className="panel p-6 mb-8">
-        <h2 className="text-lg font-black uppercase mb-4 text-[var(--ink)]">Tiến trình ghi nhớ từ vựng</h2>
-        
+        <h2 className="text-lg font-semibold mb-4 text-[var(--ink)]">Tiến trình ghi nhớ từ vựng</h2>
+
         {/* Progress Bar Container */}
-        <div className="h-8 w-full border-[3px] border-[var(--line)] rounded-xl overflow-hidden flex mb-6 shadow-[2px_2px_0_var(--line)]">
+        <div className="h-8 w-full border border-[var(--line)] rounded-xl overflow-hidden flex mb-6 ">
           {masteredCount > 0 && (
-            <div 
-              style={{ width: `${masteredPercent}%` }} 
-              className="bg-[var(--green)] h-full border-r-[2px] border-[var(--line)] flex items-center justify-center text-xs font-black text-white"
+            <div
+              style={{ width: `${masteredPercent}%` }}
+              className="bg-[var(--green)] h-full border-r-[2px] border-[var(--line)] flex items-center justify-center text-xs font-semibold text-white"
               title={`Đã thuộc: ${masteredCount} từ`}
             >
               {masteredPercent >= 10 && `${masteredPercent}%`}
             </div>
           )}
           {learningCount > 0 && (
-            <div 
-              style={{ width: `${learningPercent}%` }} 
-              className="bg-[var(--blue)] h-full border-r-[2px] border-[var(--line)] flex items-center justify-center text-xs font-black text-white"
+            <div
+              style={{ width: `${learningPercent}%` }}
+              className="bg-[var(--blue)] h-full border-r-[2px] border-[var(--line)] flex items-center justify-center text-xs font-semibold text-white"
               title={`Đang học: ${learningCount} từ`}
             >
               {learningPercent >= 10 && `${learningPercent}%`}
             </div>
           )}
           {newCount > 0 && (
-            <div 
-              style={{ width: `${newPercent}%` }} 
-              className="bg-[var(--yellow)] h-full flex items-center justify-center text-xs font-black text-[#111827]"
+            <div
+              style={{ width: `${newPercent}%` }}
+              className="bg-[var(--yellow)] h-full flex items-center justify-center text-xs font-semibold text-[#111827]"
               title={`Chưa học: ${newCount} từ`}
             >
               {newPercent >= 10 && `${newPercent}%`}
@@ -217,27 +210,27 @@ export default function AnalyticsClient({
 
         {/* Legend */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3 p-3 bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl">
-            <div className="w-5 h-5 bg-[var(--green)] border-2 border-[var(--line)] rounded-md shrink-0" />
+          <div className="flex items-center gap-3 p-3 bg-[var(--bg)] border border-[var(--line)] rounded-xl">
+            <div className="w-5 h-5 bg-[var(--green)] border border-[var(--line)] rounded-md shrink-0" />
             <div>
-              <p className="text-xs font-black uppercase text-[var(--ink)]">Đã thuộc (Mastered)</p>
-              <p className="text-sm font-bold text-[var(--muted)]">{masteredCount} từ ({masteredPercent}%)</p>
+              <p className="text-xs font-semibold text-[var(--ink)]">Đã thuộc</p>
+              <p className="text-sm font-semibold text-[var(--muted)]">{masteredCount} từ ({masteredPercent}%)</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl">
-            <div className="w-5 h-5 bg-[var(--blue)] border-2 border-[var(--line)] rounded-md shrink-0" />
+          <div className="flex items-center gap-3 p-3 bg-[var(--bg)] border border-[var(--line)] rounded-xl">
+            <div className="w-5 h-5 bg-[var(--blue)] border border-[var(--line)] rounded-md shrink-0" />
             <div>
-              <p className="text-xs font-black uppercase text-[var(--ink)]">Đang học (Learning)</p>
-              <p className="text-sm font-bold text-[var(--muted)]">{learningCount} từ ({learningPercent}%)</p>
+              <p className="text-xs font-semibold text-[var(--ink)]">Đang học</p>
+              <p className="text-sm font-semibold text-[var(--muted)]">{learningCount} từ ({learningPercent}%)</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl">
-            <div className="w-5 h-5 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-md shrink-0" />
+          <div className="flex items-center gap-3 p-3 bg-[var(--bg)] border border-[var(--line)] rounded-xl">
+            <div className="w-5 h-5 bg-[var(--yellow)] border border-[var(--line)] rounded-md shrink-0" />
             <div>
-              <p className="text-xs font-black uppercase text-[var(--ink)]">Chưa học (New)</p>
-              <p className="text-sm font-bold text-[var(--muted)]">{newCount} từ ({newPercent}%)</p>
+              <p className="text-xs font-semibold text-[var(--ink)]">Chưa học</p>
+              <p className="text-sm font-semibold text-[var(--muted)]">{newCount} từ ({newPercent}%)</p>
             </div>
           </div>
         </div>
@@ -246,8 +239,8 @@ export default function AnalyticsClient({
       {/* Heatmap Section */}
       <div className="panel p-6 mb-8 overflow-visible">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-2">
-          <h2 className="text-lg font-black uppercase text-[var(--ink)]">Biểu đồ nhiệt hoạt động</h2>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--muted)]">
+          <h2 className="text-lg font-semibold text-[var(--ink)]">Hoạt động học tập</h2>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--muted)]">
             <span>Ít</span>
             <div className="w-3 h-3 rounded-sm bg-[var(--bg)] border border-[var(--border)] opacity-30" />
             <div className="w-3 h-3 rounded-sm bg-[#dcfce7] dark:bg-[#064e3b]" />
@@ -262,7 +255,7 @@ export default function AnalyticsClient({
         <div className="overflow-x-auto overflow-y-visible scrollbar-none pb-8">
           <div className="flex gap-2 min-w-[720px] select-none">
             {/* Day of Week Labels Column */}
-            <div className="grid grid-rows-7 gap-[3px] pr-2 text-[10px] font-black text-[var(--muted)] text-right h-[122px] justify-between pt-[2px]">
+            <div className="grid grid-rows-7 gap-[3px] pr-2 text-[10px] font-semibold text-[var(--muted)] text-right h-[122px] justify-between pt-[2px]">
               {dayLabels.map((label, idx) => (
                 <div key={idx} className="h-[14px] flex items-center justify-end">
                   {idx % 2 === 1 && label}
@@ -280,12 +273,12 @@ export default function AnalyticsClient({
 
                 return (
                   <div key={idx} className="group relative">
-                    <div 
-                      className={`w-[14px] h-[14px] rounded-[3px] transition-colors cursor-pointer ${colorClass}`} 
+                    <div
+                      className={`w-[14px] h-[14px] rounded-[3px] transition-colors cursor-pointer ${colorClass}`}
                     />
                     {/* Tooltip - hiển thị bên dưới ô để không bị che */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-[var(--ink)] text-[var(--paper)] text-[10px] font-black py-1 px-2.5 rounded-lg border-2 border-[var(--line)] whitespace-nowrap z-50 shadow-[2px_2px_0_var(--line)] pointer-events-none">
-                      {count > 0 ? `Đã học ${count} từ` : 'Nhàn rỗi'} — {formattedVN}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-[var(--ink)] text-[var(--paper)] text-[10px] font-semibold py-1 px-2.5 rounded-lg border border-[var(--line)] whitespace-nowrap z-50 pointer-events-none">
+                      {count > 0 ? `Đã học ${count} từ` : 'Chưa có hoạt động'} — {formattedVN}
                     </div>
                   </div>
                 );
@@ -293,78 +286,72 @@ export default function AnalyticsClient({
             </div>
           </div>
         </div>
-        <p className="text-[10px] text-[var(--muted)] font-bold mt-3 text-right">
+        <p className="text-[10px] text-[var(--muted)] font-semibold mt-3 text-right">
           * Biểu đồ hiển thị hoạt động học tập trong 12 tháng qua.
         </p>
       </div>
 
       {/* Game Highscores Grid */}
       <div className="panel p-6">
-        <h2 className="text-lg font-black uppercase mb-4 text-[var(--ink)]">Kỷ lục trò chơi</h2>
+        <h2 className="text-lg font-semibold mb-4 text-[var(--ink)]">Kỷ lục trò chơi</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Block Blast */}
-          <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#8b5cf6] border-[3px] border-[var(--line)] rounded-lg shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+          <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-4">
+            <div className="w-10 h-10 bg-[var(--blue)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
+              <GridRegular aria-hidden="true" className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-[var(--muted)]">Xếp hình (Block Blast)</p>
-              <p className="text-xl font-black text-[var(--ink)]">{highScores.blockblast} điểm</p>
+              <p className="text-[10px] font-semibold text-[var(--muted)]">Xếp hình (Block Blast)</p>
+              <p className="text-xl font-semibold text-[var(--ink)]">{highScores.blockblast} điểm</p>
             </div>
           </div>
 
           {/* Speedrun */}
-          <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] flex items-center gap-4">
-            <div className="w-10 h-10 bg-[var(--red)] border-[3px] border-[var(--line)] rounded-lg shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-4">
+            <div className="w-10 h-10 bg-[var(--red)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
+              <FlashRegular aria-hidden="true" className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-[var(--muted)]">Tốc chiến (Speedrun)</p>
-              <p className="text-xl font-black text-[var(--ink)]">{highScores.speedrun} điểm</p>
+              <p className="text-[10px] font-semibold text-[var(--muted)]">Tốc chiến (Speedrun)</p>
+              <p className="text-xl font-semibold text-[var(--ink)]">{highScores.speedrun} điểm</p>
             </div>
           </div>
 
           {/* Sniper */}
-          <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] flex items-center gap-4">
-            <div className="w-10 h-10 bg-[var(--ink)] border-[3px] border-[var(--line)] rounded-lg shadow-[2px_2px_0_var(--line)] flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5 text-[var(--paper)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+          <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 flex items-center gap-4">
+            <div className="w-10 h-10 bg-[var(--ink)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
+              <TargetArrowRegular aria-hidden="true" className="w-5 h-5 text-[var(--paper)]" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-[var(--muted)]">Thiện xạ (Sniper)</p>
-              <p className="text-xl font-black text-[var(--ink)]">{highScores.sniper} điểm</p>
+              <p className="text-[10px] font-semibold text-[var(--muted)]">Thiện xạ (Sniper)</p>
+              <p className="text-xl font-semibold text-[var(--ink)]">{highScores.sniper} điểm</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Community Leaderboard Panel */}
-      <div className="panel p-6 mt-8 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl bg-[var(--paper)] w-full flex flex-col select-none">
+      <div className="panel p-6 mt-8 border border-[var(--line)] rounded-2xl bg-[var(--paper)] w-full flex flex-col select-none">
         {/* Title */}
-        <div className="flex items-center gap-2 mb-6 border-b-2 border-dashed border-[var(--line)] pb-3">
-          <div className="w-9 h-9 bg-[var(--yellow)] border-2 border-[var(--line)] rounded-lg shadow-[1.5px_1.5px_0_var(--line)] flex items-center justify-center shrink-0">
-            <svg className="w-5 h-5 text-[var(--ink)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
+        <div className="flex items-center gap-2 mb-6 border-b border-solid border-[var(--line)] pb-3">
+          <div className="w-9 h-9 bg-[var(--yellow)] border border-[var(--line)] rounded-lg flex items-center justify-center shrink-0">
+            <TrophyRegular aria-hidden="true" className="w-5 h-5 text-[var(--ink)]" />
           </div>
-          <h2 className="text-lg font-black uppercase text-[var(--ink)]">Bảng Xếp Hạng Cộng Đồng</h2>
+          <h2 className="text-lg font-semibold text-[var(--ink)]">Bảng xếp hạng</h2>
         </div>
 
         {/* Tabs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6 p-1 bg-[var(--bg)] rounded-xl border-2 border-[var(--line)]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6 p-1 bg-[var(--bg)] rounded-xl border border-[var(--line)]">
           {[
-            { id: 'mastered', label: 'Chăm chỉ', color: 'bg-[var(--green)] text-white' },
-            { id: 'speedrun', label: 'Tốc chiến', color: 'bg-[var(--red)] text-white' },
-            { id: 'blockblast', label: 'Xếp hình', color: 'bg-[#8b5cf6] text-white' },
-            { id: 'sniper', label: 'Thiện xạ', color: 'bg-[var(--ink)] text-[var(--paper)]' }
+            { id: 'mastered', label: 'Chăm chỉ', color: 'bg-[var(--brand-soft)] text-[var(--blue)]' },
+            { id: 'speedrun', label: 'Tốc chiến', color: 'bg-[var(--brand-soft)] text-[var(--blue)]' },
+            { id: 'blockblast', label: 'Xếp hình', color: 'bg-[var(--brand-soft)] text-[var(--blue)]' },
+            { id: 'sniper', label: 'Thiện xạ', color: 'bg-[var(--brand-soft)] text-[var(--blue)]' }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
-                activeTab === tab.id
-                  ? `${tab.color} border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] scale-102`
-                  : 'text-[var(--muted)] hover:text-[var(--ink)] bg-transparent border-2 border-transparent'
-              }`}
+              className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${ activeTab === tab.id ? `${tab.color} border border-[var(--line)] ` : 'text-[var(--muted)] hover:text-[var(--ink)] bg-transparent border border-transparent' }`}
             >
               {tab.label}
             </button>
@@ -374,19 +361,19 @@ export default function AnalyticsClient({
         {/* List */}
         <div className="space-y-3.5">
           {leaderboard[activeTab].length === 0 ? (
-            <div className="text-center py-10 font-bold text-sm text-[var(--muted)]">
-              Chưa có dữ liệu xếp hạng...
+            <div className="text-center py-10 font-semibold text-sm text-[var(--muted)]">
+              Chưa có dữ liệu xếp hạng
             </div>
           ) : (
             leaderboard[activeTab].map((user, idx) => {
               const getRankStyle = (index: number) => {
                 switch (index) {
                   case 0:
-                    return 'bg-[var(--yellow)] text-[var(--ink)] border-[var(--line)] scale-[1.01] shadow-[2px_2px_0_var(--line)]';
+                    return 'bg-[var(--yellow)] text-[var(--ink)] border-[var(--line)] ';
                   case 1:
-                    return 'bg-gray-100 text-[var(--ink)] border-[var(--line)]';
+                    return 'bg-[var(--surface-hover)] text-[var(--ink)] border-[var(--line)]';
                   case 2:
-                    return 'bg-[#ffca28]/20 text-[var(--ink)] border-[var(--line)]';
+                    return 'bg-[var(--bg)] text-[var(--ink)] border-[var(--line)]';
                   default:
                     return 'bg-[var(--bg)] text-[var(--muted)] border-[var(--line)]';
                 }
@@ -395,27 +382,27 @@ export default function AnalyticsClient({
               return (
                 <div
                   key={idx}
-                  className={`flex items-center justify-between p-3.5 border-2 rounded-xl transition-all ${getRankStyle(idx)}`}
+                  className={`flex items-center justify-between p-3.5 border rounded-xl transition-all ${getRankStyle(idx)}`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {/* Rank Badge */}
-                    <span className="w-7 h-7 rounded-full border-2 border-[var(--line)] flex items-center justify-center text-xs font-black shrink-0 bg-[var(--paper)] text-[var(--ink)]">
+                    <span className="w-7 h-7 rounded-full border border-[var(--line)] flex items-center justify-center text-xs font-semibold shrink-0 bg-[var(--paper)] text-[var(--ink)]">
                       {idx + 1}
                     </span>
 
                     {/* Avatar Letter */}
-                    <div className="w-8 h-8 rounded-full border-2 border-[var(--line)] flex items-center justify-center font-extrabold text-sm shrink-0 bg-[var(--paper)] text-[var(--ink)]">
+                    <div className="w-8 h-8 rounded-full border border-[var(--line)] flex items-center justify-center font-semibold text-sm shrink-0 bg-[var(--paper)] text-[var(--ink)]">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
 
                     {/* Username */}
-                    <span className="font-extrabold text-sm truncate text-[var(--ink)]">
+                    <span className="font-semibold text-sm truncate text-[var(--ink)]">
                       {user.name}
                     </span>
                   </div>
 
                   {/* Score */}
-                  <span className="font-black text-sm text-right shrink-0 text-[var(--ink)] ml-2">
+                  <span className="font-semibold text-sm text-right shrink-0 text-[var(--ink)] ml-2">
                     {user.score.toLocaleString()} {activeTab === 'mastered' ? 'từ đã thuộc' : 'điểm'}
                   </span>
                 </div>

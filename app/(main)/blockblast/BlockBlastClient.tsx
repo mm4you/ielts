@@ -1,5 +1,11 @@
 'use client';
 
+
+
+
+import PracticeSetup from '@/components/PracticeSetup';
+import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { TrophyRegular } from '@fluentui/react-icons/svg/trophy';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -57,7 +63,7 @@ function getSmartShapes(count: number, currentBoard: Board): (Shape | null)[] {
         if (canPlace(currentBoard, def.grid, r, c)) {
           canFit = true;
           let clearsLine = false;
-          
+
           for (let rr = 0; rr < def.grid.length; rr++) {
             let rowFull = true;
             for (let cc = 0; cc < 8; cc++) {
@@ -69,7 +75,7 @@ function getSmartShapes(count: number, currentBoard: Board): (Shape | null)[] {
             }
             if (rowFull) clearsLine = true;
           }
-          
+
           for (let cc = 0; cc < def.grid[0].length; cc++) {
             let colFull = true;
             for (let rr = 0; rr < 8; rr++) {
@@ -88,24 +94,24 @@ function getSmartShapes(count: number, currentBoard: Board): (Shape | null)[] {
       }
       if (canCombo) break;
     }
-    
+
     if (canCombo) comboShapes.push(def);
     else if (canFit) fitShapes.push(def);
   }
 
   return Array.from({ length: count }).map((_, i) => {
     let def: { grid: number[][] } | undefined;
-    
+
     if (i === 0 && comboShapes.length > 0 && Math.random() < 0.6) {
       def = comboShapes[Math.floor(Math.random() * comboShapes.length)];
-    } 
+    }
     else if (i === 1 && fitShapes.length > 0 && Math.random() < 0.7) {
       def = fitShapes[Math.floor(Math.random() * fitShapes.length)];
     }
     else if (i === 2 && comboShapes.length > 0 && Math.random() < 0.2) {
       def = comboShapes[Math.floor(Math.random() * comboShapes.length)];
     }
-    
+
     if (!def) {
       def = SHAPE_DEFS[Math.floor(Math.random() * SHAPE_DEFS.length)];
     }
@@ -158,7 +164,7 @@ export default function BlockBlastClient() {
 
   const [board, setBoard] = useState<Board>(Array(8).fill(0).map(() => Array(8).fill(0)));
   const [shapes, setShapes] = useState<(Shape | null)[]>([]);
-  
+
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'vocab' | 'gameover'>('setup');
@@ -169,7 +175,7 @@ export default function BlockBlastClient() {
   const [comboText, setComboText] = useState('');
   const [fallingCells, setFallingCells] = useState<{r: number, c: number}[]>([]);
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
-  
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
@@ -191,7 +197,7 @@ export default function BlockBlastClient() {
     setShapes(getSmartShapes(3, Array(8).fill(0).map(() => Array(8).fill(0))));
     setScore(0);
     setCurrentQIndex(0);
-    
+
     fetch(`/api/speedrun?level=${selectedLevel}`)
       .then(res => res.json())
       .then(data => {
@@ -218,7 +224,7 @@ export default function BlockBlastClient() {
           if (res.ok) {
             const data = await res.json();
             const dbScore = data.blockblast ?? 0;
-            
+
             const maxScore = Math.max(localScore, dbScore);
             setHighScore(maxScore);
 
@@ -282,13 +288,13 @@ export default function BlockBlastClient() {
     const cellSize = rect.width / 8;
     const shapeRows = dragState.shape.grid.length;
     const shapeCols = dragState.shape.grid[0].length;
-    
+
     const dropX = dragState.currX - rect.left - (shapeCols * cellSize) / 2;
     const dropY = dragState.currY - rect.top - (shapeRows * cellSize) / 2;
-    
+
     const targetC = Math.round(dropX / cellSize);
     const targetR = Math.round(dropY / cellSize);
-    
+
     if (canPlace(board, dragState.shape.grid, targetR, targetC)) {
       const coords = [];
       for (let r = 0; r < shapeRows; r++) {
@@ -328,24 +334,24 @@ export default function BlockBlastClient() {
       const gridEl = document.getElementById('block-blast-grid');
       if (gridEl && dragState) {
         const rect = gridEl.getBoundingClientRect();
-        const cellSize = rect.width / 8; 
+        const cellSize = rect.width / 8;
         const shapeRows = dragState.shape.grid.length;
         const shapeCols = dragState.shape.grid[0].length;
-        
+
         // Calculate the intended top-left cell on the grid
         const dropX = e.clientX - rect.left - (shapeCols * cellSize) / 2;
         const dropY = e.clientY - rect.top - (shapeRows * cellSize) / 2;
-        
+
         const targetC = Math.round(dropX / cellSize);
         const targetR = Math.round(dropY / cellSize);
-        
+
         if (canPlace(board, dragState.shape.grid, targetR, targetC)) {
           placeShape(targetR, targetC, dragState.shape, dragState.trayIdx);
         }
       }
       setDragState(null);
     };
-    
+
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     return () => {
@@ -363,7 +369,7 @@ export default function BlockBlastClient() {
 
     const newBoard = board.map(row => [...row]);
     let pointsEarned = 0;
-    
+
     // Đặt tạm thời trên board mới để tính toán nổ
     for (let r = 0; r < shape.grid.length; r++) {
       for (let c = 0; c < shape.grid[0].length; c++) {
@@ -407,7 +413,7 @@ export default function BlockBlastClient() {
     const linesCleared = rowsToClear.length + colsToClear.length;
     if (linesCleared > 0) {
       pointsEarned += linesCleared * 100 * linesCleared;
-      
+
       // Hiển thị banner combo
       let comboMsg = "CLEARED!";
       if (linesCleared === 2) comboMsg = "DOUBLE BLAST!";
@@ -420,7 +426,7 @@ export default function BlockBlastClient() {
     // Xử lý nổ có hiệu ứng hoạt ảnh
     if (cellsToClear.length > 0) {
       setClearingCells(cellsToClear);
-      
+
       // Tạo hạt bụi vỡ vụn
       const newParticles: { id: string; x: number; y: number; vx: number; vy: number; color: string }[] = [];
       cellsToClear.forEach(cell => {
@@ -461,7 +467,7 @@ export default function BlockBlastClient() {
             if (finalBoard[r][c] === 1) finalBoard[r][c] = 0;
           }
         });
-        
+
         setBoard(finalBoard);
         setClearingCells([]);
       }, 250);
@@ -485,13 +491,13 @@ export default function BlockBlastClient() {
     if (questions.length === 0 || answerStatus) return;
     const currentQ = questions[currentQIndex];
     const isCorrect = choiceIdx === currentQ.correctIndex;
-    
+
     setAnswerStatus({ selectedIdx: choiceIdx, isCorrect });
 
     if (isCorrect) {
       setScore(s => s + 500);
       fetch('/api/activity', { method: 'POST' }).catch(() => {});
-      
+
       setTimeout(() => {
         setShapes(getSmartShapes(3, board));
         setGameState('playing');
@@ -509,7 +515,7 @@ export default function BlockBlastClient() {
             if (newBoard[r][c] === 0) emptyCells.push({r,c});
           }
         }
-        
+
         const dropped: {r: number, c: number}[] = [];
         if (emptyCells.length > 0) {
           for (let i=0; i<Math.min(2, emptyCells.length); i++) {
@@ -519,9 +525,9 @@ export default function BlockBlastClient() {
             dropped.push(target);
           }
         }
-        
+
         setFallingCells(dropped);
-        
+
         setTimeout(() => {
           setBoard(newBoard);
           setFallingCells([]);
@@ -534,79 +540,33 @@ export default function BlockBlastClient() {
     }
   };
   if (gameState === 'setup') {
-    return (
-      <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)] relative">
-          <button
-            onClick={() => router.push(exitRoute)}
-            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
-            title={exitLabel}
-          >
-            X
-          </button>
-          <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[#8b5cf6]">Block Blast</h2>
-          <p className="text-xl font-black mb-4 md:mb-8 text-[var(--ink)]">Xếp Hình Sinh Tồn</p>
-          
-          {highScore > 0 && (
-            <div className="mb-6 p-4 border-[3px] border-[var(--line)] bg-[var(--yellow)] rounded-xl shadow-[4px_4px_0_var(--ink)] inline-block">
-              <span className="block text-sm font-black uppercase text-[var(--ink)]">Kỷ Lục Cao Nhất</span>
-              <span className="block text-3xl font-black text-[var(--red)]">{highScore}</span>
-            </div>
-          )}
-          
-          <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
-            <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
-            <ul className="font-bold text-sm space-y-2">
-              <li>Kéo thả gạch vào bàn cờ để ăn điểm.</li>
-              <li>Xếp xong 3 khối gạch sẽ phải trả lời từ vựng.</li>
-              <li>Trả lời đúng: Được cấp gạch mới.</li>
-              <li>Trả lời sai: Bị rớt "gạch chết" không thể xóa.</li>
-              <li>Không còn chỗ xếp gạch = GAME OVER.</li>
-            </ul>
-          </div>
-
-          <select 
-            value={selectedLevel}
-            onChange={(e) => setSelectedLevel(e.target.value)}
-            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_#8b5cf6] transition-shadow appearance-none cursor-pointer text-center text-lg mb-8"
-          >
-            <option value="all">Mọi từ vựng</option>
-            {LEVELS.map(l => <option key={l} value={l}>Trình độ {l}</option>)}
-          </select>
-
-          <button onClick={startGame} className="w-full btn-brutal bg-[#8b5cf6] text-white py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] mb-4">
-            VÀO XẾP HÌNH
-          </button>
-        </div>
-      </div>
-    );
+    return <PracticeSetup mode="blockblast" title="Xếp hình" rules={['Kéo khối vào bàn cờ để ghi điểm.','Xếp hết 3 khối rồi trả lời câu hỏi từ vựng.','Trả lời sai sẽ thêm ô bị chặn. Hết chỗ thì kết thúc.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} highScore={highScore} />;
   }
 
   return (
     <div className="max-w-md mx-auto pt-4 pb-24 md:py-8 px-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl shrink-0 gap-4 w-full">
+      <div className="flex justify-between items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border border-[var(--line)] rounded-xl shrink-0 gap-4 w-full">
         <div className="flex-1 flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-          <div className="text-xl md:text-2xl font-black text-[var(--ink)]">
+          <div className="text-xl md:text-2xl font-semibold text-[var(--ink)]">
             Điểm: <span className="text-[var(--blue)]">{score}</span>
           </div>
           {highScore > 0 && (
-            <div className="text-sm font-bold text-[var(--muted)]">
+            <div className="text-sm font-semibold text-[var(--muted)]">
               Kỷ lục: {highScore}
             </div>
           )}
         </div>
-        <button 
-          onClick={() => router.push(exitRoute)} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
+        <button
+          onClick={() => router.push(exitRoute)}
+          className="w-8 h-8 md:w-10 md:h-10 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
           title="Thoát game"
-        >
-          X
-        </button>
+         aria-label="Thoát game">
+          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
       </div>
 
       {/* Board */}
-      <div className={`relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none shadow-[8px_8px_0_var(--ink)] flex-shrink-0 touch-none ${isBumped ? 'animate-[bump_0.15s_ease-in-out]' : ''}`}>
+      <div className={`relative panel p-2 md:p-4 mb-6 bg-[var(--line)] border-none flex-shrink-0 touch-none ${isBumped ? 'animate-[bump_0.15s_ease-in-out]' : ''}`}>
         <div id="block-blast-grid" className="grid grid-cols-8 gap-1 bg-[var(--line)] w-fit mx-auto relative">
           {board.map((row, r) => (
             row.map((cell, c) => {
@@ -614,17 +574,11 @@ export default function BlockBlastClient() {
               const previewColor = dragState?.shape.color;
               const isClearing = clearingCells.some(cell => cell.r === r && cell.c === c);
               const isFalling = fallingCells.some(cell => cell.r === r && cell.c === c);
-              
+
               return (
-                <div 
+                <div
                   key={`${r}-${c}`}
-                  className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-sm border-2 transition-all duration-200 ${
-                    isClearing ? 'bg-white border-white scale-95 animate-[clearFlash_0.25s_ease-out] z-10 shadow-[0_0_15px_rgba(255,255,255,0.8)]' :
-                    isFalling ? 'bg-[var(--ink)] border-[var(--ink)] animate-[fallDown_0.6s_ease-out] flex items-center justify-center after:content-["X"] after:text-red-500 after:font-black' :
-                    cell === 1 ? 'bg-[var(--blue)] border-[rgba(0,0,0,0.2)] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]' : 
-                    cell === 2 ? 'bg-[var(--ink)] border-[var(--ink)] shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center after:content-["X"] after:text-gray-500 after:font-black' : 
-                    'bg-[#2d3748] border-[#1a202c]'
-                  }`}
+                  className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-sm border transition-all duration-200 ${ isClearing ? 'bg-[var(--paper)] border-white scale-95 animate-[clearFlash_0.25s_ease-out] z-10 ' : isFalling ? 'bg-[var(--ink)] border-[var(--ink)] animate-[fallDown_0.6s_ease-out] flex items-center justify-center after:content-["X"] after:text-red-500 after:font-semibold' : cell === 1 ? 'bg-[var(--blue)] border-[rgba(0,0,0,0.2)] ' : cell === 2 ? 'bg-[var(--ink)] border-[var(--ink)] flex items-center justify-center after:content-["X"] after:text-gray-500 after:font-semibold' : 'bg-[#2d3748] border-[#1a202c]' }`}
                   style={isPreview ? {
                     backgroundColor: previewColor,
                     opacity: 0.35,
@@ -640,7 +594,7 @@ export default function BlockBlastClient() {
         {/* Particles Overlay */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
           {particles.map(p => (
-            <div 
+            <div
               key={p.id}
               className="absolute w-2.5 h-2.5 rounded-sm border border-black/30 shadow-sm"
               style={{
@@ -656,8 +610,8 @@ export default function BlockBlastClient() {
         {/* Combo Text Pop-up Overlay */}
         {comboText && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-            <div className="bg-[var(--yellow)] border-[4px] border-[var(--ink)] shadow-[6px_6px_0_var(--ink)] px-6 py-3 rounded-xl rotate-[-5deg] animate-[comboPop_0.6s_ease-out]">
-              <span className="text-2xl md:text-3xl font-black text-[var(--ink)] uppercase tracking-wider">{comboText}</span>
+            <div className="bg-[var(--yellow)] border border-[var(--ink)] px-6 py-3 rounded-xl animate-[comboPop_0.6s_ease-out]">
+              <span className="text-2xl md:text-3xl font-semibold text-[var(--ink)] ">{comboText}</span>
             </div>
           </div>
         )}
@@ -665,33 +619,23 @@ export default function BlockBlastClient() {
         {/* Vocab Overlay */}
         {gameState === 'vocab' && questions.length > 0 && (
           <div className={`fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-4 ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
-            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--yellow)] w-full max-w-md max-h-[90vh] flex flex-col relative pt-10 animate-[comboPop_0.3s_ease-out]">
+            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border border-[var(--ink)] w-full max-w-md max-h-[90vh] flex flex-col relative pt-10 animate-[comboPop_0.3s_ease-out]">
               <div className="absolute top-4 right-4">
                 <SaveToCollection wordId={questions[currentQIndex].id} wordText={questions[currentQIndex].word} />
               </div>
-              <span className="text-[var(--red)] font-black uppercase text-sm mb-2 block text-center shrink-0 tracking-widest animate-pulse">Hết Gạch! Hãy trả lời:</span>
-              <h2 className="text-3xl md:text-4xl font-serif font-black mb-4 text-[var(--ink)] text-center shrink-0">{questions[currentQIndex].word}</h2>
+              <span className="text-[var(--red)] font-semibold text-sm mb-2 block text-center shrink-0 animate-pulse">Hết Gạch! Hãy trả lời:</span>
+              <h2 className="text-3xl md:text-4xl font-sans font-semibold mb-4 text-[var(--ink)] text-center shrink-0">{questions[currentQIndex].word}</h2>
               <div className="grid grid-cols-1 gap-3 overflow-y-auto p-1">
                 {questions[currentQIndex].choices.map((choice, idx) => {
                   const { en, vi } = parseMeaning(choice, questions[currentQIndex].pos || '');
                   return (
-                    <div 
+                    <div
                       key={idx}
                       onClick={() => handleVocabAnswer(idx)}
-                      className={`btn-brutal py-3 px-4 text-sm text-left block w-full h-auto min-h-[60px] ${
-                        !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] cursor-pointer group' :
-                        (idx === questions[currentQIndex].correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' :
-                        (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50'))
-                      }`}
+                      className={`btn-brutal py-3 px-4 text-sm text-left block w-full h-auto min-h-[60px] ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] cursor-pointer group' : (idx === questions[currentQIndex].correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
                     >
-                      <span className={`block font-black text-base leading-tight mb-1 ${
-                        !answerStatus ? 'text-[var(--ink)] group-hover:text-black' :
-                        (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-black' : 'text-[var(--ink)]')
-                      }`}>{en}</span>
-                      {vi && <span className={`block font-bold text-xs ${
-                        !answerStatus ? 'text-[var(--muted)] group-hover:text-black/80' :
-                        (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-black/80' : 'text-[var(--muted)]')
-                      }`}>{vi}</span>}
+                      <span className={`block font-semibold text-base leading-tight mb-1 ${ !answerStatus ? 'text-[var(--ink)] group-hover:text-[var(--ink)]' : (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]' : 'text-[var(--ink)]') }`}>{en}</span>
+                      {vi && <span className={`block font-semibold text-xs ${ !answerStatus ? 'text-[var(--muted)] group-hover:text-[var(--ink)]/80' : (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]/80' : 'text-[var(--muted)]') }`}>{vi}</span>}
                     </div>
                   );
                 })}
@@ -705,30 +649,25 @@ export default function BlockBlastClient() {
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl">
             <button
               onClick={() => router.push(exitRoute)}
-              className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+              className="absolute top-4 right-4 w-8 h-8 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
               title={exitLabel}
-            >
-              X
-            </button>
-            <h2 className="text-5xl font-serif font-black text-[var(--red)] mb-4 animate-[comboPop_0.4s_ease-out]">GAME OVER</h2>
-            <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] rounded-xl mb-6 text-center w-full max-w-[200px] shadow-[4px_4px_0_var(--ink)]">
-              <span className="block text-sm font-bold text-[var(--muted)] uppercase">Điểm của bạn</span>
-              <span className="block text-4xl font-black text-[var(--blue)]">{score}</span>
+             aria-label="Đóng">
+              <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
+            <h2 className="text-5xl font-sans font-semibold text-[var(--red)] mb-4 animate-[comboPop_0.4s_ease-out]">GAME OVER</h2>
+            <div className="bg-[var(--paper)] p-4 border border-[var(--line)] rounded-xl mb-6 text-center w-full max-w-[200px] ">
+              <span className="block text-sm font-semibold text-[var(--muted)] ">Điểm của bạn</span>
+              <span className="block text-4xl font-semibold text-[var(--blue)]">{score}</span>
               {score >= highScore && score > 0 && (
-                <span className="inline-flex items-center gap-1 justify-center mt-2 text-xs font-black text-[var(--red)] animate-pulse uppercase w-full">
-                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
+                <span className="inline-flex items-center gap-1 justify-center mt-2 text-xs font-semibold text-[var(--red)] animate-pulse w-full">
+                  <TrophyRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
                   <span>Kỷ lục mới!</span>
-                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
+                  <TrophyRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
                 </span>
               )}
             </div>
-            <button 
+            <button
               onClick={() => setGameState('setup')}
-              className="btn-brutal bg-[var(--yellow)] w-full shadow-[3px_3px_0_var(--ink)]"
+              className="btn-brutal bg-[var(--yellow)] w-full "
             >
               Chơi Lại
             </button>
@@ -740,7 +679,7 @@ export default function BlockBlastClient() {
         {shapes.map((shape, idx) => {
           const isDraggingThis = dragState?.trayIdx === idx;
           return (
-            <div 
+            <div
               key={shape ? shape.id : `empty-${idx}`}
               onPointerDown={(e) => {
                 if (shape && gameState === 'playing') {
@@ -756,22 +695,20 @@ export default function BlockBlastClient() {
                   });
                 }
               }}
-              className={`flex-1 h-full border-2 border-dashed border-[var(--line)]/20 rounded-xl flex items-center justify-center p-2 transition-transform bg-[var(--bg)] ${
-                !shape ? 'opacity-20 pointer-events-none' : 'cursor-grab active:cursor-grabbing hover:-translate-y-0.5'
-              } ${isDraggingThis ? 'opacity-0' : ''}`}
+              className={`flex-1 h-full border border-solid border-[var(--line)]/20 rounded-xl flex items-center justify-center p-2 transition-transform bg-[var(--bg)] ${ !shape ? 'opacity-20 pointer-events-none' : 'cursor-grab active:cursor-grabbing ' } ${isDraggingThis ? 'opacity-0' : ''}`}
             >
               {shape && (
-                <div 
-                  className="grid gap-[2px]" 
+                <div
+                  className="grid gap-[2px]"
                   style={{
                     gridTemplateColumns: `repeat(${shape.grid[0].length}, minmax(0, 1fr))`,
                     gridTemplateRows: `repeat(${shape.grid.length}, minmax(0, 1fr))`
                   }}
                 >
-                  {shape.grid.map((r, ri) => 
+                  {shape.grid.map((r, ri) =>
                     r.map((val, ci) => (
-                      <div 
-                        key={`${ri}-${ci}`} 
+                      <div
+                        key={`${ri}-${ci}`}
                         className="w-4 h-4 md:w-6 md:h-6 rounded-[2px]"
                         style={{
                           backgroundColor: val ? shape.color : 'transparent',
@@ -789,7 +726,7 @@ export default function BlockBlastClient() {
 
       {/* Dragging Overlay */}
       {dragState && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: dragState.currY,
@@ -799,17 +736,17 @@ export default function BlockBlastClient() {
             zIndex: 100
           }}
         >
-          <div 
-            className="grid gap-[4px]" 
+          <div
+            className="grid gap-[4px]"
             style={{
               gridTemplateColumns: `repeat(${dragState.shape.grid[0].length}, minmax(0, 1fr))`,
               gridTemplateRows: `repeat(${dragState.shape.grid.length}, minmax(0, 1fr))`
             }}
           >
-            {dragState.shape.grid.map((r, ri) => 
+            {dragState.shape.grid.map((r, ri) =>
               r.map((val, ci) => (
-                <div 
-                  key={`${ri}-${ci}`} 
+                <div
+                  key={`${ri}-${ci}`}
                   className="w-10 h-10 md:w-12 md:h-12 rounded-[2px] shadow-lg"
                   style={{
                     backgroundColor: val ? dragState.shape.color : 'transparent',

@@ -5,6 +5,9 @@ const scriptSrc = `script-src 'self'${isDev ? " 'unsafe-eval'" : ""} 'unsafe-inl
 const cspValue = `default-src 'self'; ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.googleusercontent.com; font-src 'self' data:; connect-src 'self'; media-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self' accounts.google.com; frame-ancestors 'none';`;
 
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ['@fluentui/react-components', '@fluentui/react-icons'],
+  },
   poweredByHeader: false,
   devIndicators: false,
   async headers() {

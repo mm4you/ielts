@@ -1,3 +1,5 @@
+import AppLoading from '@/components/AppLoading';
+import LoadingState from '@/components/LoadingState';
 import { Suspense } from 'react';
 import BlockBlastWrapper from './BlockBlastWrapper';
 import { Metadata } from 'next';
@@ -9,13 +11,7 @@ export const metadata: Metadata = {
 
 export default function BlockBlastPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center">
-          <p className="text-xl font-bold animate-pulse">Đang tải xếp hình...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<AppLoading contained />}>
       <BlockBlastWrapper />
     </Suspense>
   );

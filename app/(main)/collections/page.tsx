@@ -1,5 +1,16 @@
 'use client';
 
+
+
+
+import { Button, Checkbox, Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, DialogActions, Field, Input, Textarea, MessageBar } from '@fluentui/react-components';
+import { AddRegular } from '@fluentui/react-icons/svg/add';
+import { FolderRegular } from '@fluentui/react-icons/svg/folder';
+import AppLoading from '@/components/AppLoading';
+import { showToast } from '@/components/GlobalToast';
+import LoadingState from '@/components/LoadingState';
+import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
 import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
@@ -39,7 +50,7 @@ function CollectionsContent() {
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loadingCollections, setLoadingCollections] = useState(true);
-  
+
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [words, setWords] = useState<Word[]>([]);
   const [loadingWords, setLoadingWords] = useState(false);
@@ -205,7 +216,7 @@ function CollectionsContent() {
     try {
       const url = modalMode === 'create' ? '/api/collections' : `/api/collections/${targetCollectionId}`;
       const method = modalMode === 'create' ? 'POST' : 'PATCH';
-      
+
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -220,7 +231,7 @@ function CollectionsContent() {
         const updated = await res.json();
         setIsModalOpen(false);
         fetchCollections();
-        
+
         // If editing currently selected collection, update details
         if (modalMode === 'edit' && selectedCollection?.id === targetCollectionId) {
           setSelectedCollection(updated);
@@ -236,6 +247,8 @@ function CollectionsContent() {
       setSubmitting(false);
     }
   };
+
+  const notifyError = (message: string) => showToast(message, false);
 
   // Handle Delete Collection
   const handleDeleteCollection = async (col: Collection) => {
@@ -254,18 +267,18 @@ function CollectionsContent() {
           setSelectedCollection(null);
         }
       } else {
-        alert('Không thể xóa bộ sưu tập, vui lòng thử lại');
+        notifyError('Không thể xóa bộ sưu tập, vui lòng thử lại');
       }
     } catch (err) {
       console.error(err);
-      alert('Lỗi kết nối mạng');
+      notifyError('Lỗi kết nối mạng');
     }
   };
 
   // Handle Remove Word from Collection
   const handleRemoveWord = async (wordId: number, wordText: string) => {
     if (!selectedCollection) return;
-    
+
     try {
       const res = await fetch(`/api/collections/${selectedCollection.id}/words/${wordId}`, {
         method: 'DELETE',
@@ -275,26 +288,26 @@ function CollectionsContent() {
         // Optimistically update list
         setWords(prev => prev.filter(w => w.id !== wordId));
         // Update collection list count
-        setCollections(prev => 
-          prev.map(c => 
-            c.id === selectedCollection.id 
-              ? { ...c, _count: { words: Math.max((c._count?.words || 1) - 1, 0) } } 
+        setCollections(prev =>
+          prev.map(c =>
+            c.id === selectedCollection.id
+              ? { ...c, _count: { words: Math.max((c._count?.words || 1) - 1, 0) } }
               : c
           )
         );
       } else {
-        alert(`Lỗi khi gỡ từ "${wordText}"`);
+        notifyError(`Lỗi khi gỡ từ "${wordText}"`);
       }
     } catch (err) {
       console.error(err);
-      alert('Lỗi kết nối mạng');
+      notifyError('Lỗi kết nối mạng');
     }
   };
 
   if (status === 'loading') {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <p className="text-xl font-bold font-mono animate-pulse text-[var(--ink)]">[ ĐANG TẢI DỮ LIỆU... ]</p>
+        <LoadingState label="Đang tải dữ liệu" />
       </div>
     );
   }
@@ -302,14 +315,14 @@ function CollectionsContent() {
   if (status === 'unauthenticated') {
     return (
       <div className="max-w-md mx-auto px-4 py-20 text-center mt-12">
-        <div className="panel bg-[var(--paper)] p-8 shadow-[8px_8px_0_var(--line)] border-[3px] border-[var(--line)]">
-          <h2 className="text-3xl font-serif font-black uppercase mb-4 text-[var(--ink)]">Bộ Sưu Tập</h2>
-          <p className="text-sm font-bold text-[var(--muted)] mb-8">
+        <div className="panel bg-[var(--paper)] p-8 border border-[var(--line)]">
+          <h2 className="text-3xl font-sans font-semibold mb-4 text-[var(--ink)]">Bộ Sưu Tập</h2>
+          <p className="text-sm font-semibold text-[var(--muted)] mb-8">
             Đăng nhập để tạo và quản lý các danh mục từ vựng cá nhân, lưu giữ các từ khó và luyện tập riêng biệt.
           </p>
           <button
             onClick={() => signIn('google')}
-            className="btn-brutal bg-[var(--blue)] text-white w-full py-3 text-sm font-bold uppercase shadow-[4px_4px_0_var(--line)] hover:translate-y-0.5"
+            className="btn-brutal bg-[var(--blue)] text-white w-full py-3 text-sm font-semibold "
           >
             Đăng Nhập Bằng Google
           </button>
@@ -329,51 +342,25 @@ function CollectionsContent() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 mt-12">
-      {/* Page Header */}
-      <div className="mb-8 border-b-4 border-[var(--line)] pb-4">
-        <div className="flex items-center justify-between w-full gap-4">
-          <h1 className="text-4xl md:text-5xl font-serif font-black uppercase text-[var(--ink)] tracking-tight">
-            Bộ Sưu Tập
-          </h1>
-          <button 
-            onClick={() => router.push('/')} 
-            className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base"
-            title="Về Trang Chủ"
-          >
-            X
-          </button>
-        </div>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2">
-          <p className="text-[var(--muted)] font-bold">
-            Quản lý kho từ vựng cá nhân và bắt đầu ôn luyện
-          </p>
-          <button
-            onClick={() => openModal('create')}
-            className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-6 py-2.5 font-bold text-sm uppercase shadow-[4px_4px_0_var(--line)] hover:-translate-y-0.5 self-start md:self-auto"
-          >
-            [ + Tạo Bộ Mới ]
-          </button>
-        </div>
-      </div>
-
+    <div className="collections-page">
+      <header className="page-heading"><div><h1>Bộ sưu tập</h1><p>{collections.length} bộ từ vựng</p></div><Button appearance="primary" icon={<AddRegular />} onClick={() => openModal('create')}>Tạo bộ sưu tập</Button></header>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left column: Collections list */}
         <div className="lg:col-span-5 space-y-6">
-          <h2 className="text-xl font-bold font-mono uppercase border-b-2 border-dashed border-[var(--line)] pb-2 text-[var(--ink)]">
-            Danh sách bộ ({collections.length})
+          <h2 className="text-xl font-semibold font-sans border-b border-solid border-[var(--line)] pb-2 text-[var(--ink)]">
+            Bộ từ vựng ({collections.length})
           </h2>
 
           {loadingCollections ? (
-            <p className="font-mono text-sm opacity-50">[ Đang tải các bộ sưu tập... ]</p>
+            <LoadingState label="Đang tải các bộ sưu tập" />
           ) : collections.length === 0 ? (
-            <div className="panel p-6 text-center bg-[var(--bg)] border-2 border-dashed border-[var(--line)] shadow-none">
-              <p className="font-bold text-[var(--muted)] mb-4">Bạn chưa tạo bộ sưu tập nào.</p>
+            <div className="panel p-6 text-center bg-[var(--bg)] border border-solid border-[var(--line)] shadow-none">
+              <p className="font-semibold text-[var(--muted)] mb-4">Bạn chưa tạo bộ sưu tập nào.</p>
               <button
                 onClick={() => openModal('create')}
-                className="text-sm font-bold text-[var(--blue)] underline font-mono"
+                className="text-sm font-semibold text-[var(--blue)] underline font-sans"
               >
-                Tạo sổ tay từ vựng đầu tiên ngay
+                Tạo bộ sưu tập
               </button>
             </div>
           ) : (
@@ -383,63 +370,55 @@ function CollectionsContent() {
                 return (
                   <div
                     key={col.id}
-                    onClick={() => setSelectedCollection(prev => prev?.id === col.id ? null : col)}
-                    className={`panel p-5 cursor-pointer transition-all border-[3px] border-[var(--line)] flex flex-col justify-between ${
-                      isActive
-                        ? 'bg-[var(--paper)] shadow-[6px_6px_0_var(--blue)] border-[var(--blue)] -translate-y-1'
-                        : 'bg-[var(--paper)] shadow-[4px_4px_0_var(--line)] hover:shadow-[6px_6px_0_var(--line)] hover:-translate-y-0.5'
-                    }`}
+                    role="button" tabIndex={0} aria-pressed={isActive} onKeyDown={e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setSelectedCollection(prev => prev?.id === col.id ? null : col); } }} onClick={() => setSelectedCollection(prev => prev?.id === col.id ? null : col)}
+                    className={`panel p-5 cursor-pointer transition-all border border-[var(--line)] flex flex-col justify-between ${ isActive ? 'bg-[var(--brand-soft)] border-[var(--blue)]' : 'bg-[var(--paper)] ' }`}
                   >
                     <div>
                       <div className="flex justify-between items-start gap-2 mb-2">
-                        <h3 className="text-xl font-extrabold text-[var(--ink)] line-clamp-1">
+                        <h3 className="text-xl font-semibold text-[var(--ink)] line-clamp-1">
                           {col.name}
                         </h3>
-                        <span className={`font-mono text-[10px] px-2.5 py-1 rounded-md border-2 border-[var(--line)] font-black uppercase shadow-[1.5px_1.5px_0_var(--line)] tracking-wider ${
-                          col.isPublic 
-                            ? 'bg-[#16a34a] text-white' 
-                            : 'bg-[#dc2626] text-white'
-                        }`}>
+                        <span className={`font-sans text-[10px] px-2.5 py-1 rounded-md border border-[var(--line)] font-semibold ${ col.isPublic ? 'bg-[var(--brand-soft)] text-[var(--blue)]' : 'bg-[var(--bg)] text-[var(--muted)]' }`}>
                           {col.isPublic ? 'Công khai' : 'Riêng tư'}
                         </span>
                       </div>
-                      
+
                       {col.description && (
                         <p className="text-xs text-[var(--muted)] font-medium mb-4 line-clamp-2">
                           {col.description}
                         </p>
                       )}
 
-                      <p className="text-xs font-mono font-bold text-[var(--blue)] mb-4">
+                      <p className="text-xs font-sans font-semibold text-[var(--blue)] mb-4">
                         Số lượng: {col._count?.words || 0} từ
                       </p>
                     </div>
 
                     {/* Quick Study Modes & Metadata Actions */}
-                    <div className="border-t border-dashed border-[var(--line)] pt-3 flex flex-wrap gap-2 items-center justify-between">
+                    <div className="border-t border-solid border-[var(--line)] pt-3 flex flex-wrap gap-2 items-center justify-between">
                       {/* Study Buttons */}
                       <div className="flex flex-wrap gap-1.5" onClick={e => e.stopPropagation()}>
                         <Link
                           href={`/review?collectionId=${col.id}`}
-                          className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-[var(--blue)] text-white hover:brightness-110 shadow-[1px_1px_0_var(--line)] border border-[var(--line)]"
+                          className="text-[10px] font-sans font-semibold px-2 py-1 rounded bg-[var(--blue)] text-white hover:brightness-110 border border-[var(--line)]"
                         >
                           Ôn tập
                         </Link>
                         <Link
                           href={`/speedrun?collectionId=${col.id}`}
-                          className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-[var(--yellow)] text-[var(--ink)] hover:brightness-105 shadow-[1px_1px_0_var(--line)] border border-[var(--line)]"
+                          className="text-[10px] font-sans font-semibold px-2 py-1 rounded bg-[var(--yellow)] text-[var(--ink)] hover:brightness-105 border border-[var(--line)]"
                         >
                           Tốc chiến
                         </Link>
                         <Link
                           href={`/sniper?collectionId=${col.id}`}
-                          className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-[var(--red)] text-white hover:brightness-110 shadow-[1px_1px_0_var(--line)] border border-[var(--line)]"
+                          className="text-xs font-sans font-medium px-2 py-1 rounded bg-[var(--bg)] text-[var(--ink)] hover:brightness-110 border border-[var(--line)]"
                         >
                           Thiện xạ
                         </Link>
                         <Link
                           href={`/match?collectionId=${col.id}`}
-                          className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-[var(--green)] text-white hover:brightness-110 shadow-[1px_1px_0_var(--line)] border border-[var(--line)]"
+                          className="text-xs font-sans font-medium px-2 py-1 rounded bg-[var(--bg)] text-[var(--ink)] hover:brightness-110 border border-[var(--line)]"
                         >
                           Ghép cặp
                         </Link>
@@ -449,15 +428,15 @@ function CollectionsContent() {
                       <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => openModal('edit', col)}
-                          className="text-[10px] font-mono font-bold text-[var(--blue)] hover:underline px-1 py-1"
+                          className="text-[10px] font-sans font-semibold text-[var(--blue)] hover:underline px-1 py-1"
                         >
-                          [ Sửa ]
+                          Sửa
                         </button>
                         <button
                           onClick={() => handleDeleteCollection(col)}
-                          className="text-[10px] font-mono font-bold text-[var(--red)] hover:underline px-1 py-1"
+                          className="text-[10px] font-sans font-semibold text-[var(--red)] hover:underline px-1 py-1"
                         >
-                          [ Xóa ]
+                          Xóa
                         </button>
                       </div>
                     </div>
@@ -471,18 +450,14 @@ function CollectionsContent() {
         {/* Right column: Selected collection words detail */}
         <div className="lg:col-span-7 space-y-6">
           {selectedCollection ? (
-            <div className="panel bg-[var(--paper)] p-6 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)]">
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-2 border-dashed border-[var(--line)] pb-4 mb-4 w-full">
+            <div className="panel bg-[var(--paper)] p-6 border border-[var(--line)] ">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-solid border-[var(--line)] pb-4 mb-4 w-full">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 flex-wrap">
-                    <h2 className="text-2xl font-black text-[var(--ink)] uppercase truncate">
+                    <h2 className="text-2xl font-semibold text-[var(--ink)] truncate">
                       {selectedCollection.name}
                     </h2>
-                    <span className={`font-mono text-[10px] px-2.5 py-1 rounded-md border-2 border-[var(--line)] shrink-0 font-black uppercase shadow-[1.5px_1.5px_0_var(--line)] tracking-wider ${
-                      selectedCollection.isPublic 
-                        ? 'bg-[#16a34a] text-white' 
-                        : 'bg-[#dc2626] text-white'
-                    }`}>
+                    <span className={`font-sans text-[10px] px-2.5 py-1 rounded-md border border-[var(--line)] shrink-0 font-semibold ${ selectedCollection.isPublic ? 'bg-[var(--brand-soft)] text-[var(--blue)]' : 'bg-[var(--bg)] text-[var(--muted)]' }`}>
                       {selectedCollection.isPublic ? 'Công khai' : 'Riêng tư'}
                     </span>
                   </div>
@@ -492,18 +467,18 @@ function CollectionsContent() {
                     </p>
                   )}
                 </div>
-                
+
                 {/* Mode indicators inside details panel */}
                 <div className="flex flex-wrap gap-2">
                   <Link
                     href={`/review?collectionId=${selectedCollection.id}`}
-                    className="btn-brutal bg-[var(--blue)] text-white text-xs px-3 py-1.5 font-bold uppercase shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5"
+                    className="btn-brutal bg-[var(--blue)] text-white text-xs px-3 py-1.5 font-semibold "
                   >
                     Ôn tập
                   </Link>
                   <Link
                     href={`/speedrun?collectionId=${selectedCollection.id}`}
-                    className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-xs px-3 py-1.5 font-bold uppercase shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5"
+                    className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-xs px-3 py-1.5 font-semibold "
                   >
                     Tốc chiến
                   </Link>
@@ -517,23 +492,23 @@ function CollectionsContent() {
                   placeholder="Tìm từ vựng trong bộ này..."
                   value={wordSearchQuery}
                   onChange={(e) => setWordSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[2px_2px_0_var(--blue)] transition-shadow placeholder-gray-400 font-mono text-sm"
+                  className="w-full px-4 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none transition-shadow placeholder-gray-400 font-sans text-sm"
                 />
               </div>
 
               {/* Word List */}
               {loadingWords ? (
-                <p className="font-mono text-sm opacity-50 py-10 text-center">[ Đang tải danh sách từ vựng... ]</p>
+                <LoadingState label="Đang tải danh sách từ vựng" />
               ) : words.length === 0 ? (
-                <div className="py-12 text-center text-[var(--muted)] font-bold">
+                <div className="py-12 text-center text-[var(--muted)] font-semibold">
                   Chưa có từ vựng nào trong bộ sưu tập này.
                   <br />
-                  <Link href="/library" className="text-[var(--blue)] underline font-mono text-xs mt-2 block">
+                  <Link href="/library" className="text-[var(--blue)] underline font-sans text-xs mt-2 block">
                     Đến Thư Viện để thêm từ
                   </Link>
                 </div>
               ) : filteredWords.length === 0 ? (
-                <p className="py-8 text-center text-xs font-bold text-[var(--muted)]">
+                <p className="py-8 text-center text-xs font-semibold text-[var(--muted)]">
                   Không tìm thấy từ vựng khớp với "{wordSearchQuery}"
                 </p>
               ) : (
@@ -543,13 +518,13 @@ function CollectionsContent() {
                     return (
                       <div
                         key={word.id}
-                        className="panel p-3 border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] bg-[var(--paper)] hover:-translate-y-0.5 transition-all flex items-center justify-between gap-4"
+                        className="panel p-3 border border-[var(--line)] bg-[var(--paper)] transition-all flex items-center justify-between gap-4"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <Link
                               href={`/word/${word.id}`}
-                              className="font-bold text-[var(--ink)] hover:text-[var(--blue)] hover:underline text-lg truncate"
+                              className="font-semibold text-[var(--ink)] hover:text-[var(--blue)] hover:underline text-lg truncate"
                             >
                               {word.word}
                             </Link>
@@ -559,39 +534,31 @@ function CollectionsContent() {
                                 e.stopPropagation();
                                 handlePlayAudio(word.id, word.word);
                               }}
-                              className={`p-1 rounded-md border-2 border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none relative z-20
-                                ${playingWordId === word.id 
-                                  ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' 
-                                  : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] shadow-[1.5px_1.5px_0_var(--line)] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none'
-                                }`}
+                              className={`p-1 rounded-md border border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none relative z-20 ${playingWordId === word.id ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] active:shadow-none' }`}
                               title="Phát âm"
                             >
                               {playingWordId === word.id ? (
-                                <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                                </svg>
+                                <Speaker2Regular aria-hidden="true" className="w-3.5 h-3.5 " />
                               ) : (
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
-                                </svg>
+                                <Speaker2Regular aria-hidden="true" className="w-3.5 h-3.5" />
                               )}
                             </button>
                             {word.ipa && (
-                              <span className="text-xs text-[var(--muted)] font-mono">
+                              <span className="text-xs text-[var(--muted)] font-sans">
                                 {word.ipa}
                               </span>
                             )}
-                            <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[1px_1px_0_var(--line)] font-black text-[10px] px-2 py-0.5 rounded-md uppercase shrink-0">
+                            <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-[10px] px-2 py-0.5 rounded-md shrink-0">
                               {word.level}
                             </span>
                           </div>
                           <div className="text-xs text-[var(--muted)] font-medium mt-1 truncate">
                             {pos && (
-                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-1.5 py-0.5 rounded-md font-mono text-[9px] font-extrabold uppercase mr-1.5 shadow-[1px_1px_0_var(--line)]">
+                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-1.5 py-0.5 rounded-md font-sans text-[9px] font-semibold mr-1.5 ">
                                 {pos}
                               </span>
                             )}
-                            <span className="font-bold text-[var(--ink)]">{en}</span>
+                            <span className="font-semibold text-[var(--ink)]">{en}</span>
                             {vi && <span> — {vi}</span>}
                           </div>
                         </div>
@@ -599,7 +566,7 @@ function CollectionsContent() {
                         {/* Remove Action */}
                         <button
                           onClick={() => handleRemoveWord(word.id, word.word)}
-                          className="font-mono text-xs text-[var(--red)] font-bold border border-[var(--red)] px-2 py-1 rounded bg-red-50 hover:bg-red-100 shadow-[1px_1px_0_var(--red)] select-none cursor-pointer"
+                          className="font-sans text-xs text-[var(--red)] font-semibold border border-[var(--red)] px-2 py-1 rounded bg-red-50 hover:bg-red-100 select-none cursor-pointer"
                         >
                           Gỡ
                         </button>
@@ -610,99 +577,22 @@ function CollectionsContent() {
               )}
             </div>
           ) : (
-            <div className="panel bg-[var(--paper)] p-12 border-2 border-dashed border-[var(--line)] text-center text-[var(--muted)] font-bold shadow-[4px_4px_0_var(--line)]">
+            <div className="panel bg-[var(--paper)] p-12 border border-solid border-[var(--line)] text-center text-[var(--muted)] font-semibold ">
               Chọn một bộ sưu tập để hiển thị danh sách từ vựng chi tiết và bắt đầu ôn luyện.
             </div>
           )}
         </div>
       </div>
 
-      {/* Create / Edit Collection Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="panel max-w-md w-full bg-[var(--paper)] p-6 border-[3px] border-[var(--line)] shadow-[8px_8px_0px_#000] relative">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-xs font-mono font-bold text-[var(--muted)] hover:text-[var(--ink)] border border-[var(--line)] px-2 py-0.5 rounded shadow-[1px_1px_0_var(--line)] bg-white cursor-pointer select-none"
-            >
-              [ Đóng ]
-            </button>
+      <Dialog open={isModalOpen} onOpenChange={(_,data)=>{if(!submitting)setIsModalOpen(data.open);}}><DialogSurface className="collection-dialog"><DialogBody><DialogTitle action={<Button appearance="subtle" aria-label="Đóng" icon={<UiDismissRegular />} disabled={submitting} onClick={()=>setIsModalOpen(false)} />}>{modalMode==='create'?'Tạo bộ sưu tập':'Sửa bộ sưu tập'}</DialogTitle><DialogContent><form id="collection-form" onSubmit={handleFormSubmit} className="collection-fields"><Field label="Tên bộ sưu tập" required><Input value={formName} maxLength={50} required onChange={(_,data)=>setFormName(data.value)} placeholder="Ví dụ: IELTS Writing" /></Field><Field label="Mô tả" hint="Không bắt buộc"><Textarea value={formDescription} maxLength={150} rows={3} onChange={(_,data)=>setFormDescription(data.value)} /></Field><Checkbox label="Công khai bộ sưu tập" checked={formIsPublic} onChange={(_,data)=>setFormIsPublic(data.checked===true)} />{formError&&<MessageBar intent="error">{formError}</MessageBar>}</form></DialogContent><DialogActions><Button disabled={submitting} onClick={()=>setIsModalOpen(false)}>Hủy</Button><Button appearance="primary" type="submit" form="collection-form" disabled={submitting}>{submitting?'Đang lưu':'Lưu'}</Button></DialogActions></DialogBody></DialogSurface></Dialog>
 
-            <h3 className="text-2xl font-serif font-black uppercase text-[var(--ink)] mb-6 border-b-2 border-dashed border-[var(--line)] pb-2">
-              {modalMode === 'create' ? 'Tạo Bộ Sưu Tập Mới' : 'Cập Nhật Bộ Sưu Tập'}
-            </h3>
-
-            <form onSubmit={handleFormSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase mb-1.5 text-[var(--ink)]">
-                  Tên Bộ Sưu Tập <span className="text-[var(--red)]">*</span>
-                </label>
-                <input
-                  type="text"
-                  maxLength={50}
-                  required
-                  placeholder="Ví dụ: Từ vựng IELTS Writing Task 1"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  className="w-full px-4 py-2 border-2 border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[2px_2px_0_var(--blue)] transition-shadow placeholder-gray-400 font-mono text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase mb-1.5 text-[var(--ink)]">
-                  Mô Tả Chi Tiết (Không bắt buộc)
-                </label>
-                <textarea
-                  maxLength={150}
-                  placeholder="Ghi chú về mục tiêu học hoặc chủ đề của bộ từ vựng..."
-                  value={formDescription}
-                  onChange={(e) => setFormDescription(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-2 border-2 border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[2px_2px_0_var(--blue)] transition-shadow placeholder-gray-400 font-mono text-sm resize-none"
-                />
-              </div>
-
-              <div className="flex items-center gap-3 py-2">
-                <input
-                  type="checkbox"
-                  id="isPublic"
-                  checked={formIsPublic}
-                  onChange={(e) => setFormIsPublic(e.target.checked)}
-                  className="w-4 h-4 border-2 border-[var(--line)] rounded accent-[var(--blue)] cursor-pointer"
-                />
-                <label htmlFor="isPublic" className="text-xs font-bold font-mono text-[var(--ink)] cursor-pointer select-none">
-                  Công khai bộ sưu tập này cho người khác xem
-                </label>
-              </div>
-
-              {formError && (
-                <p className="text-xs font-mono font-bold text-[var(--red)] py-1">
-                  {formError}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="btn-brutal bg-[var(--blue)] text-white w-full py-3 text-sm font-bold uppercase shadow-[4px_4px_0_var(--line)] hover:translate-y-0.5"
-              >
-                {submitting ? 'ĐANG LƯU...' : modalMode === 'create' ? 'TẠO BỘ SƯU TẬP' : 'LƯU THAY ĐỔI'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 export default function CollectionsPage() {
   return (
-    <Suspense fallback={
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <p className="text-xl font-bold font-mono animate-pulse text-[var(--ink)]">[ ĐANG TẢI DỮ LIỆU... ]</p>
-      </div>
-    }>
+    <Suspense fallback={<AppLoading contained />}>
       <CollectionsContent />
     </Suspense>
   );

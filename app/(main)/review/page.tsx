@@ -1,5 +1,14 @@
 'use client';
 
+
+
+
+
+import PracticeSetup from '@/components/PracticeSetup';
+import AppLoading from '@/components/AppLoading';
+import LoadingState from '@/components/LoadingState';
+import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
 import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ReviewWord, ReviewRating, RATING_LABELS, LEVELS } from '@/types';
@@ -9,13 +18,7 @@ import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 
 export default function ReviewPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center">
-          <p className="text-xl font-bold animate-pulse">Đang tải cấu hình ôn tập...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<AppLoading contained />}>
       <ReviewContent />
     </Suspense>
   );
@@ -27,7 +30,7 @@ function ReviewContent() {
   const collectionId = searchParams.get('collectionId');
   const exitRoute = collectionId ? '/collections' : '/';
   const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
-  
+
   const [words, setWords] = useState<ReviewWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMeaning, setShowMeaning] = useState(false);
@@ -169,70 +172,28 @@ function ReviewContent() {
   };
 
   if (gameState === 'setup') {
-    return (
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center relative border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)]">
-          <button 
-            onClick={() => router.push(exitRoute)} 
-            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm"
-            title={exitLabel}
-          >
-            X
-          </button>
-          <h2 className="text-3xl font-serif font-black uppercase mb-4">Ôn Tập Từ Vựng</h2>
-          <p className="text-[var(--muted)] font-bold mb-8">Bạn muốn ôn tập từ vựng ở mức độ nào?</p>
-          
-          <select 
-            value={selectedLevel}
-            onChange={(e) => setSelectedLevel(e.target.value)}
-            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-4 appearance-none cursor-pointer text-center text-lg"
-          >
-            <option value="all">Tất cả mức độ</option>
-            {LEVELS.map(l => <option key={l} value={l}>Mức độ {l}</option>)}
-          </select>
-
-          <p className="text-[var(--muted)] font-bold mb-4">Số lượng từ muốn ôn tập?</p>
-          
-          <select 
-            value={selectedLimit}
-            onChange={(e) => setSelectedLimit(e.target.value)}
-            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--blue)] transition-shadow mb-8 appearance-none cursor-pointer text-center text-lg"
-          >
-            <option value="10">10 từ</option>
-            <option value="20">20 từ</option>
-            <option value="50">50 từ</option>
-            <option value="100">100 từ</option>
-            <option value="200">200 từ</option>
-          </select>
-
-          <button onClick={fetchWords} className="w-full btn-brutal bg-[var(--green)] text-white py-4 text-xl uppercase shadow-[4px_4px_0_var(--ink)]">
-            Bắt đầu ôn tập
-          </button>
-        </div>
-      </div>
-    );
+    return <PracticeSetup mode="review" title="Ôn tập từ vựng" rules={['Xem từ và thử nhớ nghĩa trước khi lật thẻ.','Đánh giá mức độ nhớ để lên lịch ôn tiếp theo.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={fetchWords} exitRoute={exitRoute} loading={loading}><label className="setup-field">Số từ<select value={selectedLimit} onChange={e=>setSelectedLimit(e.target.value)}>{[10,20,50,100,200].map(value=><option key={value} value={String(value)}>{value} từ</option>)}</select></label></PracticeSetup>;
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-[var(--muted)] font-bold text-xl animate-pulse">Đang tải thẻ học...</p>
+        <LoadingState label="Đang tải thẻ học" />
       </div>
     );
   }
 
   if (!words || words.length === 0) {
     return (
-      <div className="panel text-center py-20 max-w-2xl mx-auto mt-10 relative border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)]">
-        <button 
-          onClick={() => router.push(exitRoute)} 
-          className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm"
+      <div className="panel text-center py-20 max-w-2xl mx-auto mt-10 relative border border-[var(--line)] ">
+        <button
+          onClick={() => router.push(exitRoute)}
+          className="absolute top-4 right-4 w-8 h-8 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm"
           title={exitLabel}
-        >
-          X
-        </button>
-        <h2 className="text-3xl font-serif mb-4">Bạn chưa đăng nhập hoặc đã học xong!</h2>
-        <p className="text-[var(--muted)] mb-8 font-bold">Vui lòng đăng nhập để theo dõi tiến trình học, hoặc khám phá thêm từ vựng mới trong Thư viện.</p>
+         aria-label="Đóng">
+          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
+        <h2 className="text-3xl font-sans mb-4">Bạn chưa đăng nhập hoặc đã học xong!</h2>
+        <p className="text-[var(--muted)] mb-8 font-semibold">Vui lòng đăng nhập để theo dõi tiến trình học, hoặc khám phá thêm từ vựng mới trong Thư viện.</p>
         <button onClick={() => router.push('/library')} className="btn-brutal bg-[var(--yellow)] w-full max-w-xs mx-auto">
           Khám phá thư viện
         </button>
@@ -245,41 +206,40 @@ function ReviewContent() {
 
   return (
     <div className="max-w-3xl mx-auto w-full px-2 md:px-4 py-4 md:py-8 min-h-[calc(100vh-80px)] flex flex-col">
-      <div className="flex justify-between font-bold mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl items-center gap-4">
+      <div className="flex justify-between font-semibold mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border border-[var(--line)] rounded-xl items-center gap-4">
         <div className="flex-1 flex justify-between items-center mr-4">
           <span>Thẻ {currentIndex + 1} / {words.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
-        <button 
-          onClick={() => router.push(exitRoute)} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
+        <button
+          onClick={() => router.push(exitRoute)}
+          className="w-8 h-8 md:w-10 md:h-10 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
           title="Thoát"
-        >
-          X
-        </button>
+         aria-label="Thoát">
+          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
       </div>
 
-      <div className="w-full h-3 md:h-4 bg-[var(--paper)] border-[3px] border-[var(--line)] rounded-full mb-4 md:mb-10 overflow-hidden shadow-[2px_2px_0_var(--line)] shrink-0">
+      <div className="w-full h-3 md:h-4 bg-[var(--paper)] border border-[var(--line)] rounded-full mb-4 md:mb-10 overflow-hidden shrink-0">
         <div
           className="h-full bg-[var(--green)] border-r-[3px] border-[var(--line)] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <div 
-        className={`panel flex-1 min-h-[250px] md:min-h-[400px] flex flex-col justify-center items-center text-center mb-4 md:mb-8 relative transition-all duration-300 ${!showMeaning ? 'cursor-pointer hover:-translate-y-2 hover:shadow-[12px_12px_0_var(--line)]' : ''}`}
+      <div
+        className={`panel flex-1 min-h-[250px] md:min-h-[400px] flex flex-col justify-center items-center text-center mb-4 md:mb-8 relative transition-all duration-300 ${!showMeaning ? 'cursor-pointer hover:-translate-y-2 ' : ''}`}
         onClick={() => { if (!showMeaning) setShowMeaning(true); }}
       >
         <div className="absolute top-4 left-4 flex gap-2">
-          <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] font-black text-[10px] px-2.5 py-0.5 rounded-md uppercase tracking-wider">{currentWord.level}</span>
+          <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-[10px] px-2.5 py-0.5 rounded-md ">{currentWord.level}</span>
           <span className="chip">{currentWord.topic}</span>
         </div>
         <div className="absolute top-4 right-4">
           <SaveToCollection wordId={currentWord.id} wordText={currentWord.word} />
         </div>
-        
+
         <div className="flex items-center gap-3 justify-center mb-4 relative z-20">
-          <h2 className={`text-4xl md:text-6xl font-serif font-bold text-[var(--ink)] ${showMeaning ? 'mt-8' : ''}`}>
+          <h2 className={`text-4xl md:text-6xl font-sans font-semibold text-[var(--ink)] ${showMeaning ? 'mt-8' : ''}`}>
             {currentWord.word}
           </h2>
           <button
@@ -288,51 +248,43 @@ function ReviewContent() {
               e.stopPropagation();
               handlePlayAudio(currentWord.word);
             }}
-            className={`p-2 rounded-lg border-2 border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none
-              ${isPlaying 
-                ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' 
-                : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] shadow-[2.5px_2.5px_0_var(--line)] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none'
-              }`}
+            className={`p-2 rounded-lg border border-[var(--line)] transition-all flex items-center justify-center cursor-pointer select-none ${isPlaying ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--yellow)] text-[var(--ink)] active:shadow-none' }`}
             title="Phát âm"
           >
             {isPlaying ? (
-              <svg className="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
+              <Speaker2Regular aria-hidden="true" className="w-5 h-5 " />
             ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
-              </svg>
+              <Speaker2Regular aria-hidden="true" className="w-5 h-5" />
             )}
           </button>
         </div>
-        
+
         {currentWord.ipa && (
-          <p className="text-lg md:text-xl text-[var(--muted)] mb-4 md:mb-8 font-mono bg-[var(--bg)] px-4 py-1 rounded-md border-2 border-[var(--line)]">
+          <p className="text-lg md:text-xl text-[var(--muted)] mb-4 md:mb-8 font-sans bg-[var(--bg)] px-4 py-1 rounded-md border border-[var(--line)]">
             {currentWord.ipa}
           </p>
         )}
 
         {showMeaning ? (
-          <div className="w-full max-w-xl text-left border-t-[3px] border-dashed border-[var(--line)] pt-4 md:pt-6 mt-2 animate-fade-in flex flex-col items-center">
+          <div className="w-full max-w-xl text-left border-t-[3px] border-solid border-[var(--line)] pt-4 md:pt-6 mt-2 animate-fade-in flex flex-col items-center">
             {(() => {
               const { pos, en, vi } = parseMeaning(currentWord.meaning_vi, currentWord.pos);
               return (
                 <div className="mb-4 text-center">
                   {pos && (
-                    <span className="inline-block bg-[#0ea5e9] text-[#111827] border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] font-black text-sm px-3 py-1 rounded-md mb-3">
+                    <span className="inline-block bg-[#0ea5e9] text-[#111827] border border-[var(--line)] font-semibold text-sm px-3 py-1 rounded-md mb-3">
                       {pos}
                     </span>
                   )}
-                  <p className="text-xl font-bold text-[var(--ink)] mb-2 leading-tight break-words">{en}</p>
-                  {vi && <p className="text-lg font-bold text-[var(--muted)] break-words">{vi}</p>}
+                  <p className="text-xl font-semibold text-[var(--ink)] mb-2 leading-tight break-words">{en}</p>
+                  {vi && <p className="text-lg font-semibold text-[var(--muted)] break-words">{vi}</p>}
                 </div>
               );
             })()}
 
             {(currentWord as any).example && (
-              <div className="w-full mt-2 bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)] text-left">
-                <span className="font-bold text-[var(--muted)] block mb-1 text-xs uppercase tracking-wide">Ví dụ ngữ cảnh:</span>
+              <div className="w-full mt-2 bg-[var(--bg)] border border-[var(--line)] rounded-xl p-3 text-left">
+                <span className="font-semibold text-[var(--muted)] block mb-1 text-xs tracking-wide">Ví dụ ngữ cảnh:</span>
                 {(() => {
                   const rawEx = (currentWord as any).example;
                   const separator = rawEx.includes('///') ? '///' : '|||';
@@ -341,7 +293,7 @@ function ReviewContent() {
                   const exVi = parts[1]?.trim();
                   return (
                     <>
-                      <p className="text-sm font-bold text-[var(--ink)] font-serif italic">"{exEn}"</p>
+                      <p className="text-sm font-semibold text-[var(--ink)] font-sans italic">"{exEn}"</p>
                       {exVi && <p className="text-xs text-[var(--muted)] mt-1">{exVi}</p>}
                     </>
                   );
@@ -350,7 +302,7 @@ function ReviewContent() {
             )}
           </div>
         ) : (
-          <div className="absolute bottom-8 text-[var(--muted)] font-bold text-lg animate-pulse">
+          <div className="absolute bottom-8 text-[var(--muted)] font-semibold text-lg animate-pulse">
             Bấm vào thẻ để xem nghĩa
           </div>
         )}
@@ -358,29 +310,29 @@ function ReviewContent() {
 
       {showMeaning && (
         <div className="w-full flex flex-col gap-3 mt-4 md:mt-8 animate-fade-in shrink-0">
-          <p className="text-center text-[10px] md:text-xs font-mono font-black uppercase text-[var(--muted)]">
+          <p className="text-center text-[10px] md:text-xs font-sans font-semibold text-[var(--muted)]">
             Chọn mức độ ghi nhớ của bạn để thuật toán xếp lịch học tiếp theo:
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             <button onClick={() => handleRating('forgot')} className="btn-brutal bg-[var(--red)] text-white flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
               <span className="text-lg md:text-2xl">Lại</span>
-              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quên sạch</span>
-              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('forgot')}</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 text-center leading-tight">Quên sạch</span>
+              <span className="text-[9px] md:text-[10px] font-sans mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('forgot')}</span>
             </button>
             <button onClick={() => handleRating('hard')} className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
               <span className="text-lg md:text-2xl">Khó</span>
-              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ mang máng</span>
-              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/5 px-2 py-0.5 rounded-full">{getIntervalPreview('hard')}</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 text-center leading-tight">Nhớ mang máng</span>
+              <span className="text-[9px] md:text-[10px] font-sans mt-1.5 opacity-90 bg-black/5 px-2 py-0.5 rounded-full">{getIntervalPreview('hard')}</span>
             </button>
             <button onClick={() => handleRating('good')} className="btn-brutal bg-[var(--blue)] text-white flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
               <span className="text-lg md:text-2xl">Tốt</span>
-              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Nhớ rõ</span>
-              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('good')}</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 text-center leading-tight">Nhớ rõ</span>
+              <span className="text-[9px] md:text-[10px] font-sans mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('good')}</span>
             </button>
             <button onClick={() => handleRating('easy')} className="btn-brutal bg-[var(--green)] text-white flex flex-col items-center justify-center py-2 md:py-3 cursor-pointer">
               <span className="text-lg md:text-2xl">Dễ</span>
-              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 uppercase text-center leading-tight">Quá quen thuộc</span>
-              <span className="text-[9px] md:text-[10px] font-mono mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('easy')}</span>
+              <span className="text-[10px] md:text-xs font-normal opacity-90 mt-1 text-center leading-tight">Quá quen thuộc</span>
+              <span className="text-[9px] md:text-[10px] font-sans mt-1.5 opacity-90 bg-black/20 px-2 py-0.5 rounded-full">{getIntervalPreview('easy')}</span>
             </button>
           </div>
         </div>

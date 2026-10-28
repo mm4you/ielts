@@ -58,12 +58,12 @@ export default async function WordDetailPage({
         <div className="flex items-start justify-between mb-6">
           <div>
             <div className="flex gap-3 items-center flex-wrap">
-              <h1 className="text-4xl font-bold">{word.word}</h1>
+              <h1 className="text-4xl font-semibold">{word.word}</h1>
               <SaveToCollection wordId={word.id} wordText={word.word} />
             </div>
             {word.ipa && <p className="text-xl text-[var(--muted)] mt-1">{word.ipa}</p>}
           </div>
-          <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] font-black text-xs px-3 py-1 rounded-md uppercase tracking-wider">
+          <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-xs px-3 py-1 rounded-md ">
             {word.level}
           </span>
         </div>
@@ -75,8 +75,8 @@ export default async function WordDetailPage({
               const { pos, en, vi } = parseMeaning(word.meaning_vi, word.pos);
               return (
                 <div className="space-y-1">
-                  <p className="text-xl font-bold text-[var(--ink)]">
-                    {pos && <span className="bg-[#0ea5e9] text-[#111827] text-sm border-2 border-[var(--line)] px-2.5 py-0.5 rounded-full font-black shadow-[2px_2px_0_var(--line)] mr-2">{pos}</span>}
+                  <p className="text-xl font-semibold text-[var(--ink)]">
+                    {pos && <span className="bg-[#0ea5e9] text-[#111827] text-sm border border-[var(--line)] px-2.5 py-0.5 rounded-full font-semibold mr-2">{pos}</span>}
                     {en}
                   </p>
                   {vi && <p className="text-base text-[var(--muted)]">{vi}</p>}
@@ -109,8 +109,8 @@ export default async function WordDetailPage({
                 const exEn = parts[0]?.trim();
                 const exVi = parts[1]?.trim();
                 return (
-                  <div className="bg-[var(--bg)] border-2 border-[var(--line)] rounded-xl p-4 shadow-[2px_2px_0_var(--line)] text-left">
-                    <p className="text-base font-bold text-[var(--ink)] font-serif italic">
+                  <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 text-left">
+                    <p className="text-base font-semibold text-[var(--ink)] font-sans italic">
                       "{exEn}"
                     </p>
                     {exVi && <p className="text-sm text-[var(--muted)] mt-1.5">{exVi}</p>}
@@ -129,16 +129,16 @@ export default async function WordDetailPage({
           <div className="border-t border-[var(--border)] pt-6">
             <p className="text-sm text-[var(--muted)] mb-3">Thống kê ôn tập</p>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="border-2 border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)]">
-                <p className="text-2xl font-bold">{progress?.repetition_count ?? 0}</p>
+              <div className="border border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 ">
+                <p className="text-2xl font-semibold">{progress?.repetition_count ?? 0}</p>
                 <p className="text-xs text-[var(--muted)]">Lần ôn</p>
               </div>
-              <div className="border-2 border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)]">
-                <p className="text-2xl font-bold">{progress?.interval_days ?? 0}</p>
+              <div className="border border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 ">
+                <p className="text-2xl font-semibold">{progress?.interval_days ?? 0}</p>
                 <p className="text-xs text-[var(--muted)]">Giãn cách (ngày)</p>
               </div>
-              <div className="border-2 border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 shadow-[2px_2px_0_var(--line)]">
-                <p className="text-2xl font-bold">{progress?.ease_factor?.toFixed(1) ?? "2.5"}</p>
+              <div className="border border-[var(--line)] bg-[var(--paper)] rounded-xl p-3 ">
+                <p className="text-2xl font-semibold">{progress?.ease_factor?.toFixed(1) ?? "2.5"}</p>
                 <p className="text-xs text-[var(--muted)]">Độ dễ</p>
               </div>
             </div>

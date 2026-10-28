@@ -1,5 +1,7 @@
 'use client';
 
+
+import LoadingState from '@/components/LoadingState';
 import { useState, useEffect } from 'react';
 import { showToast } from '@/components/GlobalToast';
 
@@ -110,13 +112,13 @@ export default function SaveToCollection({
       const data = await res.json();
       if (res.ok) {
         showToast(
-          data.added 
-            ? `Đã thêm vào: "${data.collection?.name || 'sổ tay'}"` 
+          data.added
+            ? `Đã thêm vào: "${data.collection?.name || 'sổ tay'}"`
             : `Đã gỡ khỏi: "${data.collection?.name || 'sổ tay'}"`,
           data.added
         );
-        
-        const newIds = data.added 
+
+        const newIds = data.added
           ? [...savedCollectionIds.filter(id => id !== collectionId), collectionId]
           : savedCollectionIds.filter(id => id !== collectionId);
         setSavedCollectionIds(newIds);
@@ -147,7 +149,7 @@ export default function SaveToCollection({
       });
       if (!createRes.ok) throw new Error('Create collection failed');
       const newCol = await createRes.json();
-      
+
       setCollections(prev => [newCol, ...prev]);
       setNewCollectionName('');
 
@@ -176,7 +178,7 @@ export default function SaveToCollection({
 
   if (loading) {
     return (
-      <span className={`text-[10px] font-mono opacity-50 select-none ${className}`}>
+      <span className={`text-[10px] font-sans opacity-50 select-none ${className}`}>
         [ ... ]
       </span>
     );
@@ -188,11 +190,7 @@ export default function SaveToCollection({
         <button
           type="button"
           onClick={handleTriggerClick}
-          className={`text-[10px] md:text-xs font-mono font-black px-2.5 py-1 rounded border border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] transition-all cursor-pointer select-none hover:scale-102 active:scale-98 ${
-            isSaved
-              ? 'bg-[var(--green)] text-white hover:brightness-105'
-              : 'bg-green-50 text-[var(--green)] hover:bg-green-100'
-          }`}
+          className={`text-[10px] md:text-xs font-sans font-semibold px-2.5 py-1 rounded border border-[var(--line)] transition-all cursor-pointer select-none hover:scale-102 active:scale-98 ${ isSaved ? 'bg-[var(--green)] text-white hover:brightness-105' : 'bg-[var(--success-soft)] text-[var(--green)] hover:bg-green-100' }`}
         >
           {isSaved ? 'ĐÃ LƯU' : 'LƯU'}
         </button>
@@ -200,15 +198,15 @@ export default function SaveToCollection({
         {showDropdown && (
           <>
             <div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setShowDropdown(false); }} />
-            <div className="absolute right-0 top-full mt-2 w-64 bg-[var(--paper)] border-[3px] border-[var(--line)] shadow-[4px_4px_0_var(--line)] rounded-xl p-3 z-50 text-left font-sans">
-              <h4 className="text-xs font-mono font-black uppercase text-[var(--muted)] border-b border-dashed border-[var(--line)] pb-1.5 mb-2">
+            <div className="absolute right-0 top-full mt-2 w-64 bg-[var(--paper)] border border-[var(--line)] rounded-xl p-3 z-50 text-left font-sans">
+              <h4 className="text-xs font-sans font-semibold text-[var(--muted)] border-b border-solid border-[var(--line)] pb-1.5 mb-2">
                 Lưu vào sổ tay
               </h4>
-              
+
               {loadingCollections ? (
-                <p className="text-[10px] font-mono text-[var(--muted)] py-2 text-center">[ Đang tải... ]</p>
+                <LoadingState label="Đang tải" />
               ) : collections.length === 0 ? (
-                <p className="text-[10px] font-mono text-[var(--muted)] py-2 text-center">Chưa có sổ tay nào.</p>
+                <p className="text-[10px] font-sans text-[var(--muted)] py-2 text-center">Chưa có sổ tay nào.</p>
               ) : (
                 <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1 mb-3">
                   {collections.map(col => {
@@ -217,12 +215,10 @@ export default function SaveToCollection({
                       <button
                         key={col.id}
                         onClick={(e) => handleToggle(e, col.id)}
-                        className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg border-2 border-transparent hover:border-[var(--line)] hover:bg-[var(--bg)] transition-all text-xs font-bold ${
-                          isSavedInCol ? 'text-[var(--green)] bg-green-50/50' : 'text-[var(--ink)]'
-                        }`}
+                        className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg border border-transparent hover:border-[var(--line)] hover:bg-[var(--bg)] transition-all text-xs font-semibold ${ isSavedInCol ? 'text-[var(--green)] bg-[var(--success-soft)]/50' : 'text-[var(--ink)]' }`}
                       >
                         <span className="truncate flex-1 pr-2">{col.name}</span>
-                        <span className="font-mono text-[10px] shrink-0">
+                        <span className="font-sans text-[10px] shrink-0">
                           {isSavedInCol ? '[ ✓ ]' : '[   ]'}
                         </span>
                       </button>
@@ -230,22 +226,22 @@ export default function SaveToCollection({
                   })}
                 </div>
               )}
-              
-              <div className="border-t border-dashed border-[var(--line)] pt-2 mt-2" onClick={e => e.stopPropagation()}>
+
+              <div className="border-t border-solid border-[var(--line)] pt-2 mt-2" onClick={e => e.stopPropagation()}>
                 <form onSubmit={handleCreateAndAdd} className="flex gap-1.5">
                   <input
                     type="text"
                     placeholder="Tạo sổ tay mới..."
                     value={newCollectionName}
                     onChange={e => setNewCollectionName(e.target.value)}
-                    className="flex-1 px-2 py-1 text-xs border border-[var(--line)] rounded bg-[var(--paper)] focus:outline-none focus:border-[var(--blue)] font-bold placeholder-gray-400"
+                    className="flex-1 px-2 py-1 text-xs border border-[var(--line)] rounded bg-[var(--paper)] focus:outline-none focus:border-[var(--blue)] font-semibold placeholder-gray-400"
                     maxLength={40}
                     disabled={creatingCollection}
                   />
                   <button
                     type="submit"
                     disabled={creatingCollection || !newCollectionName.trim()}
-                    className="px-2 py-1 text-xs bg-[var(--blue)] text-white font-bold rounded hover:brightness-105 disabled:opacity-50"
+                    className="px-2 py-1 text-xs bg-[var(--blue)] text-white font-semibold rounded hover:brightness-105 disabled:opacity-50"
                   >
                     +
                   </button>

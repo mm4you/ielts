@@ -1,13 +1,19 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { BookOpenRegular } from '@fluentui/react-icons/svg/book-open';
+import { ArrowRepeatAllRegular } from '@fluentui/react-icons/svg/arrow-repeat-all';
+import { LibraryRegular } from '@fluentui/react-icons/svg/library';
+import { GamesRegular } from '@fluentui/react-icons/svg/games';
+import { Button } from '@fluentui/react-components';
+import BrandMark from '@/components/BrandMark';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginWall() {
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
   const [forgotStep, setForgotStep] = useState<1 | 2 | 3>(1);
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -18,7 +24,7 @@ export default function LoginWall() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [devCode, setDevCode] = useState('');
   const [isDevMode, setIsDevMode] = useState(false);
-  
+
   const [error, _setError] = useState('');
   const [shouldShake, setShouldShake] = useState(false);
 
@@ -205,7 +211,7 @@ export default function LoginWall() {
       }
 
       setSuccessMsg('Đăng ký tài khoản thành công! Đang đăng nhập...');
-      
+
       const loginRes = await signIn('credentials', {
         email,
         password,
@@ -360,70 +366,32 @@ export default function LoginWall() {
   };
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] flex flex-col md:flex-row relative overflow-hidden">
-      {/* Left side: Branding & Motivation (Only on desktop) */}
-      <div className="hidden md:flex md:w-1/2 bg-[var(--yellow)] border-r-4 border-black flex-col justify-between p-12 relative overflow-hidden">
-        {/* Grid pattern background */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#000_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
-        
-        {/* Top Header */}
-        <div className="z-10">
-          <div className="inline-block border-4 border-black bg-white rounded-lg px-3 py-1.5 font-mono font-black text-xs uppercase shadow-[2px_2px_0_#000]">
-            IELTS Vocabulary Studio
-          </div>
-        </div>
-
-        {/* Central Illustration and Title */}
-        <div className="z-10 my-auto flex flex-col gap-6 max-w-md">
-          {/* Neo-brutalist SVG Illustration */}
-          <div className="mb-4">
-            <svg className="w-48 h-48 text-[var(--ink)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M40 110 L140 110 L120 150 L20 150 Z" fill="black" />
-              <path d="M50 90 L150 90 L140 110 L40 110 Z" fill="black" />
-              <rect x="30" y="100" width="100" height="30" rx="4" fill="var(--paper)" stroke="black" strokeWidth="4" />
-              <line x1="30" y1="115" x2="130" y2="115" stroke="black" strokeWidth="4" />
-              <rect x="45" y="75" width="95" height="25" rx="4" fill="var(--blue)" stroke="black" strokeWidth="4" />
-              <line x1="45" y1="87.5" x2="140" y2="87.5" stroke="black" strokeWidth="4" />
-              <path d="M150 35 L155 50 L170 55 L155 60 L150 75 L145 60 L130 55 L145 50 Z" fill="var(--yellow)" stroke="black" strokeWidth="3" />
-              <path d="M25 50 L28 58 L36 60 L28 62 L25 70 L22 62 L14 60 L22 58 Z" fill="var(--red)" stroke="black" strokeWidth="2" />
-            </svg>
-          </div>
-          
-          <h2 className="text-4xl lg:text-5xl font-serif font-black text-[var(--ink)] leading-tight">
-            Lò Luyện Từ Vựng Khắc Nghiệt
-          </h2>
-          <p className="text-[var(--ink)] font-bold leading-relaxed border-l-4 border-black pl-4">
-            Học tập thông minh qua phương pháp lặp lại ngắt quãng tối ưu và rèn luyện phản xạ cực đỉnh cùng chiến thần AI mỏ hỗn.
-          </p>
-        </div>
-
-        {/* Footer copyright */}
-        <div className="z-10 pt-6 border-t-4 border-black border-dashed">
-          <p className="text-xs font-mono font-black text-[var(--ink)] uppercase tracking-wider">
-            © 2026 IELTS VOCABULARY STUDIO. ALL RIGHTS RESERVED.
-          </p>
-        </div>
-      </div>
+    <main className="login-screen">
+      <aside className="login-branding">
+        <div className="app-brand"><BrandMark size={38} /><span className="brand-name">IELTS Vocab</span></div>
+        <div className="login-branding-content"><BookOpenRegular style={{fontSize:52,color:'var(--blue)'}} /><h2>Học từ vựng IELTS</h2><ul className="login-feature-list"><li><ArrowRepeatAllRegular />Ôn tập bằng flashcard</li><li><LibraryRegular />Từ vựng theo chủ đề và cấp độ</li><li><GamesRegular />Luyện phản xạ qua trò chơi</li></ul></div>
+        <div className="login-branding-footer">IELTS Vocabulary Studio</div>
+      </aside>
 
       {/* Right side: Form (Takes full screen on mobile, 50% on desktop) */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10 min-h-screen">
+      <div className="login-form-side">
         <div className="bg-orb orb-1 opacity-10"></div>
         <div className="bg-orb orb-2 opacity-10"></div>
 
-        <div className={`panel max-w-md w-full relative z-10 flex flex-col p-8 md:p-10 hover:-translate-y-1 transition-transform duration-300 bg-[var(--paper)] ${shouldShake ? 'animate-shake' : ''}`}>
+        <div className={`login-form-card ${shouldShake ? 'animate-shake' : ''}`}>
 
-        
+
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-serif font-black text-[var(--ink)] text-center mb-2">
+        <h1 className="text-3xl md:text-4xl font-serif font-semibold text-[var(--ink)] text-center mb-2">
           IELTS Vocab
         </h1>
-        <p className="text-[var(--muted)] text-sm font-bold text-center mb-6">
-          {mode === 'forgot' ? 'Khôi phục tài khoản của bạn' : 'Hệ thống yêu cầu đăng nhập để cá nhân hóa tiến trình học tập.'}
+        <p className="text-[var(--muted)] text-sm font-semibold text-center mb-6">
+          {mode === 'forgot' ? 'Khôi phục tài khoản của bạn' : 'Đăng nhập để tiếp tục học.'}
         </p>
 
         {/* Tab Headers (hidden in Forgot Password mode) */}
         {mode !== 'forgot' && (
-          <div className="flex border-4 border-black rounded-lg overflow-hidden mb-6 shadow-[2px_2px_0_#000]">
+          <div className="login-tabs" role="tablist" aria-label="Tài khoản">
             <button
               type="button"
               onClick={() => {
@@ -431,11 +399,7 @@ export default function LoginWall() {
                 setError('');
                 setSuccessMsg('');
               }}
-              className={`flex-1 py-2 font-mono font-bold text-sm uppercase transition-colors ${
-                mode === 'login'
-                  ? 'bg-[var(--blue)] text-white border-r-4 border-black'
-                  : 'bg-[var(--paper)] text-[var(--muted)] hover:bg-gray-100 border-r-4 border-black'
-              }`}
+              role="tab" aria-selected={mode === 'login'}
             >
               Đăng nhập
             </button>
@@ -446,11 +410,7 @@ export default function LoginWall() {
                 setError('');
                 setSuccessMsg('');
               }}
-              className={`flex-1 py-2 font-mono font-bold text-sm uppercase transition-colors ${
-                mode === 'register'
-                  ? 'bg-[var(--blue)] text-white'
-                  : 'bg-[var(--paper)] text-[var(--muted)] hover:bg-gray-100'
-              }`}
+              role="tab" aria-selected={mode === 'register'}
             >
               Đăng ký
             </button>
@@ -459,12 +419,12 @@ export default function LoginWall() {
 
         {/* Success / Error Message */}
         {error && (
-          <div className="bg-[var(--red)] text-white border-2 border-black p-3 font-mono font-bold text-xs shadow-[2px_2px_0_#000] mb-4 text-left rounded">
+          <div className="bg-[var(--red)] text-white border border-[var(--line)] p-3 font-sans font-semibold text-xs  mb-4 text-left rounded">
             {error}
           </div>
         )}
         {successMsg && (
-          <div className="bg-[var(--green)] text-white border-2 border-black p-3 font-mono font-bold text-xs shadow-[2px_2px_0_#000] mb-4 text-left rounded">
+          <div className="bg-[var(--green)] text-white border border-[var(--line)] p-3 font-sans font-semibold text-xs  mb-4 text-left rounded">
             {successMsg}
           </div>
         )}
@@ -473,7 +433,7 @@ export default function LoginWall() {
         {mode === 'login' && (
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                 Email
               </label>
               <input
@@ -483,12 +443,12 @@ export default function LoginWall() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@example.com"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                 Mật khẩu
               </label>
               <input
@@ -498,7 +458,7 @@ export default function LoginWall() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="******"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
               <div className="text-right mt-1">
                 <button
@@ -509,7 +469,7 @@ export default function LoginWall() {
                     setError('');
                     setSuccessMsg('');
                   }}
-                  className="text-xs font-mono font-bold text-[var(--blue)] hover:underline"
+                  className="text-xs font-sans font-semibold text-[var(--blue)] hover:underline"
                 >
                   Quên mật khẩu?
                 </button>
@@ -519,7 +479,7 @@ export default function LoginWall() {
             <button
               type="submit"
               disabled={loading}
-              className={`btn-brutal mt-2 bg-[var(--green)] text-white py-3 font-mono font-bold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
+              className={`btn-brutal mt-2 bg-[var(--green)] text-white py-3 font-sans font-semibold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
@@ -531,7 +491,7 @@ export default function LoginWall() {
         {mode === 'register' && (
           <form onSubmit={handleRegister} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                 Họ và Tên
               </label>
               <input
@@ -541,12 +501,12 @@ export default function LoginWall() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nguyễn Văn A"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                 Email
               </label>
               <input
@@ -556,12 +516,12 @@ export default function LoginWall() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@example.com"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                 Mật khẩu
               </label>
               <input
@@ -571,12 +531,12 @@ export default function LoginWall() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Tối thiểu 6 ký tự"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                 Xác nhận mật khẩu
               </label>
               <input
@@ -586,14 +546,14 @@ export default function LoginWall() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Tối thiểu 6 ký tự"
-                className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className={`btn-brutal mt-2 bg-[var(--yellow)] text-[var(--ink)] py-3 font-mono font-bold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
+              className={`btn-brutal mt-2 bg-[var(--yellow)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
@@ -607,7 +567,7 @@ export default function LoginWall() {
             {forgotStep === 1 && (
               <form onSubmit={handleForgotVerify} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+                  <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                     Nhập Email đã đăng ký
                   </label>
                   <input
@@ -617,10 +577,10 @@ export default function LoginWall() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@example.com"
-                    className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                    className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
                   />
                 </div>
-                
+
                 <div className="flex gap-3 mt-2">
                   <button
                     type="button"
@@ -629,14 +589,14 @@ export default function LoginWall() {
                       setError('');
                       setSuccessMsg('');
                     }}
-                    className="btn-brutal bg-white text-[var(--ink)] py-3 font-mono font-bold text-sm uppercase rounded flex-1 text-center border-4 border-black"
+                    className="btn-brutal bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
                   >
                     Quay lại
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`btn-brutal bg-[var(--blue)] text-white py-3 font-mono font-bold text-sm uppercase rounded flex-[2] text-center border-4 border-black ${
+                    className={`btn-brutal bg-[var(--blue)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
                       loading ? 'opacity-50' : ''
                     }`}
                   >
@@ -649,12 +609,12 @@ export default function LoginWall() {
             {forgotStep === 2 && (
               <form onSubmit={handleForgotVerifyCode} className="flex flex-col gap-4">
                 {isDevMode && (
-                  <div className="bg-amber-100 text-amber-950 border-2 border-amber-400 p-3 font-mono text-xs rounded shadow-[2px_2px_0_rgba(251,191,36,0.3)]">
+                  <div className="bg-amber-100 text-amber-950 border border-amber-400 p-3 font-sans text-xs rounded ">
                     <strong>Dev Mode:</strong> Mã xác minh cho {email} là: <strong className="text-sm bg-amber-200 px-2 py-0.5 rounded border border-amber-400">{devCode}</strong> (mã này cũng được ghi vào tệp log).
                   </div>
                 )}
                 <div className="flex flex-col gap-3">
-                  <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase text-center">
+                  <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase text-center">
                     Nhập mã xác minh (6 chữ số)
                   </label>
                   <div className="flex justify-center gap-2 md:gap-3">
@@ -671,7 +631,7 @@ export default function LoginWall() {
                         onChange={(e) => handleOtpChange(e.target.value, idx)}
                         onKeyDown={(e) => handleOtpKeyDown(e, idx)}
                         onPaste={idx === 0 ? handleOtpPaste : undefined}
-                        className="w-12 h-14 md:w-14 md:h-16 flex-shrink-0 min-w-0 border-4 border-black font-mono font-black text-center text-2xl rounded-xl bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 focus:shadow-[4px_4px_0_#000] shadow-[2px_2px_0_#000] transition-all"
+                        className="w-12 h-14 md:w-14 md:h-16 flex-shrink-0 min-w-0 border border-[var(--line)] font-sans font-semibold text-center text-2xl rounded-xl bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
                         maxLength={1}
                         inputMode="numeric"
                         pattern="[0-9]*"
@@ -684,7 +644,7 @@ export default function LoginWall() {
                       type="button"
                       disabled={resendCooldown > 0 || loading}
                       onClick={handleResendCode}
-                      className={`text-xs font-bold font-mono uppercase tracking-wider underline underline-offset-4 cursor-pointer hover:text-[var(--blue)] transition-colors ${
+                      className={`text-xs font-semibold font-sans uppercase tracking-wider underline underline-offset-4 cursor-pointer hover:text-[var(--blue)] transition-colors ${
                         resendCooldown > 0 ? 'text-[var(--muted)] no-underline cursor-not-allowed opacity-75' : 'text-[var(--ink)]'
                       }`}
                     >
@@ -701,14 +661,14 @@ export default function LoginWall() {
                       setError('');
                       setSuccessMsg('');
                     }}
-                    className="btn-brutal bg-white text-[var(--ink)] py-3 font-mono font-bold text-sm uppercase rounded flex-1 text-center border-4 border-black"
+                    className="btn-brutal bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
                   >
                     Quay lại
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`btn-brutal bg-[var(--blue)] text-white py-3 font-mono font-bold text-sm uppercase rounded flex-[2] text-center border-4 border-black ${
+                    className={`btn-brutal bg-[var(--blue)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
                       loading ? 'opacity-50' : ''
                     }`}
                   >
@@ -721,7 +681,7 @@ export default function LoginWall() {
             {forgotStep === 3 && (
               <form onSubmit={handleForgotReset} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+                  <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                     Mật khẩu mới
                   </label>
                   <input
@@ -731,12 +691,12 @@ export default function LoginWall() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Tối thiểu 6 ký tự"
-                    className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                    className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="font-mono text-xs font-bold text-[var(--ink)] uppercase">
+                  <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
                     Xác nhận mật khẩu mới
                   </label>
                   <input
@@ -746,7 +706,7 @@ export default function LoginWall() {
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
                     placeholder="Nhập lại mật khẩu mới"
-                    className="w-full border-4 border-black p-3 font-mono font-bold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-yellow-50 shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all"
+                    className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
                   />
                 </div>
 
@@ -758,14 +718,14 @@ export default function LoginWall() {
                       setError('');
                       setSuccessMsg('');
                     }}
-                    className="btn-brutal bg-white text-[var(--ink)] py-3 font-mono font-bold text-sm uppercase rounded flex-1 text-center border-4 border-black"
+                    className="btn-brutal bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
                   >
                     Quay lại
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`btn-brutal bg-[var(--green)] text-white py-3 font-mono font-bold text-sm uppercase rounded flex-[2] text-center border-4 border-black ${
+                    className={`btn-brutal bg-[var(--green)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
                       loading ? 'opacity-50' : ''
                     }`}
                   >
@@ -779,40 +739,24 @@ export default function LoginWall() {
 
         {/* Divider */}
         <div className="border-t-2 border-dashed border-[var(--line)] w-full my-6 relative flex items-center justify-center">
-          <span className="bg-[var(--paper)] px-3 text-xs font-mono font-bold text-[var(--muted)] uppercase absolute">
+          <span className="bg-[var(--paper)] px-3 text-xs font-sans font-semibold text-[var(--muted)] uppercase absolute">
             Hoặc
           </span>
         </div>
 
         {/* Google Login Button */}
-        <button
+        <Button
+          appearance="secondary"
+          size="large"
           onClick={() => {
             if (loading) return;
             signIn('google');
           }}
           disabled={loading}
-          className="btn-brutal bg-white hover:bg-[var(--yellow)] text-[var(--ink)] w-full py-3.5 text-sm uppercase flex items-center justify-center gap-3 transition-colors duration-300 shadow-[4px_4px_0_var(--line)] border-4 border-black rounded"
+          className="google-login-button"
         >
-          <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="currentColor"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            />
-          </svg>
           Đăng nhập bằng Google
-        </button>
+        </Button>
       </div>
       </div>
     </main>

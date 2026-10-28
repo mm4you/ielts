@@ -1,5 +1,15 @@
 'use client';
 
+
+
+
+
+import PracticeSetup from '@/components/PracticeSetup';
+import AppLoading from '@/components/AppLoading';
+import LoadingState from '@/components/LoadingState';
+import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { PlayRegular } from '@fluentui/react-icons/svg/play';
+import { FireRegular as FluentFireRegular } from '@fluentui/react-icons/svg/fire';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LEVELS } from '@/types';
@@ -16,13 +26,7 @@ interface Question {
 
 export default function SpeedrunPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center">
-          <p className="text-xl font-bold animate-pulse">Đang tải cấu hình tốc chiến...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<AppLoading contained />}>
       <SpeedrunContent />
     </Suspense>
   );
@@ -34,22 +38,22 @@ function SpeedrunContent() {
   const collectionId = searchParams.get('collectionId');
   const exitRoute = collectionId ? '/collections' : '/';
   const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
-  
+
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
-  
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(45);
   const [streak, setStreak] = useState(0);
-  
+
   const [isShaking, setIsShaking] = useState(false);
   const [flashColor, setFlashColor] = useState<'green' | 'red' | null>(null);
   const [answerStatus, setAnswerStatus] = useState<{ selectedIdx: number, isCorrect: boolean } | null>(null);
   const [explosions, setExplosions] = useState<{id: string, x: number, y: number}[]>([]);
   const [scorePops, setScorePops] = useState<{ id: string; text: string; color: string; x: number; y: number }[]>([]);
-  
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchQuestions = async () => {
@@ -97,7 +101,7 @@ function SpeedrunContent() {
 
   const handleAnswer = (choiceIdx: number, e: React.MouseEvent<HTMLDivElement>) => {
     if (questions.length === 0 || answerStatus) return;
-    
+
     const currentQ = questions[currentIndex];
     const isCorrect = choiceIdx === currentQ.correctIndex;
 
@@ -133,7 +137,7 @@ function SpeedrunContent() {
       setStreak(s => s + 1);
       setFlashColor('green');
       fetch('/api/activity', { method: 'POST' }).catch(() => {});
-      
+
       setTimeout(() => {
         setFlashColor(null);
         setCurrentIndex(c => (c + 1) % questions.length);
@@ -145,7 +149,7 @@ function SpeedrunContent() {
       setStreak(0);
       setIsShaking(true);
       setFlashColor('red');
-      
+
       setTimeout(() => {
         setIsShaking(false);
         setFlashColor(null);
@@ -156,67 +160,24 @@ function SpeedrunContent() {
   };
 
   if (gameState === 'setup') {
-    return (
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--red)] relative">
-          <button
-            onClick={() => router.push(exitRoute)}
-            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
-            title={exitLabel}
-          >
-            X
-          </button>
-          <h2 className="text-4xl font-serif font-black uppercase mb-2 text-[var(--red)]">Speedrun</h2>
-          <p className="text-xl font-black mb-8">Sinh Tồn Cùng Từ Vựng</p>
-          
-          <div className="bg-[var(--paper)] p-4 border-[3px] border-[var(--line)] mb-8 text-left rounded-xl">
-            <h3 className="font-black text-lg mb-2 border-b-2 border-dashed border-[var(--line)] pb-2">Luật chơi:</h3>
-            <ul className="font-bold text-sm space-y-2">
-              <li>Khởi đầu với 45 giây.</li>
-              <li>Chế độ Sinh Tồn: Bắn không giới hạn từ.</li>
-              <li>Trả lời đúng: <span className="text-[var(--green)]">+2 giây</span>, +10 điểm.</li>
-              <li>Trả lời sai: <span className="text-[var(--red)]">-3 giây</span>.</li>
-              <li>Hết giờ = GAME OVER.</li>
-            </ul>
-          </div>
-
-          <select 
-            value={selectedLevel}
-            onChange={(e) => setSelectedLevel(e.target.value)}
-            className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl font-bold bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--red)] transition-shadow mb-8 appearance-none cursor-pointer text-center text-lg"
-          >
-            <option value="all">Tất cả mức độ</option>
-            {LEVELS.map(l => <option key={l} value={l}>Mức độ {l}</option>)}
-          </select>
-
-          <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-2xl uppercase shadow-[4px_4px_0_var(--ink)] flex items-center justify-center gap-2">
-            <span>CHIẾN NGAY</span>
-            <svg className="w-6 h-6 animate-pulse shrink-0 text-[var(--red)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    );
+    return <PracticeSetup mode="speedrun" title="Tốc chiến" rules={['Bắt đầu với 45 giây.','Đúng: thêm 2 giây và 10 điểm.','Sai: trừ 3 giây. Hết giờ thì kết thúc.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} />;
   }
 
   if (gameState === 'gameover') {
     return (
       <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center border-[4px] border-[var(--ink)] shadow-[8px_8px_0_var(--ink)] relative">
+        <div className="panel max-w-md w-full text-center border border-[var(--ink)] relative">
           <button
             onClick={() => router.push(exitRoute)}
-            className="absolute top-4 right-4 w-8 h-8 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
+            className="absolute top-4 right-4 w-8 h-8 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
             title={exitLabel}
-          >
-            X
-          </button>
-          <h2 className="text-5xl font-serif font-black uppercase mb-4 text-[var(--red)]">Game Over</h2>
-          <p className="text-2xl font-black mb-4">Điểm của bạn:</p>
-          <div className="text-7xl font-black text-[var(--green)] mb-8">{score}</div>
-          
-          <button onClick={() => setGameState('setup')} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl uppercase">
+           aria-label="Đóng">
+            <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
+          <h2 className="text-5xl font-sans font-semibold mb-4 text-[var(--red)]">Game Over</h2>
+          <p className="text-2xl font-semibold mb-4">Điểm của bạn:</p>
+          <div className="text-7xl font-semibold text-[var(--green)] mb-8">{score}</div>
+
+          <button onClick={() => setGameState('setup')} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl ">
             Chơi lại
           </button>
         </div>
@@ -225,92 +186,67 @@ function SpeedrunContent() {
   }
 
   if (questions.length === 0) {
-    return <div className="text-center py-20 font-bold text-xl animate-pulse">Đang tải câu hỏi...</div>;
+    return <LoadingState label="Đang tải câu hỏi" />;
   }
 
   const currentQ = questions[currentIndex];
 
   return (
-    <div className={`max-w-2xl mx-auto py-4 md:py-10 px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center transition-colors duration-200 ${
-      flashColor === 'green' ? 'bg-green-100' : flashColor === 'red' ? 'bg-red-100' : ''
-    }`}>
+    <div className={`max-w-2xl mx-auto py-4 md:py-10 px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center transition-colors duration-200 ${ flashColor === 'green' ? 'bg-green-100' : flashColor === 'red' ? 'bg-red-100' : '' }`}>
       {/* Top Bar */}
-      <div className={`flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 pb-5 md:pb-6 border-[3px] rounded-xl relative shrink-0 gap-4 transition-all duration-300 ${
-        timeLeft <= 10 ? 'border-[var(--red)] shadow-[4px_4px_0_var(--red)] shadow-[0_0_15px_rgba(239,68,68,0.5)] animate-pulse' : 'border-[var(--line)] shadow-[4px_4px_0_var(--line)]'
-      }`}>
-        <div className="text-xl md:text-2xl font-black text-[var(--ink)] flex-1">
+      <div className={`flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 pb-5 md:pb-6 border rounded-xl relative shrink-0 gap-4 transition-all duration-300 ${ timeLeft <= 10 ? 'border-[var(--red)] animate-pulse' : 'border-[var(--line)] ' }`}>
+        <div className="text-xl md:text-2xl font-semibold text-[var(--ink)] flex-1">
           Điểm: <span className="text-[var(--blue)]">{score}</span>
         </div>
         {streak >= 3 && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl md:text-3xl font-black text-[var(--red)] animate-bounce whitespace-nowrap drop-shadow-md flex items-center gap-1">
-            <svg className="w-6 h-6 md:w-8 md:h-8 shrink-0 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-            </svg>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl md:text-3xl font-semibold text-[var(--red)] animate-bounce whitespace-nowrap drop-shadow-md flex items-center gap-1">
+            <FluentFireRegular aria-hidden="true" className="w-6 h-6 md:w-8 md:h-8 shrink-0 " />
             <span>x{streak} FLAME</span>
           </div>
         )}
-        <div className={`transition-all duration-300 font-black ${timeLeft <= 10 ? 'text-4xl md:text-5xl text-[var(--red)] drop-shadow-lg' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
+        <div className={`transition-all duration-300 font-semibold ${timeLeft <= 10 ? 'text-4xl md:text-5xl text-[var(--red)] drop-shadow-lg' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
           {timeLeft}s
         </div>
-        <button 
-          onClick={() => router.push(exitRoute)} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 cursor-pointer z-10"
+        <button
+          onClick={() => router.push(exitRoute)}
+          className="w-8 h-8 md:w-10 md:h-10 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 cursor-pointer z-10"
           title="Thoát game"
-        >
-          X
-        </button>
+         aria-label="Thoát game">
+          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
 
         {/* Progress Bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gray-200 rounded-b-lg overflow-hidden border-t-2 border-[var(--line)]">
-          <div 
-            className={`h-full transition-all duration-200 ${
-              timeLeft <= 10 ? 'bg-[var(--red)]' : 'bg-[var(--green)]'
-            }`}
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gray-200 rounded-b-lg overflow-hidden border-t border-[var(--line)]">
+          <div
+            className={`h-full transition-all duration-200 ${ timeLeft <= 10 ? 'bg-[var(--red)]' : 'bg-[var(--green)]' }`}
             style={{ width: `${Math.min(100, (timeLeft / 45) * 100)}%` }}
           />
         </div>
       </div>
 
       {/* Question Card */}
-      <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative transition-all duration-300 ${
-        isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''
-      } ${
-        streak >= 3 ? 'animate-fire-glow border-[#ef4444]' : ''
-      }`}>
+      <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative transition-all duration-300 ${ isShaking ? 'animate-[shake_0.5s_ease-in-out]' : '' } ${ streak >= 3 ? 'animate-fire-glow border-[#ef4444]' : '' }`}>
         <div className="absolute top-4 left-4">
-          <span className="bg-[#0ea5e9] text-[#111827] border-2 border-[var(--line)] shadow-[1.5px_1.5px_0_var(--line)] font-black text-xs px-2.5 py-1 rounded-md uppercase tracking-wider">{currentIndex + 1} / {questions.length}</span>
+          <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] font-semibold text-xs px-2.5 py-1 rounded-md ">{currentIndex + 1} / {questions.length}</span>
         </div>
         <div className="absolute top-4 right-4">
           <SaveToCollection wordId={currentQ.id} wordText={currentQ.word} />
         </div>
-        <h2 id="speedrun-target-word" className={`text-4xl md:text-6xl font-serif font-black text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full transition-all duration-200 ${
-          explosions.length > 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100'
-        }`}>{currentQ.word}</h2>
-        {currentQ.pos && <span className="bg-[#0ea5e9] text-[#111827] border-2 border-[var(--line)] shadow-[2px_2px_0_var(--line)] font-black text-sm px-3 py-1 rounded-md uppercase tracking-wider">{currentQ.pos}</span>}
+        <h2 id="speedrun-target-word" className={`text-4xl md:text-6xl font-sans font-semibold text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full transition-all duration-200 ${ explosions.length > 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100' }`}>{currentQ.word}</h2>
+        {currentQ.pos && <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] font-semibold text-sm px-3 py-1 rounded-md ">{currentQ.pos}</span>}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {currentQ.choices.map((choice, idx) => {
           const { en, vi } = parseMeaning(choice, currentQ.pos || '');
           return (
-            <div 
+            <div
               key={idx}
               onClick={(e) => handleAnswer(idx, e)}
-              className={`btn-brutal text-left block w-full h-auto min-h-[60px] md:min-h-[80px] py-3 px-4 md:py-6 md:px-6 cursor-pointer transition-colors active:scale-95 ${
-                !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] group' :
-                (idx === currentQ.correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' :
-                (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50'))
-              }`}
+              className={`btn-brutal text-left block w-full h-auto min-h-[60px] md:min-h-[80px] py-3 px-4 md:py-6 md:px-6 cursor-pointer transition-colors active:scale-95 ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--yellow)] group' : (idx === currentQ.correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
             >
               <div className="flex flex-col h-full justify-center">
-                <span className={`block text-lg md:text-xl font-black mb-1 text-center ${
-                  !answerStatus ? 'text-[var(--ink)] group-hover:text-black' :
-                  (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-black' : 'text-[var(--ink)]')
-                }`}>{en}</span>
-                {vi && <span className={`block text-sm font-bold text-center ${
-                  !answerStatus ? 'text-[var(--muted)] group-hover:text-black/80' :
-                  (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-black/80' : 'text-[var(--muted)]')
-                }`}>{vi}</span>}
+                <span className={`block text-lg md:text-xl font-semibold mb-1 text-center ${ !answerStatus ? 'text-[var(--ink)] group-hover:text-[var(--ink)]' : (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]' : 'text-[var(--ink)]') }`}>{en}</span>
+                {vi && <span className={`block text-sm font-semibold text-center ${ !answerStatus ? 'text-[var(--muted)] group-hover:text-[var(--ink)]/80' : (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]/80' : 'text-[var(--muted)]') }`}>{vi}</span>}
               </div>
             </div>
           );
@@ -355,7 +291,7 @@ function SpeedrunContent() {
           animation: fire-glow 1s ease-in-out infinite alternate;
         }
       `}</style>
-      
+
       {/* Explosions layer */}
       {explosions.map(exp => (
         <div key={exp.id} className="fixed pointer-events-none" style={{ left: exp.x, top: exp.y, zIndex: 100 }}>
@@ -368,7 +304,7 @@ function SpeedrunContent() {
             return (
               <div
                 key={i}
-                className="absolute font-serif font-black text-2xl md:text-4xl text-[var(--ink)]"
+                className="absolute font-sans font-semibold text-2xl md:text-4xl text-[var(--ink)]"
                 style={{
                   '--tx': `${tx}px`,
                   '--ty': `${ty}px`,
@@ -386,7 +322,7 @@ function SpeedrunContent() {
       {scorePops.map(pop => (
         <div
           key={pop.id}
-          className={`fixed pointer-events-none z-50 text-xl md:text-3xl font-black bg-[var(--paper)] px-3 py-1.5 border-[3px] border-[var(--line)] shadow-[3px_3px_0_var(--ink)] rounded-xl animate-score-pop ${pop.color}`}
+          className={`fixed pointer-events-none z-50 text-xl md:text-3xl font-semibold bg-[var(--paper)] px-3 py-1.5 border border-[var(--line)] rounded-xl animate-score-pop ${pop.color}`}
           style={{ left: pop.x, top: pop.y }}
         >
           {pop.text}

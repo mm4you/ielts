@@ -1,5 +1,7 @@
 'use client';
 
+
+import { WandRegular } from '@fluentui/react-icons/svg/wand';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS, POS_TYPES } from '@/types';
@@ -22,7 +24,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
   const [activeTab, setActiveTab] = useState<'words' | 'users'>('words');
   const [words, setWords] = useState<Word[]>(initialWords);
   const [users, setUsers] = useState<UserData[]>(initialUsers);
-  
+
   // Word Filters & Pagination
   const [search, setSearch] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
@@ -61,7 +63,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
 
   // Word Filter & Pagination Logic
   const filteredWords = words.filter(w => {
-    const matchesSearch = w.word.toLowerCase().includes(search.toLowerCase()) || 
+    const matchesSearch = w.word.toLowerCase().includes(search.toLowerCase()) ||
       w.meaning_vi.toLowerCase().includes(search.toLowerCase());
     const matchesTopic = selectedTopic ? w.topic === selectedTopic : true;
     const matchesLevel = selectedLevel ? w.level === selectedLevel : true;
@@ -72,7 +74,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
   const paginatedWords = filteredWords.slice((wordPage - 1) * wordsPerPage, wordPage * wordsPerPage);
 
   // User Filter & Pagination Logic
-  const filteredUsers = users.filter(u => 
+  const filteredUsers = users.filter(u =>
     (u.name?.toLowerCase().includes(userSearch.toLowerCase()) || false) ||
     u.email.toLowerCase().includes(userSearch.toLowerCase())
   );
@@ -190,29 +192,29 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
       {/* Title & Top Navigation */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-4xl font-black font-serif text-[var(--ink)] uppercase">Quản Trị Hệ Thống</h1>
-          <p className="text-[var(--muted)] text-sm mt-1">Trang quản lý dành riêng cho quản trị viên.</p>
+          <h1 className="text-3xl font-semibold font-sans text-[var(--ink)] ">Quản trị</h1>
+
         </div>
         <div className="flex gap-3 flex-wrap justify-end">
           {activeTab === 'words' && (
             <>
-              <Link 
-                href="/admin/seed-bot" 
-                className="btn-brutal bg-[var(--green)] text-white px-4 md:px-6 py-3 uppercase flex items-center justify-center text-sm md:text-base font-bold whitespace-nowrap"
+              <Link
+                href="/admin/seed-bot"
+                className="btn-brutal bg-[var(--green)] text-white px-4 md:px-6 py-3 flex items-center justify-center text-sm md:text-base font-semibold whitespace-nowrap"
               >
-                Bơm Từ Mới Bằng Bot
+                Tạo từ bằng AI
               </Link>
-              <Link 
-                href="/admin/migrate" 
-                className="btn-brutal bg-[var(--blue)] text-white px-4 md:px-6 py-3 uppercase flex items-center justify-center text-sm md:text-base font-bold whitespace-nowrap"
+              <Link
+                href="/admin/migrate"
+                className="btn-brutal bg-[var(--blue)] text-white px-4 md:px-6 py-3 flex items-center justify-center text-sm md:text-base font-semibold whitespace-nowrap"
               >
-                Cập nhật Loại từ AI
+                Cập nhật loại từ
               </Link>
-              <button 
-                onClick={() => handleOpenModal()} 
-                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-4 md:px-6 py-3 uppercase text-sm md:text-base whitespace-nowrap"
+              <button
+                onClick={() => handleOpenModal()}
+                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] px-4 md:px-6 py-3 text-sm md:text-base whitespace-nowrap"
               >
-                + Thêm Từ Mới
+                Thêm từ
               </button>
             </>
           )}
@@ -220,18 +222,18 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-8 border-b-4 border-[var(--line)]">
-        <button 
+      <div className="flex gap-4 mb-8 border-b border-[var(--line)]">
+        <button
           onClick={() => setActiveTab('words')}
-          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'words' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
+          className={`px-4 py-3 font-semibold text-sm transition-colors border-b -mb-1 ${activeTab === 'words' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
         >
-          Quản Lý Từ Vựng ({words.length})
+          Từ vựng ({words.length})
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('users')}
-          className={`px-6 py-3 font-bold text-lg uppercase transition-colors border-b-4 -mb-1 ${activeTab === 'users' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
+          className={`px-4 py-3 font-semibold text-sm transition-colors border-b -mb-1 ${activeTab === 'users' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
         >
-          Học Viên ({users.length})
+          Người dùng ({users.length})
         </button>
       </div>
 
@@ -246,12 +248,12 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                 placeholder="Tìm kiếm từ hoặc nghĩa..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="flex-1 px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold"
+                className="flex-1 px-4 py-3 border border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none transition-shadow font-semibold"
               />
               <select
                 value={selectedTopic}
                 onChange={(e) => setSelectedTopic(e.target.value)}
-                className="px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold appearance-none cursor-pointer"
+                className="px-4 py-3 border border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none transition-shadow font-semibold appearance-none cursor-pointer"
               >
                 <option value="">Tất cả chủ đề</option>
                 {TOPICS.map((topic) => (
@@ -264,7 +266,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
               <select
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value)}
-                className="px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold appearance-none cursor-pointer"
+                className="px-4 py-3 border border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none transition-shadow font-semibold appearance-none cursor-pointer"
               >
                 <option value="">Tất cả mức</option>
                 {LEVELS.map((level) => (
@@ -275,7 +277,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
               </select>
             </div>
 
-            <div className="flex gap-3 flex-wrap pt-2 border-t border-dashed border-[var(--line)]">
+            <div className="flex gap-3 flex-wrap pt-2 border-t border-solid border-[var(--line)]">
               <button
                 onClick={async () => {
                   try {
@@ -287,7 +289,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     alert('Lỗi nạp từ cơ bản');
                   }
                 }}
-                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-xs py-2 px-4 shadow-[2px_2px_0_var(--line)]"
+                className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-xs py-2 px-4 "
               >
                 + Nạp 50 từ cơ bản (A1)
               </button>
@@ -309,11 +311,9 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     alert('Lỗi kết nối AI');
                   }
                 }}
-                className="btn-brutal bg-[#a855f7] text-white text-xs py-2 px-4 shadow-[2px_2px_0_var(--line)] flex items-center justify-center gap-1.5"
+                className="btn-brutal bg-[#a855f7] text-white text-xs py-2 px-4 flex items-center justify-center gap-1.5"
               >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
+                <WandRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
                 <span>AI Sửa Nghĩa Tự Động (50 từ)</span>
               </button>
             </div>
@@ -322,7 +322,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
           {/* Cards Grid */}
           {paginatedWords.length === 0 ? (
             <div className="panel text-center py-20">
-              <p className="text-[var(--muted)] font-bold text-lg">Không tìm thấy từ vựng nào phù hợp!</p>
+              <p className="text-[var(--muted)] font-semibold text-lg">Không tìm thấy từ vựng nào phù hợp!</p>
             </div>
           ) : (
             <>
@@ -330,58 +330,58 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                 {paginatedWords.map((word) => {
                   const { pos, en, vi } = parseMeaning(word.meaning_vi, word.pos);
                   return (
-                    <div key={word.id} className="panel flex flex-col hover:-translate-y-1 transition-transform bg-[var(--paper)] h-full relative group">
+                    <div key={word.id} className="panel flex flex-col transition-transform bg-[var(--paper)] h-full relative group">
                       <div className="absolute top-0 right-0 w-16 h-16 bg-[var(--blue)] rounded-bl-full opacity-5"></div>
-                      
+
                       <div className="flex items-start justify-between mb-2">
                         <div className="pr-6">
                           <div className="flex gap-2 items-center flex-wrap">
-                            <h3 className="text-xl font-black font-serif text-[var(--ink)]">{word.word}</h3>
+                            <h3 className="text-xl font-semibold font-sans text-[var(--ink)]">{word.word}</h3>
                             {pos && (
-                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-2 py-0.5 rounded-md text-[10px] font-bold select-none shadow-[1px_1px_0_var(--line)]">
+                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-2 py-0.5 rounded-md text-[10px] font-semibold select-none ">
                                 {pos}
                               </span>
                             )}
                           </div>
-                          {word.ipa && <p className="text-xs font-mono text-[var(--muted)] mt-0.5">{word.ipa}</p>}
+                          {word.ipa && <p className="text-xs font-sans text-[var(--muted)] mt-0.5">{word.ipa}</p>}
                         </div>
-                        <span className="text-[10px] font-mono text-gray-400 select-none">#{word.id}</span>
+                        <span className="text-[10px] font-sans text-gray-400 select-none">#{word.id}</span>
                       </div>
 
                       <div className="mt-2 flex-1 mb-4 space-y-2">
-                        <p className="text-[var(--ink)] font-bold text-sm">
+                        <p className="text-[var(--ink)] font-semibold text-sm">
                           {en}
                         </p>
                         {vi && (
-                          <p className="text-[var(--muted)] text-xs font-medium border-l-2 border-[var(--blue)] pl-2">
+                          <p className="text-[var(--muted)] text-xs font-medium border-l border-[var(--blue)] pl-2">
                             {vi}
                           </p>
                         )}
                         {word.synonyms && (
                           <p className="text-[11px] text-[var(--muted)] italic">
-                            <span className="font-bold">Đồng nghĩa:</span> {word.synonyms}
+                            <span className="font-semibold">Đồng nghĩa:</span> {word.synonyms}
                           </p>
                         )}
                         {word.example && (
                           <p className="text-[11px] text-[var(--muted)] line-clamp-2" title={word.example}>
-                            <span className="font-bold text-[var(--ink)]">Ví dụ:</span> {word.example}
+                            <span className="font-semibold text-[var(--ink)]">Ví dụ:</span> {word.example}
                           </p>
                         )}
                       </div>
 
                       <div className="flex flex-wrap gap-1.5 mb-4">
-                        <span className="bg-[#f59e0b] text-[#111827] border-2 border-[var(--line)] shadow-[1px_1px_0_var(--line)] font-bold text-[10px] py-0.5 px-2 rounded-md uppercase">{word.level}</span>
+                        <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-[10px] py-0.5 px-2 rounded-md ">{word.level}</span>
                         <span className="chip text-[10px] py-0.5 px-2">{TOPIC_LABELS[word.topic] || word.topic}</span>
                       </div>
 
-                      <div className="flex items-center gap-2 mt-auto pt-4 border-t-2 border-dashed border-[var(--line)]">
-                        <Link href={`/word/${word.id}`} className="btn-brutal bg-[var(--paper)] text-[var(--ink)] text-[11px] px-2.5 py-1.5 font-bold flex-1 text-center select-none shadow-[2px_2px_0_var(--line)]">
+                      <div className="flex items-center gap-2 mt-auto pt-4 border-t border-solid border-[var(--line)]">
+                        <Link href={`/word/${word.id}`} className="btn-brutal bg-[var(--paper)] text-[var(--ink)] text-[11px] px-2.5 py-1.5 font-semibold flex-1 text-center select-none ">
                           Xem
                         </Link>
-                        <button onClick={() => handleOpenModal(word)} className="btn-brutal bg-[var(--blue)] text-white text-[11px] px-2.5 py-1.5 font-bold flex-1 shadow-[2px_2px_0_var(--line)]">
+                        <button onClick={() => handleOpenModal(word)} className="btn-brutal bg-[var(--blue)] text-white text-[11px] px-2.5 py-1.5 font-semibold flex-1 ">
                           Sửa
                         </button>
-                        <button onClick={() => handleDelete(word.id)} className="btn-brutal bg-[var(--red)] text-white text-[11px] px-2.5 py-1.5 font-bold shadow-[2px_2px_0_var(--line)]">
+                        <button onClick={() => handleDelete(word.id)} className="btn-brutal bg-[var(--red)] text-white text-[11px] px-2.5 py-1.5 font-semibold ">
                           Xóa
                         </button>
                       </div>
@@ -392,9 +392,9 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
 
               {/* Pagination */}
               {totalWordPages > 1 && (
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-12 bg-[var(--paper)] p-5 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl w-full">
-                  <p className="text-sm font-bold text-[var(--muted)]">
-                    Hiển thị từ <span className="text-[var(--ink)] font-black">{(wordPage - 1) * wordsPerPage + 1}</span> - <span className="text-[var(--ink)] font-black">{Math.min(wordPage * wordsPerPage, filteredWords.length)}</span> trên <span className="text-[var(--ink)] font-black">{filteredWords.length}</span> từ vựng
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-12 bg-[var(--paper)] p-5 border border-[var(--line)] rounded-2xl w-full">
+                  <p className="text-sm font-semibold text-[var(--muted)]">
+                    Hiển thị từ <span className="text-[var(--ink)] font-semibold">{(wordPage - 1) * wordsPerPage + 1}</span> - <span className="text-[var(--ink)] font-semibold">{Math.min(wordPage * wordsPerPage, filteredWords.length)}</span> trên <span className="text-[var(--ink)] font-semibold">{filteredWords.length}</span> từ vựng
                   </p>
 
                   <div className="flex items-center gap-2 flex-wrap justify-center">
@@ -403,7 +403,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       onClick={() => {
                         setWordPage((prev) => Math.max(prev - 1, 1));
                       }}
-                      className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &lt;
                     </button>
@@ -411,7 +411,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     {getPageNumbers(wordPage, totalWordPages).map((p, idx) => {
                       if (p === '...') {
                         return (
-                          <span key={`dots-${idx}`} className="w-10 h-10 flex items-center justify-center font-bold text-[var(--muted)]">
+                          <span key={`dots-${idx}`} className="w-10 h-10 flex items-center justify-center font-semibold text-[var(--muted)]">
                             ...
                           </span>
                         );
@@ -424,11 +424,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           onClick={() => {
                             setWordPage(p as number);
                           }}
-                          className={`w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold transition-all cursor-pointer ${
-                            isCurrent
-                              ? 'bg-[var(--green)] text-white shadow-[2px_2px_0_var(--line)]'
-                              : 'bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] hover:bg-[var(--green)]/10'
-                          }`}
+                          className={`w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold transition-all cursor-pointer ${ isCurrent ? 'bg-[var(--green)] text-white ' : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-[var(--green)]/10' }`}
                         >
                           {p}
                         </button>
@@ -440,7 +436,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       onClick={() => {
                         setWordPage((prev) => Math.min(prev + 1, totalWordPages));
                       }}
-                      className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &gt;
                     </button>
@@ -462,69 +458,69 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
               placeholder="Tìm kiếm học viên theo tên hoặc email..."
               value={userSearch}
               onChange={e => setUserSearch(e.target.value)}
-              className="w-full px-4 py-3 border-[3px] border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none focus:shadow-[4px_4px_0_var(--line)] transition-shadow font-bold"
+              className="w-full px-4 py-3 border border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none transition-shadow font-semibold"
             />
           </div>
 
           {/* Users Table */}
           {paginatedUsers.length === 0 ? (
             <div className="panel text-center py-20">
-              <p className="text-[var(--muted)] font-bold text-lg">Không tìm thấy học viên nào phù hợp!</p>
+              <p className="text-[var(--muted)] font-semibold text-lg">Không tìm thấy học viên nào phù hợp!</p>
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl bg-[var(--paper)]">
+              <div className="overflow-x-auto border border-[var(--line)] rounded-2xl bg-[var(--paper)]">
                 <table className="w-full text-left border-collapse min-w-[650px] md:min-w-0">
                   <thead>
                     <tr className="border-b-[3px] border-[var(--line)] bg-[var(--bg)] text-[var(--ink)] select-none">
-                      <th className="p-4 font-black text-sm uppercase tracking-wider">Học viên</th>
-                      <th className="p-4 font-black text-sm uppercase tracking-wider w-[120px]">Vai trò</th>
-                      <th className="p-4 font-black text-sm uppercase tracking-wider w-[140px]">Từ đang học</th>
-                      <th className="p-4 font-black text-sm uppercase tracking-wider hidden md:table-cell w-[160px]">Ngày tham gia</th>
-                      <th className="p-4 font-black text-sm text-right uppercase tracking-wider w-[180px]">Hành động</th>
+                      <th className="p-4 font-semibold text-sm ">Học viên</th>
+                      <th className="p-4 font-semibold text-sm w-[120px]">Vai trò</th>
+                      <th className="p-4 font-semibold text-sm w-[140px]">Từ đang học</th>
+                      <th className="p-4 font-semibold text-sm hidden md:table-cell w-[160px]">Ngày tham gia</th>
+                      <th className="p-4 font-semibold text-sm text-right w-[180px]">Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     {paginatedUsers.map((user) => {
                       const isAdmin = user.email === 'ungnhutkhang53@gmail.com' || user.role === 'admin';
                       return (
-                        <tr key={user.id} className="border-b-2 border-[var(--line)] last:border-b-0 hover:bg-[var(--bg)]/10 transition-colors">
+                        <tr key={user.id} className="border-b border-[var(--line)] last:border-b-0 hover:bg-[var(--bg)]/10 transition-colors">
                           <td className="p-4">
                             <div className="flex items-center gap-3">
-                              <span className="w-10 h-10 rounded-full bg-[var(--yellow)] border-2 border-[var(--line)] flex items-center justify-center font-black text-[var(--ink)] text-sm shadow-[1.5px_1.5px_0_var(--line)] select-none shrink-0">
+                              <span className="w-10 h-10 rounded-full bg-[var(--yellow)] border border-[var(--line)] flex items-center justify-center font-semibold text-[var(--ink)] text-sm select-none shrink-0">
                                 {user.name?.charAt(0).toUpperCase() || 'U'}
                               </span>
                               <div className="min-w-0">
-                                <span className="font-bold text-[var(--ink)] truncate block" title={user.name || 'Người dùng ẩn danh'}>
+                                <span className="font-semibold text-[var(--ink)] truncate block" title={user.name || 'Người dùng ẩn danh'}>
                                   {user.name || 'Người dùng ẩn danh'}
                                 </span>
-                                <span className="text-xs text-[var(--muted)] font-mono block truncate" title={user.email}>{user.email}</span>
+                                <span className="text-xs text-[var(--muted)] font-sans block truncate" title={user.email}>{user.email}</span>
                               </div>
                             </div>
                           </td>
                           <td className="p-4">
                             {isAdmin ? (
-                              <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] px-2 py-0.5 rounded-md font-black border border-[var(--line)] select-none">
+                              <span className="bg-[var(--yellow)] text-[var(--ink)] text-[10px] px-2 py-0.5 rounded-md font-semibold border border-[var(--line)] select-none">
                                 ADMIN
                               </span>
                             ) : (
-                              <span className="bg-[var(--blue)] text-white text-[10px] px-2 py-0.5 rounded-md font-black border border-[var(--line)] select-none">
+                              <span className="bg-[var(--blue)] text-white text-[10px] px-2 py-0.5 rounded-md font-semibold border border-[var(--line)] select-none">
                                 Học viên
                               </span>
                             )}
                           </td>
                           <td className="p-4">
-                            <span className="font-bold text-[var(--ink)] text-sm">
+                            <span className="font-semibold text-[var(--ink)] text-sm">
                               {user._count.progress} từ
                             </span>
                           </td>
-                          <td className="p-4 text-xs font-mono text-[var(--muted)] hidden md:table-cell">
+                          <td className="p-4 text-xs font-sans text-[var(--muted)] hidden md:table-cell">
                             {new Date(user.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' })}
                           </td>
                           <td className="p-4 text-right">
                             {user.email !== 'ungnhutkhang53@gmail.com' ? (
                               <div className="flex justify-end gap-2">
-                                <button 
+                                <button
                                   onClick={async () => {
                                     const newPass = prompt(`Nhập mật khẩu mới cho ${user.name || user.email}:`, "123456");
                                     if (newPass) {
@@ -549,11 +545,11 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                       }
                                     }
                                   }}
-                                  className="btn-brutal bg-[var(--blue)] text-white text-[10px] py-1 px-2.5 font-bold shadow-[1.5px_1.5px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_var(--line)] active:translate-y-0.5 active:shadow-[0.5px_0.5px_0_var(--line)] cursor-pointer transition-all shrink-0"
+                                  className="btn-brutal bg-[var(--blue)] text-white text-[10px] py-1 px-2.5 font-semibold cursor-pointer transition-all shrink-0"
                                 >
                                   Đổi Pass
                                 </button>
-                                <button 
+                                <button
                                   onClick={async () => {
                                     if (confirm(`Bạn có chắc muốn xóa học viên ${user.name || user.email}? Hành động này không thể hoàn tác!`)) {
                                       try {
@@ -568,13 +564,13 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                       }
                                     }
                                   }}
-                                  className="btn-brutal bg-[var(--red)] text-white text-[10px] py-1 px-2.5 font-bold shadow-[1.5px_1.5px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_var(--line)] active:translate-y-0.5 active:shadow-[0.5px_0.5px_0_var(--line)] cursor-pointer transition-all shrink-0"
+                                  className="btn-brutal bg-[var(--red)] text-white text-[10px] py-1 px-2.5 font-semibold cursor-pointer transition-all shrink-0"
                                 >
                                   Xóa
                                 </button>
                               </div>
                             ) : (
-                              <span className="text-[10px] text-[var(--muted)] font-bold italic">Bảo vệ</span>
+                              <span className="text-[10px] text-[var(--muted)] font-semibold italic">Bảo vệ</span>
                             )}
                           </td>
                         </tr>
@@ -583,12 +579,12 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                   </tbody>
                 </table>
               </div>
-              
+
 {/* User Pagination */}
               {totalUserPages > 1 && (
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-12 bg-[var(--paper)] p-5 border-[3px] border-[var(--line)] shadow-[6px_6px_0_var(--line)] rounded-2xl w-full">
-                  <p className="text-sm font-bold text-[var(--muted)]">
-                    Hiển thị học viên <span className="text-[var(--ink)] font-black">{(userPage - 1) * usersPerPage + 1}</span> - <span className="text-[var(--ink)] font-black">{Math.min(userPage * usersPerPage, filteredUsers.length)}</span> trên <span className="text-[var(--ink)] font-black">{filteredUsers.length}</span> học viên
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-12 bg-[var(--paper)] p-5 border border-[var(--line)] rounded-2xl w-full">
+                  <p className="text-sm font-semibold text-[var(--muted)]">
+                    Hiển thị học viên <span className="text-[var(--ink)] font-semibold">{(userPage - 1) * usersPerPage + 1}</span> - <span className="text-[var(--ink)] font-semibold">{Math.min(userPage * usersPerPage, filteredUsers.length)}</span> trên <span className="text-[var(--ink)] font-semibold">{filteredUsers.length}</span> học viên
                   </p>
 
                   <div className="flex items-center gap-2 flex-wrap justify-center">
@@ -597,7 +593,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       onClick={() => {
                         setUserPage((prev) => Math.max(prev - 1, 1));
                       }}
-                      className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &lt;
                     </button>
@@ -605,7 +601,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     {getPageNumbers(userPage, totalUserPages).map((p, idx) => {
                       if (p === '...') {
                         return (
-                          <span key={`dots-${idx}`} className="w-10 h-10 flex items-center justify-center font-bold text-[var(--muted)]">
+                          <span key={`dots-${idx}`} className="w-10 h-10 flex items-center justify-center font-semibold text-[var(--muted)]">
                             ...
                           </span>
                         );
@@ -618,11 +614,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           onClick={() => {
                             setUserPage(p as number);
                           }}
-                          className={`w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold transition-all cursor-pointer ${
-                            isCurrent
-                              ? 'bg-[var(--green)] text-white shadow-[2px_2px_0_var(--line)]'
-                              : 'bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] hover:bg-[var(--green)]/10'
-                          }`}
+                          className={`w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold transition-all cursor-pointer ${ isCurrent ? 'bg-[var(--green)] text-white ' : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-[var(--green)]/10' }`}
                         >
                           {p}
                         </button>
@@ -634,7 +626,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       onClick={() => {
                         setUserPage((prev) => Math.min(prev + 1, totalUserPages));
                       }}
-                      className="w-10 h-10 flex items-center justify-center border-2 border-[var(--line)] rounded-lg font-bold bg-[var(--bg)] text-[var(--ink)] shadow-[2px_2px_0_var(--line)] disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--line)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] transition-all cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &gt;
                     </button>
@@ -650,61 +642,61 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
       {isModalOpen && (
         <div className="fixed inset-0 bg-[var(--bg)]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="panel max-w-2xl w-full bg-[var(--paper)] my-8">
-            <h2 className="text-2xl font-black mb-6 uppercase">{editingWord ? 'Sửa Từ Vựng' : 'Thêm Từ Mới'}</h2>
+            <h2 className="text-2xl font-semibold mb-6 ">{editingWord ? 'Sửa Từ Vựng' : 'Thêm Từ Mới'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-bold mb-1">Từ vựng (Tiếng Anh)</label>
-                  <input required value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-bold bg-[var(--paper)] focus:outline-none" />
+                  <label className="block text-sm font-semibold mb-1">Từ vựng (Tiếng Anh)</label>
+                  <input required value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1">Loại từ</label>
-                  <select value={formData.pos} onChange={e => setFormData({...formData, pos: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-bold bg-[var(--paper)] cursor-pointer">
+                  <label className="block text-sm font-semibold mb-1">Loại từ</label>
+                  <select value={formData.pos} onChange={e => setFormData({...formData, pos: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     <option value="">Không phân loại</option>
                     {POS_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1">Phiên âm (IPA) - Tùy chọn</label>
-                  <input value={formData.ipa} onChange={e => setFormData({...formData, ipa: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-mono bg-[var(--paper)] focus:outline-none" />
+                  <label className="block text-sm font-semibold mb-1">Phiên âm (IPA) - Tùy chọn</label>
+                  <input value={formData.ipa} onChange={e => setFormData({...formData, ipa: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-sans bg-[var(--paper)] focus:outline-none" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold mb-1">Nghĩa (Định dạng: Nghĩa tiếng Anh ||| Nghĩa tiếng Việt)</label>
-                <textarea required rows={3} value={formData.meaning_vi} onChange={e => setFormData({...formData, meaning_vi: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-bold bg-[var(--paper)] focus:outline-none" placeholder="to be extremely happy ||| Vô cùng hạnh phúc"></textarea>
+                <label className="block text-sm font-semibold mb-1">Nghĩa (Định dạng: Nghĩa tiếng Anh ||| Nghĩa tiếng Việt)</label>
+                <textarea required rows={3} value={formData.meaning_vi} onChange={e => setFormData({...formData, meaning_vi: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" placeholder="to be extremely happy ||| Vô cùng hạnh phúc"></textarea>
               </div>
 
               <div>
-                <label className="block text-sm font-bold mb-1">Ví dụ (Tùy chọn)</label>
-                <textarea rows={2} value={formData.example} onChange={e => setFormData({...formData, example: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none"></textarea>
+                <label className="block text-sm font-semibold mb-1">Ví dụ (Tùy chọn)</label>
+                <textarea rows={2} value={formData.example} onChange={e => setFormData({...formData, example: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none"></textarea>
               </div>
 
               <div>
-                <label className="block text-sm font-bold mb-1">Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)</label>
-                <input value={formData.synonyms} onChange={e => setFormData({...formData, synonyms: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none" placeholder="happy, joyful" />
+                <label className="block text-sm font-semibold mb-1">Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)</label>
+                <input value={formData.synonyms} onChange={e => setFormData({...formData, synonyms: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none" placeholder="happy, joyful" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold mb-1">Chủ đề</label>
-                  <select value={formData.topic} onChange={e => setFormData({...formData, topic: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-bold bg-[var(--paper)] cursor-pointer">
+                  <label className="block text-sm font-semibold mb-1">Chủ đề</label>
+                  <select value={formData.topic} onChange={e => setFormData({...formData, topic: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     {TOPICS.map(t => <option key={t} value={t}>{TOPIC_LABELS[t] || t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1">Mức độ</label>
-                  <select value={formData.level} onChange={e => setFormData({...formData, level: e.target.value})} className="w-full px-3 py-2 border-[2px] border-[var(--line)] rounded-lg font-bold bg-[var(--paper)] cursor-pointer">
+                  <label className="block text-sm font-semibold mb-1">Mức độ</label>
+                  <select value={formData.level} onChange={e => setFormData({...formData, level: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
                   </select>
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-4 mt-4 border-t-2 border-dashed border-[var(--line)]">
-                <button type="submit" disabled={isSubmitting} className="btn-brutal bg-[var(--green)] text-white flex-1 py-3 uppercase shadow-[2px_2px_0_var(--line)]">
+              <div className="flex gap-4 pt-4 mt-4 border-t border-solid border-[var(--line)]">
+                <button type="submit" disabled={isSubmitting} className="btn-brutal bg-[var(--green)] text-white flex-1 py-3 ">
                   {isSubmitting ? 'Đang lưu...' : 'Lưu lại'}
                 </button>
-                <button type="button" onClick={handleCloseModal} className="btn-brutal bg-[var(--paper)] text-[var(--ink)] px-6 py-3 uppercase shadow-[2px_2px_0_var(--line)]">
+                <button type="button" onClick={handleCloseModal} className="btn-brutal bg-[var(--paper)] text-[var(--ink)] px-6 py-3 ">
                   Hủy
                 </button>
               </div>

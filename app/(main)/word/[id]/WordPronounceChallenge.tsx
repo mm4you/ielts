@@ -1,5 +1,7 @@
 'use client';
 
+
+import { DismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { useState } from 'react';
 import PronounceRoast from '@/app/(main)/pronounce-challenge/PronounceRoast';
 
@@ -12,11 +14,11 @@ export default function WordPronounceChallenge({ wordId, wordText }: WordPronoun
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="mt-6 border-t-2 border-dashed border-[var(--line)] pt-6">
+    <div className="mt-6 border-t border-solid border-[var(--line)] pt-6">
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          className="btn-brutal w-full bg-[var(--blue)] text-white py-3.5 px-6 text-lg font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-transform shadow-[4px_4px_0_var(--line)]"
+          className="btn-brutal w-full bg-[var(--blue)] text-white py-3.5 px-6 text-lg font-semibold flex items-center justify-center gap-2 transition-transform "
         >
           LUYỆN PHÁT ÂM VỚI AI
         </button>
@@ -25,11 +27,9 @@ export default function WordPronounceChallenge({ wordId, wordText }: WordPronoun
           <div className="flex justify-end mb-2">
             <button
               onClick={() => setIsOpen(false)}
-              className="text-xs font-black bg-[var(--red)] text-white border-2 border-[var(--line)] px-2.5 py-1.5 uppercase shadow-[2px_2px_0_var(--line)] hover:translate-y-0.5 hover:shadow-[0_0_0_var(--line)] transition-all flex items-center gap-1"
+              className="text-xs font-semibold bg-[var(--red)] text-white border border-[var(--line)] px-2.5 py-1.5 transition-all flex items-center gap-1"
             >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <DismissRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
               <span>Đóng luyện tập</span>
             </button>
           </div>

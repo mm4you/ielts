@@ -2,21 +2,23 @@ import { MetadataRoute } from 'next'
  
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'IELTS Vocab - Vũ Trụ Game Học Thuật',
+    name: 'IELTS Vocab',
     short_name: 'Vocab',
-    description: 'Học từ vựng IELTS với các chế độ game sinh tồn và phương pháp lặp lại ngắt quãng SM2.',
+    description: 'Học và ôn tập từ vựng IELTS.',
+    id: '/',
+    scope: '/',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f4f4f0',
-    theme_color: '#ef4444',
+    background_color: '#f5f6f8',
+    theme_color: '#0f6cbd',
     icons: [
       {
-        src: '/icon?size=192',
+        src: '/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/icon?size=512',
+        src: '/icon-512.png',
         sizes: '512x512',
         type: 'image/png',
       },

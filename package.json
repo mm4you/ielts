@@ -19,6 +19,9 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
+    "@fluentui/react-components": "^9.75.0",
+    "@fluentui/react-icons": "^2.0.344",
+    "@griffel/react": "^1.7.8",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.4.0",

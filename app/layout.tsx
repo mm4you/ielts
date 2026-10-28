@@ -1,18 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { auth } from "@/auth";
 
-const fraunces = Fraunces({
-  subsets: ["latin", "vietnamese"],
-  variable: "--font-fraunces",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin", "vietnamese"],
-  variable: "--font-space-grotesk",
-});
 
 export const metadata: Metadata = {
   title: "IELTS Vocab - Học từ vựng IELTS",
@@ -25,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ef4444",
+  themeColor: "#0f6cbd",
   width: "device-width",
   initialScale: 1,
 };
@@ -38,7 +28,7 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${fraunces.variable} font-sans`}>
+      <body className="font-sans">
         <Providers session={session}>
           {children}
         </Providers>

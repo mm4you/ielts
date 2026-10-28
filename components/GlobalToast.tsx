@@ -1,5 +1,6 @@
 'use client';
 
+import { MessageBar, MessageBarBody } from '@fluentui/react-components';
 import { useState, useEffect } from 'react';
 
 interface ToastData {
@@ -52,36 +53,5 @@ export default function GlobalToast() {
 
   if (!toast || !show) return null;
 
-  return (
-    <>
-      {/* Stylesheet injected for toast animations */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes slideInRight {
-          from {
-            transform: translateX(120%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        .animate-toast-slide {
-          animation: slideInRight 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-      `}} />
-
-      {/* Screen Corner Toast Alert (using z-[9999] and rendered at root body level) */}
-      <div 
-        key={toast.id}
-        className={`fixed bottom-6 right-6 z-[9999] py-3 px-5 border-[3px] border-[var(--line)] shadow-[4px_4px_0px_#000] font-mono text-sm font-bold uppercase flex items-center gap-3 rounded-xl animate-toast-slide ${
-          toast.isSaved 
-            ? 'bg-[var(--green)] text-white' 
-            : 'bg-[var(--red)] text-white'
-        }`}
-      >
-        <span>{toast.message}</span>
-      </div>
-    </>
-  );
+  return <div className="global-toast" role="status" aria-live="polite"><MessageBar intent={toast.isSaved?'success':'error'}><MessageBarBody>{toast.message}</MessageBarBody></MessageBar></div>;
 }

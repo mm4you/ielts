@@ -1,23 +1,23 @@
 'use client';
 
+
+
+import { Button, Field, Select } from '@fluentui/react-components';
+import AppLoading from '@/components/AppLoading';
+import LoadingState from '@/components/LoadingState';
+import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 const PronounceRoast = dynamic(() => import('./PronounceRoast'), {
   ssr: false,
-  loading: () => <div className="text-center py-6 font-bold text-lg animate-pulse text-[var(--muted)]">Đang tải giọng nói AI...</div>
+  loading: () => <LoadingState label="Đang chuẩn bị phát âm" />
 });
 
 export default function RoastDemoPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center animate-pulse">
-          <p className="text-xl font-bold">Đang tải thử thách phát âm...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<AppLoading contained />}>
       <RoastDemoContent />
     </Suspense>
   );
@@ -49,6 +49,7 @@ function RoastDemoContent() {
       }
     } catch (e) {
       console.error(e);
+      setErrorMsg('Không thể tải từ. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -62,56 +63,54 @@ function RoastDemoContent() {
   const CEFR_LEVELS = ['ALL', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
   return (
-    <div className="container mx-auto p-4 sm:p-8 max-w-2xl text-[var(--ink)]">
-      <div className="flex items-center justify-between mb-6 border-b-4 border-[var(--line)] pb-2">
-        <h1 className="text-2xl sm:text-3xl font-black uppercase flex items-center gap-3">
-          THỬ THÁCH PHÁT ÂM
-          <span className="bg-[var(--yellow)] text-[var(--ink)] text-sm px-2 py-1 border-2 border-[var(--line)] rotate-[-5deg]">BETA</span>
+    <div className="pronunciation-page">
+      <div className="flex items-center justify-between mb-6 border-b border-[var(--line)] pb-2">
+        <h1 className="text-2xl sm:text-3xl font-semibold flex items-center gap-3">
+          Luyện phát âm
         </h1>
-        <button 
-          onClick={() => router.push(exitRoute)} 
-          className="w-8 h-8 md:w-10 md:h-10 border-2 border-[var(--line)] bg-[var(--red)] text-white font-black rounded-lg shadow-[2px_2px_0_var(--line)] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base"
+        <button
+          onClick={() => router.push(exitRoute)}
+          className="w-8 h-8 md:w-10 md:h-10 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm md:text-base"
           title={exitLabel}
-        >
-          X
-        </button>
+         aria-label="Đóng">
+          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
       </div>
-      
-      <p className="mb-6 text-base sm:text-lg font-bold text-[var(--muted)]">
-        AI "Mỏ Hỗn" sẽ chấm điểm và nhận xét trình độ phát âm tiếng Anh của bạn!
+
+      <p className="mb-6 text-base sm:text-lg font-semibold text-[var(--muted)]">
+        Đọc từ để nhận điểm và phản hồi phát âm.
       </p>
 
-      <div className="panel bg-[var(--paper)] border-4 border-[var(--line)] shadow-[6px_6px_0_var(--line)] mb-8 p-4 sm:p-6 text-center">
+      <div className="panel bg-[var(--paper)] border border-[var(--line)] mb-8 p-4 sm:p-6 text-center">
         <div className="mb-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <label className="font-bold text-lg text-[var(--ink)]">Chọn Độ Khó:</label>
-          <select 
-            value={level} 
+          <label htmlFor="pronunciation-level" className="text-sm text-[var(--muted)]">Cấp độ</label>
+          <select id="pronunciation-level"
+            value={level}
             onChange={(e) => setLevel(e.target.value)}
-            className="input-brutal w-full sm:w-auto text-center font-bold bg-[var(--bg)] text-[var(--ink)] border-[var(--line)]"
+            className="input-brutal w-full sm:w-auto text-center font-semibold bg-[var(--bg)] text-[var(--ink)] border-[var(--line)]"
           >
             {CEFR_LEVELS.map(l => (
-              <option key={l} value={l}>{l === 'ALL' ? 'Tất cả (Trộn lộn xộn)' : `Level ${l}`}</option>
+              <option key={l} value={l}>{l === 'ALL' ? 'Tất cả cấp độ' : l}</option>
             ))}
           </select>
         </div>
 
-        <button 
+        <button
           onClick={fetchRandomWord}
           disabled={loading}
-          className={`btn-brutal w-full sm:w-auto px-8 py-3 text-xl font-black ${loading ? 'bg-[var(--muted)] text-[var(--paper)]' : 'bg-[var(--blue)] text-[var(--bg)] hover:brightness-110'}`}
+          className={`btn-brutal w-full sm:w-auto px-8 py-3 text-xl font-semibold ${loading ? 'bg-[var(--muted)] text-[var(--paper)]' : 'bg-[var(--blue)] text-white hover:brightness-110'}`}
         >
-          {loading ? '⏳ Đang xoay ru-lét...' : 'ĐỔI TỪ KHÁC'}
+          {loading ? 'Đang tải' : 'Đổi từ'}
         </button>
-        {errorMsg && <p className="text-red-500 font-bold mt-4">{errorMsg}</p>}
+        {errorMsg && <p className="text-red-500 font-semibold mt-4">{errorMsg}</p>}
       </div>
 
       {!loading && wordData && (
         <div className="space-y-8">
-          <div className="border-4 border-[var(--line)] p-4 sm:p-6 bg-[var(--paper)] shadow-[8px_8px_0_var(--line)]">
-            <PronounceRoast 
-              key={`pronounce-${wordData.id}`} 
-              wordId={wordData.id} 
-              wordText={wordData.word} 
+          <div className="border border-[var(--line)] p-4 sm:p-6 bg-[var(--paper)] ">
+            <PronounceRoast
+              key={`pronounce-${wordData.id}`}
+              wordId={wordData.id}
+              wordText={wordData.word}
             />
           </div>
         </div>
