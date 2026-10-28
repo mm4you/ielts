@@ -1,6 +1,9 @@
 'use client';
 
 
+import { Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, Button } from '@fluentui/react-components';
+import { DismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { showToast } from '@/components/GlobalToast';
 import { WandRegular } from '@fluentui/react-icons/svg/wand';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -24,6 +27,8 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
   const [activeTab, setActiveTab] = useState<'words' | 'users'>('words');
   const [words, setWords] = useState<Word[]>(initialWords);
   const [users, setUsers] = useState<UserData[]>(initialUsers);
+
+  const showMessage = (message: string) => showToast(message, false);
 
   // Word Filters & Pagination
   const [search, setSearch] = useState('');
@@ -169,7 +174,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
       }
       handleCloseModal();
     } catch (err) {
-      alert('Có lỗi xảy ra! Vui lòng thử lại.');
+      showMessage('Có lỗi xảy ra! Vui lòng thử lại.');
       console.error(err);
     } finally {
       setIsSubmitting(false);
@@ -182,7 +187,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
         await deleteWord(id);
         setWords(words.filter(w => w.id !== id));
       } catch (err) {
-        alert('Lỗi khi xóa!');
+        showMessage('Lỗi khi xóa!');
       }
     }
   };
@@ -283,10 +288,10 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                   try {
                     const res = await fetch('/api/seed-basic');
                     const data = await res.json();
-                    alert(data.message);
+                    showMessage(data.message);
                     if (data.success) window.location.reload();
                   } catch (e) {
-                    alert('Lỗi nạp từ cơ bản');
+                    showMessage('Lỗi nạp từ cơ bản');
                   }
                 }}
                 className="btn-brutal bg-[var(--yellow)] text-[var(--ink)] text-xs py-2 px-4 "
@@ -302,16 +307,16 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       body: JSON.stringify({ limit: 50 })
                     });
                     const data = await res.json();
-                    if (data.error) alert('Lỗi: ' + data.error);
+                    if (data.error) showMessage('Lỗi: ' + data.error);
                     else {
-                      alert(data.message);
+                      showMessage(data.message);
                       window.location.reload();
                     }
                   } catch (e) {
-                    alert('Lỗi kết nối AI');
+                    showMessage('Lỗi kết nối AI');
                   }
                 }}
-                className="btn-brutal bg-[#a855f7] text-white text-xs py-2 px-4 flex items-center justify-center gap-1.5"
+                className="btn-brutal bg-[var(--blue)] text-white text-xs py-2 px-4 flex items-center justify-center gap-1.5"
               >
                 <WandRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
                 <span>AI Sửa Nghĩa Tự Động (50 từ)</span>
@@ -338,7 +343,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           <div className="flex gap-2 items-center flex-wrap">
                             <h3 className="text-xl font-semibold font-sans text-[var(--ink)]">{word.word}</h3>
                             {pos && (
-                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-2 py-0.5 rounded-md text-[10px] font-semibold select-none ">
+                              <span className="bg-[var(--bg)] text-[var(--muted)] border border-[var(--line)] px-2 py-0.5 rounded-md text-[10px] font-semibold select-none ">
                                 {pos}
                               </span>
                             )}
@@ -370,7 +375,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       </div>
 
                       <div className="flex flex-wrap gap-1.5 mb-4">
-                        <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-[10px] py-0.5 px-2 rounded-md ">{word.level}</span>
+                        <span className="bg-[var(--brand-soft)] text-[var(--blue)] border border-[var(--line)] font-semibold text-[10px] py-0.5 px-2 rounded-md ">{word.level}</span>
                         <span className="chip text-[10px] py-0.5 px-2">{TOPIC_LABELS[word.topic] || word.topic}</span>
                       </div>
 
@@ -525,7 +530,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                     const newPass = prompt(`Nhập mật khẩu mới cho ${user.name || user.email}:`, "123456");
                                     if (newPass) {
                                       if (newPass.length < 6) {
-                                        alert('Mật khẩu phải chứa ít nhất 6 ký tự.');
+                                        showMessage('Mật khẩu phải chứa ít nhất 6 ký tự.');
                                         return;
                                       }
                                       try {
@@ -535,13 +540,13 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                           body: JSON.stringify({ password: newPass })
                                         });
                                         if (res.ok) {
-                                          alert('Đặt lại mật khẩu thành công!');
+                                          showToast('Đã đặt lại mật khẩu', true);
                                         } else {
                                           const data = await res.json();
-                                          alert(data.error || 'Lỗi khi đặt lại mật khẩu.');
+                                          showMessage(data.error || 'Lỗi khi đặt lại mật khẩu.');
                                         }
                                       } catch (e) {
-                                        alert('Có lỗi xảy ra.');
+                                        showMessage('Có lỗi xảy ra.');
                                       }
                                     }
                                   }}
@@ -557,10 +562,10 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                         if (res.ok) {
                                           window.location.reload();
                                         } else {
-                                          alert('Không thể xóa người dùng này.');
+                                          showMessage('Không thể xóa người dùng này.');
                                         }
                                       } catch (e) {
-                                        alert('Có lỗi xảy ra.');
+                                        showMessage('Có lỗi xảy ra.');
                                       }
                                     }
                                   }}
@@ -638,27 +643,22 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
         </>
       )}
 
-      {/* Modal Add/Edit */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-[var(--bg)]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="panel max-w-2xl w-full bg-[var(--paper)] my-8">
-            <h2 className="text-2xl font-semibold mb-6 ">{editingWord ? 'Sửa Từ Vựng' : 'Thêm Từ Mới'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+      <Dialog open={isModalOpen} onOpenChange={(_,data)=>{if(!data.open&&!isSubmitting)handleCloseModal();}}><DialogSurface className="admin-word-dialog"><DialogBody><DialogTitle action={<Button appearance="subtle" aria-label="Đóng" disabled={isSubmitting} onClick={handleCloseModal} icon={<DismissRegular />} />}>{editingWord?'Sửa từ vựng':'Thêm từ vựng'}</DialogTitle><DialogContent>            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1">Từ vựng (Tiếng Anh)</label>
-                  <input required value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" />
+                  <input aria-label="Từ vựng (Tiếng Anh)" required value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Loại từ</label>
-                  <select value={formData.pos} onChange={e => setFormData({...formData, pos: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
+                  <select aria-label="Loại từ" value={formData.pos} onChange={e => setFormData({...formData, pos: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     <option value="">Không phân loại</option>
                     {POS_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Phiên âm (IPA) - Tùy chọn</label>
-                  <input value={formData.ipa} onChange={e => setFormData({...formData, ipa: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-sans bg-[var(--paper)] focus:outline-none" />
+                  <input aria-label="Phiên âm (IPA) - Tùy chọn" value={formData.ipa} onChange={e => setFormData({...formData, ipa: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-sans bg-[var(--paper)] focus:outline-none" />
                 </div>
               </div>
 
@@ -674,19 +674,19 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
 
               <div>
                 <label className="block text-sm font-semibold mb-1">Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)</label>
-                <input value={formData.synonyms} onChange={e => setFormData({...formData, synonyms: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none" placeholder="happy, joyful" />
+                <input aria-label="Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)" value={formData.synonyms} onChange={e => setFormData({...formData, synonyms: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none" placeholder="happy, joyful" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1">Chủ đề</label>
-                  <select value={formData.topic} onChange={e => setFormData({...formData, topic: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
+                  <select aria-label="Chủ đề" value={formData.topic} onChange={e => setFormData({...formData, topic: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     {TOPICS.map(t => <option key={t} value={t}>{TOPIC_LABELS[t] || t}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Mức độ</label>
-                  <select value={formData.level} onChange={e => setFormData({...formData, level: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
+                  <select aria-label="Mức độ" value={formData.level} onChange={e => setFormData({...formData, level: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
                   </select>
                 </div>
@@ -700,10 +700,8 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                   Hủy
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </form></DialogContent></DialogBody></DialogSurface></Dialog>
+
     </div>
   );
 }

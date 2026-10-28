@@ -59,22 +59,23 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
       const link = <Link href={href} className={`nav-link ${active ? 'is-active' : ''}`} aria-current={active ? 'page' : undefined} aria-label={compact ? label : undefined} onClick={() => setMobileOpen(false)}><Icon aria-hidden="true" />{!compact && <span>{label}</span>}</Link>;
       return compact ? <Tooltip key={href} content={label} relationship="label" positioning="after">{link}</Tooltip> : <div key={href}>{link}</div>;
     }
+    const feedbackButton = <button className="nav-link" onClick={() => { setMobileOpen(false); openFeedbackModal(); }} aria-label={compact ? 'Góp ý hệ thống' : undefined}><ChatHelpRegular />{!compact && <span>Góp ý hệ thống</span>}</button>;
     return <>
       <Link href="/" className="app-brand" aria-label="IELTS Vocab, trang chủ" onClick={() => setMobileOpen(false)}>
         <BrandMark size={36} />
         {!compact && <span className="brand-name">IELTS Vocab</span>}
       </Link>
       <nav className="sidebar-navigation" aria-label="Điều hướng chính">
-        <div className="nav-group"><p className={compact ? 'nav-section-label compact-label' : 'nav-section-label'}>{compact ? '·' : 'Học tập'}</p>{studyLinks.slice(0,4).map(navLink)}</div>
-        <div className="nav-group"><p className={compact ? 'nav-section-label compact-label' : 'nav-section-label'}>{compact ? '·' : 'Luyện tập'}</p>
+        <div className="nav-group">{!compact && <p className="nav-section-label">Học tập</p>}{studyLinks.slice(0,4).map(navLink)}</div>
+        <div className="nav-group">{!compact && <p className="nav-section-label">Luyện tập</p>}
           {navLink({href:'/pronounce-challenge',label:'Phát âm',icon:MicRegular})}
           {compact ? <Menu positioning="after"><MenuTrigger disableButtonEnhancement><Button appearance="subtle" className="nav-link" icon={<GamesRegular />} aria-label="Trò chơi" /></MenuTrigger><MenuPopover><MenuList>{gameLinks.slice(0,4).map(({href,label,icon:Icon})=><MenuItemLink href={href} key={href} icon={<Icon />}>{label}</MenuItemLink>)}</MenuList></MenuPopover></Menu> : <><button className="nav-link" onClick={()=>setGamesOpen(value=>!value)} aria-expanded={gamesOpen} aria-controls={gamesId}><GamesRegular /><span>Trò chơi</span><ChevronDownRegular className={`nav-chevron ${gamesOpen?'is-open':''}`} /></button><div id={gamesId} className="nav-subgroup" hidden={!gamesOpen}>{gameLinks.slice(0,4).map(navLink)}</div></>}
         </div>
         <div className="nav-group">{navLink(studyLinks[4])}</div>
       </nav>
       <div className="sidebar-bottom">
-        {isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)} className={`nav-link ${pathname.startsWith('/admin') ? 'is-active' : ''}`} aria-label={compact ? 'Trang Admin' : undefined}><SettingsRegular />{!compact && <span>Trang Admin</span>}</Link>}
-        <button className="nav-link" onClick={() => { setMobileOpen(false); openFeedbackModal(); }} aria-label={compact ? 'Góp ý hệ thống' : undefined}><ChatHelpRegular />{!compact && <span>Góp ý hệ thống</span>}</button>
+        {isAdmin && navLink({href:'/admin',label:'Quản trị',icon:SettingsRegular})}
+        {compact ? <Tooltip content="Góp ý hệ thống" relationship="label" positioning="after">{feedbackButton}</Tooltip> : feedbackButton}
       </div>
     </>;
   }
@@ -92,10 +93,10 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
         <Input name="search" aria-label="Tìm từ trong thư viện" placeholder="Tìm từ vựng trong thư viện" contentBefore={<SearchRegular />} appearance="filled-lighter" />
       </form>
       <div className="topbar-actions">
-        <ThemeToggle />
         {session ? <Menu positioning="below-end">
           <MenuTrigger disableButtonEnhancement><Button appearance="transparent" className="profile-trigger" aria-label="Mở menu tài khoản"><Avatar name={session.user?.name || 'Bạn'} size={32} color="brand" /><span className="profile-name">{session.user?.name || 'Tài khoản'}</span></Button></MenuTrigger>
           <MenuPopover><div className="profile-summary"><strong>{session.user?.name}</strong><span>{session.user?.email}</span></div><MenuList>
+            <ThemeToggle />
             <MenuItem icon={<ChatHelpRegular />} onClick={() => openFeedbackModal()}>Góp ý hệ thống</MenuItem>
             <MenuItem icon={<ArrowExitRegular />} onClick={() => signOut({ callbackUrl: '/' })}>Đăng xuất</MenuItem>
           </MenuList></MenuPopover>

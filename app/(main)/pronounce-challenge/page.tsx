@@ -1,7 +1,5 @@
 'use client';
 
-
-
 import { Button, Field, Select } from '@fluentui/react-components';
 import AppLoading from '@/components/AppLoading';
 import LoadingState from '@/components/LoadingState';
@@ -106,7 +104,7 @@ function RoastDemoContent() {
 
       {!loading && wordData && (
         <div className="space-y-8">
-          <div className="border border-[var(--line)] p-4 sm:p-6 bg-[var(--paper)] ">
+          <div>
             <PronounceRoast
               key={`pronounce-${wordData.id}`}
               wordId={wordData.id}

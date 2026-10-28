@@ -27,7 +27,7 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang="vi" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="font-sans">
         <Providers session={session}>
           {children}

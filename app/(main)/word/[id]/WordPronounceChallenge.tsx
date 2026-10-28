@@ -20,7 +20,7 @@ export default function WordPronounceChallenge({ wordId, wordText }: WordPronoun
           onClick={() => setIsOpen(true)}
           className="btn-brutal w-full bg-[var(--blue)] text-white py-3.5 px-6 text-lg font-semibold flex items-center justify-center gap-2 transition-transform "
         >
-          LUYỆN PHÁT ÂM VỚI AI
+          Luyện phát âm với AI
         </button>
       ) : (
         <div className="relative">

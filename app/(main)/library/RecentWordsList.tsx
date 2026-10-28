@@ -46,7 +46,7 @@ export default function RecentWordsList() {
             >
               <div className="flex gap-1 items-center">
                 <p className="font-semibold text-[var(--ink)] group-hover:text-[var(--blue)]">{w.word}</p>
-                {pos && <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-1.5 py-0.5 rounded font-sans text-[9px] font-semibold ">{pos}</span>}
+                {pos && <span className="bg-[var(--bg)] text-[var(--muted)] border border-[var(--line)] px-1.5 py-0.5 rounded font-sans text-[9px] font-semibold ">{pos}</span>}
               </div>
               <p className="text-xs text-[var(--muted)] truncate max-w-[120px]">{en}</p>
             </Link>

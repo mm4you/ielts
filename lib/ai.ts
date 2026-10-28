@@ -1,3 +1,4 @@
+import { getNvidiaModel } from './ai-config';
 import fs from 'fs';
 import path from 'path';
 
@@ -55,7 +56,7 @@ Hãy trả về đúng định dạng JSON dưới đây, không thêm bất k�
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "meta/llama-3.1-8b-instruct",
+        model: getNvidiaModel(),
         messages: [{ role: "user", content: prompt }],
         temperature: 0.3,
         response_format: { type: "json_object" }

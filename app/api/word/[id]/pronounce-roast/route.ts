@@ -1,3 +1,4 @@
+import { getNvidiaModel } from '@/lib/ai-config';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
@@ -141,13 +142,14 @@ Quy tắc khen/chê theo điểm:
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'meta/llama-3.1-8b-instruct',
+        model: getNvidiaModel(),
         messages: messages,
         temperature: 0.8,
         top_p: 0.9,
-        max_tokens: 100,
+        max_tokens: 256,
         response_format: { type: "json_object" }
-      })
+      }),
+      signal: AbortSignal.timeout(12000)
     });
 
     if (!response.ok) {

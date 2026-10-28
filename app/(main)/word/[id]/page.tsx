@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
+import { ArrowLeftRegular } from '@fluentui/react-icons/svg/arrow-left';
 import Link from 'next/link';
 import { TOPIC_LABELS } from '@/types';
 import { auth } from '@/auth';
@@ -44,26 +45,26 @@ export default async function WordDetailPage({
   }
 
   return (
-    <div>
+    <div className="word-detail-page">
       <RecentWordTracker word={word} />
       <Link
         href="/library"
-        className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] mb-6 inline-block"
+        className="back-link"
       >
-        ← Quay lại thư viện
+        <ArrowLeftRegular aria-hidden="true" />Quay lại thư viện
       </Link>
 
 
-      <div className="card">
+      <div className="panel word-detail-card">
         <div className="flex items-start justify-between mb-6">
           <div>
             <div className="flex gap-3 items-center flex-wrap">
-              <h1 className="text-4xl font-semibold">{word.word}</h1>
+              <h1 className="word-detail-title">{word.word}</h1>
               <SaveToCollection wordId={word.id} wordText={word.word} />
             </div>
             {word.ipa && <p className="text-xl text-[var(--muted)] mt-1">{word.ipa}</p>}
           </div>
-          <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-xs px-3 py-1 rounded-md ">
+          <span className="bg-[var(--brand-soft)] text-[var(--blue)] border border-[var(--line)] font-semibold text-xs px-3 py-1 rounded-md ">
             {word.level}
           </span>
         </div>
@@ -76,7 +77,7 @@ export default async function WordDetailPage({
               return (
                 <div className="space-y-1">
                   <p className="text-xl font-semibold text-[var(--ink)]">
-                    {pos && <span className="bg-[#0ea5e9] text-[#111827] text-sm border border-[var(--line)] px-2.5 py-0.5 rounded-full font-semibold mr-2">{pos}</span>}
+                    {pos && <span className="bg-[var(--bg)] text-[var(--muted)] text-sm border border-[var(--line)] px-2.5 py-0.5 rounded-full font-semibold mr-2">{pos}</span>}
                     {en}
                   </p>
                   {vi && <p className="text-base text-[var(--muted)]">{vi}</p>}
@@ -102,7 +103,7 @@ export default async function WordDetailPage({
           )}
           {word.example && (
             <div>
-              <p className="text-sm text-[var(--muted)] mb-1">Ví dụ ngữ cảnh</p>
+              <p className="text-sm text-[var(--muted)] mb-1">Ví dụ</p>
               {(() => {
                 const separator = word.example.includes('///') ? '///' : '|||';
                 const parts = word.example.split(separator);

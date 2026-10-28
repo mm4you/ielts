@@ -1,7 +1,5 @@
 'use client';
 
-
-
 import AppLoading from '@/components/AppLoading';
 import LoadingState from '@/components/LoadingState';
 import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';

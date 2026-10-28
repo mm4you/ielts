@@ -1,7 +1,6 @@
 'use client';
 
-
-
+import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
 import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { useState, useEffect, useRef } from 'react';
@@ -213,20 +212,7 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
   }
 
   if (gameState === 'gameover') {
-    return (
-      <div className="flex items-center justify-center py-20 px-4 min-h-[calc(100vh-80px)]">
-        <div className="panel max-w-md w-full text-center border border-[var(--ink)] relative">
-          <button
-            onClick={() => router.push(exitRoute)}
-            className="absolute top-4 right-4 w-8 h-8 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
-            title={exitLabel}
-           aria-label="Đóng">
-            <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
-          <h2 className="text-5xl font-sans font-semibold mb-4 text-[var(--red)]">TỬ TRẬN</h2>
-          <p className="text-2xl font-semibold mb-4">Điểm thiện xạ:</p>
-          <div className="text-7xl font-semibold text-[var(--ink)] mb-6">{score}</div>
-
-          {playedWords.length > 0 && (
+    return <GameResult value={score} onReplay={startGame} loading={loading} exitRoute={exitRoute}>          {playedWords.length > 0 && (
             <div className="bg-[var(--paper)] p-4 border border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
               <h3 className="font-semibold text-sm mb-2 border-b border-solid border-[var(--line)] pb-2 text-[var(--blue)]">Các từ đã xuất hiện:</h3>
               <ul className="space-y-2">
@@ -245,13 +231,7 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
               </ul>
             </div>
           )}
-
-          <button onClick={startGame} disabled={loading} className={`w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
-            {loading ? 'ĐANG TẢI...' : 'CHƠI LẠI'}
-          </button>
-        </div>
-      </div>
-    );
+</GameResult>;
   }
 
   const currentQ = questions[currentQIndex];

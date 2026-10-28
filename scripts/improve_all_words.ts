@@ -1,3 +1,4 @@
+import { getNvidiaModel } from '../lib/ai-config';
 process.env.IS_SCRIPT = 'true';
 import { prisma } from '../lib/prisma';
 import dotenv from 'dotenv';
@@ -30,7 +31,7 @@ async function translateWithAI(word: string, pos: string | null, oldMeaning: str
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "meta/llama-3.1-8b-instruct",
+        model: getNvidiaModel(),
         messages: [{ role: "user", content: prompt }],
         temperature: 0.3
       }),

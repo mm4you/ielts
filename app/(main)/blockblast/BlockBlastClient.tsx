@@ -1,8 +1,6 @@
 'use client';
 
-
-
-
+import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
 import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { TrophyRegular } from '@fluentui/react-icons/svg/trophy';
@@ -644,35 +642,8 @@ export default function BlockBlastClient() {
           </div>
         )}
 
-        {/* Game Over Overlay */}
-        {gameState === 'gameover' && (
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 rounded-2xl">
-            <button
-              onClick={() => router.push(exitRoute)}
-              className="absolute top-4 right-4 w-8 h-8 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
-              title={exitLabel}
-             aria-label="Đóng">
-              <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
-            <h2 className="text-5xl font-sans font-semibold text-[var(--red)] mb-4 animate-[comboPop_0.4s_ease-out]">GAME OVER</h2>
-            <div className="bg-[var(--paper)] p-4 border border-[var(--line)] rounded-xl mb-6 text-center w-full max-w-[200px] ">
-              <span className="block text-sm font-semibold text-[var(--muted)] ">Điểm của bạn</span>
-              <span className="block text-4xl font-semibold text-[var(--blue)]">{score}</span>
-              {score >= highScore && score > 0 && (
-                <span className="inline-flex items-center gap-1 justify-center mt-2 text-xs font-semibold text-[var(--red)] animate-pulse w-full">
-                  <TrophyRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
-                  <span>Kỷ lục mới!</span>
-                  <TrophyRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
-                </span>
-              )}
-            </div>
-            <button
-              onClick={() => setGameState('setup')}
-              className="btn-brutal bg-[var(--yellow)] w-full "
-            >
-              Chơi Lại
-            </button>
-          </div>
-        )}
+        {gameState === 'gameover' && <div className="game-result-overlay"><GameResult embedded value={score} onReplay={() => setGameState('setup')} exitRoute={exitRoute}>{score>=highScore&&score>0&&<p className="new-record">Kỷ lục mới</p>}</GameResult></div>}
+
       </div>
       {/* Shapes tray */}
       <div className="w-full h-32 panel flex justify-between items-center gap-4 shrink-0 touch-none p-3 bg-[var(--paper)]">

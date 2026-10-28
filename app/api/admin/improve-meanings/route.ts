@@ -1,3 +1,4 @@
+import { getNvidiaModel } from '@/lib/ai-config';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
@@ -77,7 +78,7 @@ export async function POST(req: Request) {
                 'Authorization': `Bearer ${apiKey}`
               },
               body: JSON.stringify({
-                model: "meta/llama-3.1-8b-instruct",
+                model: getNvidiaModel(),
                 messages: [{ role: "user", content: prompt }],
                 temperature: 0.3
               }),

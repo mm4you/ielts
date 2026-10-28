@@ -1,9 +1,5 @@
 'use client';
 
-
-
-
-
 import PracticeSetup from '@/components/PracticeSetup';
 import AppLoading from '@/components/AppLoading';
 import LoadingState from '@/components/LoadingState';
@@ -231,7 +227,7 @@ function ReviewContent() {
         onClick={() => { if (!showMeaning) setShowMeaning(true); }}
       >
         <div className="absolute top-4 left-4 flex gap-2">
-          <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-[10px] px-2.5 py-0.5 rounded-md ">{currentWord.level}</span>
+          <span className="bg-[var(--brand-soft)] text-[var(--blue)] border border-[var(--line)] font-semibold text-[10px] px-2.5 py-0.5 rounded-md ">{currentWord.level}</span>
           <span className="chip">{currentWord.topic}</span>
         </div>
         <div className="absolute top-4 right-4">
@@ -272,7 +268,7 @@ function ReviewContent() {
               return (
                 <div className="mb-4 text-center">
                   {pos && (
-                    <span className="inline-block bg-[#0ea5e9] text-[#111827] border border-[var(--line)] font-semibold text-sm px-3 py-1 rounded-md mb-3">
+                    <span className="inline-block bg-[var(--bg)] text-[var(--muted)] border border-[var(--line)] font-semibold text-sm px-3 py-1 rounded-md mb-3">
                       {pos}
                     </span>
                   )}

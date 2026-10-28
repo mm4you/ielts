@@ -1,7 +1,5 @@
 'use client';
 
-
-
 import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { FireRegular as FluentFireRegular } from '@fluentui/react-icons/svg/fire';
 import { BookOpenRegular } from '@fluentui/react-icons/svg/book-open';

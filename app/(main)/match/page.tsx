@@ -1,9 +1,6 @@
 'use client';
 
-
-
-
-
+import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
 import AppLoading from '@/components/AppLoading';
 import LoadingState from '@/components/LoadingState';
@@ -142,20 +139,7 @@ function MatchContent() {
   }
 
   if (gameState === 'gameover') {
-    return (
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center border border-[var(--ink)] relative">
-          <button
-            onClick={() => router.push(exitRoute)}
-            className="absolute top-4 right-4 w-8 h-8 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
-            title={exitLabel}
-           aria-label="Đóng">
-            <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
-          <h2 className="text-5xl font-sans font-semibold mb-4 text-[var(--blue)]">Chiến Thắng!</h2>
-          <p className="text-2xl font-semibold mb-4">Số lượt lật của bạn:</p>
-          <div className="text-7xl font-semibold text-[var(--green)] mb-6">{moves}</div>
-
-          <div className="bg-[var(--paper)] p-4 border border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
+    return <GameResult title="Đã ghép đủ 6 cặp" value={moves} label="Lượt lật" onReplay={startGame} exitRoute={exitRoute}>          <div className="bg-[var(--paper)] p-4 border border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
             <h3 className="font-semibold text-sm mb-2 border-b border-solid border-[var(--line)] pb-2 text-[var(--blue)]">Các từ đã ghép cặp:</h3>
             <ul className="space-y-2">
               {playedWords.map(w => {
@@ -171,17 +155,11 @@ function MatchContent() {
               })}
             </ul>
           </div>
-
-          <button onClick={startGame} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl ">
-            Chơi lại
-          </button>
-        </div>
-      </div>
-    );
+</GameResult>;
   }
 
   if (cards.length === 0) {
-    return <div className="text-center py-20 font-semibold text-xl animate-pulse">Đang rải bài...</div>;
+    return <div className="text-center py-20 font-semibold text-xl animate-pulse">Đang chuẩn bị thẻ</div>;
   }
 
   return (
@@ -189,10 +167,10 @@ function MatchContent() {
       {/* Top Bar */}
       <div className="flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 border border-[var(--line)] rounded-xl shrink-0 gap-4 w-full">
         <div className="text-xl md:text-2xl font-semibold text-[var(--ink)] flex-1">
-          Lượt (Moves): <span className="text-[var(--blue)]">{moves}</span>
+          Lượt lật: <span className="text-[var(--blue)]">{moves}</span>
         </div>
         <div className="text-xl md:text-2xl font-semibold text-[var(--green)]">
-          {matchedIndices.length / 2} / 6 Cặp
+          {matchedIndices.length / 2} / 6 cặp
         </div>
         <button
           onClick={() => router.push(exitRoute)}
@@ -225,7 +203,7 @@ function MatchContent() {
                 </div>
 
                 {/* Front of card (Face up) */}
-                <div className={`absolute inset-0 border rounded-xl backface-hidden flex items-center justify-center p-2 text-center rotate-y-180 leading-tight overflow-y-auto ${ isMatched ? 'bg-green-500 border-green-700 shadow-none' : isMismatched ? 'bg-red-100 border-red-500 shadow-none' : 'bg-[var(--paper)] border-[var(--line)]' }`}>
+                <div className={`absolute inset-0 border rounded-xl backface-hidden flex items-center justify-center p-2 text-center rotate-y-180 leading-tight overflow-y-auto ${ isMatched ? 'bg-green-500 border-green-700 shadow-none' : isMismatched ? 'bg-[var(--danger-soft)] border-red-500 shadow-none' : 'bg-[var(--paper)] border-[var(--line)]' }`}>
                   <span className={`font-semibold break-words block w-full my-auto ${isMatched ? 'text-green-950' : isMismatched ? 'text-red-950' : (card.type === 'en' ? 'text-sm md:text-2xl text-[var(--ink)]' : 'text-[10px] md:text-sm text-[var(--muted)]')}`}>
                     {card.content}
                   </span>

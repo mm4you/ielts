@@ -1,6 +1,10 @@
 'use client';
 
 
+import { Button, Input, Popover, PopoverSurface, PopoverTrigger, Spinner } from '@fluentui/react-components';
+import { BookmarkRegular, BookmarkFilled } from '@fluentui/react-icons/svg/bookmark';
+import { AddRegular } from '@fluentui/react-icons/svg/add';
+import { CheckmarkRegular } from '@fluentui/react-icons/svg/checkmark';
 import LoadingState from '@/components/LoadingState';
 import { useState, useEffect } from 'react';
 import { showToast } from '@/components/GlobalToast';
@@ -22,7 +26,6 @@ interface Collection {
 
 export default function SaveToCollection({
   wordId,
-  wordText = '',
   className = '',
   onSaveStatusChange,
 }: SaveToCollectionProps) {
@@ -59,8 +62,6 @@ export default function SaveToCollection({
     };
   }, [wordId]);
 
-
-
   const fetchCollections = async () => {
     setLoadingCollections(true);
     try {
@@ -73,16 +74,6 @@ export default function SaveToCollection({
       console.error(e);
     } finally {
       setLoadingCollections(false);
-    }
-  };
-
-  const handleTriggerClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const nextShow = !showDropdown;
-    setShowDropdown(nextShow);
-    if (nextShow) {
-      fetchCollections();
     }
   };
 
@@ -170,87 +161,11 @@ export default function SaveToCollection({
       }
     } catch (err) {
       console.error(err);
-      alert('Không thể tạo sổ tay mới');
+      showToast('Không thể tạo bộ sưu tập. Vui lòng thử lại.', false);
     } finally {
       setCreatingCollection(false);
     }
   };
 
-  if (loading) {
-    return (
-      <span className={`text-[10px] font-sans opacity-50 select-none ${className}`}>
-        [ ... ]
-      </span>
-    );
-  }
-
-  return (
-    <>
-      <span className={`inline-flex items-center relative ${className}`}>
-        <button
-          type="button"
-          onClick={handleTriggerClick}
-          className={`text-[10px] md:text-xs font-sans font-semibold px-2.5 py-1 rounded border border-[var(--line)] transition-all cursor-pointer select-none hover:scale-102 active:scale-98 ${ isSaved ? 'bg-[var(--green)] text-white hover:brightness-105' : 'bg-[var(--success-soft)] text-[var(--green)] hover:bg-green-100' }`}
-        >
-          {isSaved ? 'ĐÃ LƯU' : 'LƯU'}
-        </button>
-
-        {showDropdown && (
-          <>
-            <div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setShowDropdown(false); }} />
-            <div className="absolute right-0 top-full mt-2 w-64 bg-[var(--paper)] border border-[var(--line)] rounded-xl p-3 z-50 text-left font-sans">
-              <h4 className="text-xs font-sans font-semibold text-[var(--muted)] border-b border-solid border-[var(--line)] pb-1.5 mb-2">
-                Lưu vào sổ tay
-              </h4>
-
-              {loadingCollections ? (
-                <LoadingState label="Đang tải" />
-              ) : collections.length === 0 ? (
-                <p className="text-[10px] font-sans text-[var(--muted)] py-2 text-center">Chưa có sổ tay nào.</p>
-              ) : (
-                <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1 mb-3">
-                  {collections.map(col => {
-                    const isSavedInCol = savedCollectionIds.includes(col.id);
-                    return (
-                      <button
-                        key={col.id}
-                        onClick={(e) => handleToggle(e, col.id)}
-                        className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg border border-transparent hover:border-[var(--line)] hover:bg-[var(--bg)] transition-all text-xs font-semibold ${ isSavedInCol ? 'text-[var(--green)] bg-[var(--success-soft)]/50' : 'text-[var(--ink)]' }`}
-                      >
-                        <span className="truncate flex-1 pr-2">{col.name}</span>
-                        <span className="font-sans text-[10px] shrink-0">
-                          {isSavedInCol ? '[ ✓ ]' : '[   ]'}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              <div className="border-t border-solid border-[var(--line)] pt-2 mt-2" onClick={e => e.stopPropagation()}>
-                <form onSubmit={handleCreateAndAdd} className="flex gap-1.5">
-                  <input
-                    type="text"
-                    placeholder="Tạo sổ tay mới..."
-                    value={newCollectionName}
-                    onChange={e => setNewCollectionName(e.target.value)}
-                    className="flex-1 px-2 py-1 text-xs border border-[var(--line)] rounded bg-[var(--paper)] focus:outline-none focus:border-[var(--blue)] font-semibold placeholder-gray-400"
-                    maxLength={40}
-                    disabled={creatingCollection}
-                  />
-                  <button
-                    type="submit"
-                    disabled={creatingCollection || !newCollectionName.trim()}
-                    className="px-2 py-1 text-xs bg-[var(--blue)] text-white font-semibold rounded hover:brightness-105 disabled:opacity-50"
-                  >
-                    +
-                  </button>
-                </form>
-              </div>
-            </div>
-          </>
-        )}
-      </span>
-    </>
-  );
+  return <span className={className} onClick={e=>e.stopPropagation()}><Popover open={showDropdown} onOpenChange={(_,data)=>{setShowDropdown(data.open);if(data.open)fetchCollections();}} positioning="below-end" withArrow><PopoverTrigger disableButtonEnhancement><Button appearance="subtle" size="small" disabled={loading} aria-label={isSaved?'Sửa bộ sưu tập đã lưu':'Lưu vào bộ sưu tập'} icon={loading?<Spinner size="tiny" />:isSaved?<BookmarkFilled />:<BookmarkRegular />} className={isSaved?'save-word-button is-saved':'save-word-button'}>{isSaved?'Đã lưu':'Lưu'}</Button></PopoverTrigger><PopoverSurface className="save-collection-popover" onClick={e=>e.stopPropagation()}><h3>Lưu vào bộ sưu tập</h3>{loadingCollections?<LoadingState label="Đang tải bộ sưu tập" />:collections.length===0?<p className="save-collection-empty">Chưa có bộ sưu tập.</p>:<div className="save-collection-list">{collections.map(col=><Button key={col.id} appearance="subtle" aria-pressed={savedCollectionIds.includes(col.id)} onClick={e=>handleToggle(e,col.id)} icon={savedCollectionIds.includes(col.id)?<CheckmarkRegular />:undefined}>{col.name}</Button>)}</div>}<form onSubmit={handleCreateAndAdd} className="save-collection-form"><Input aria-label="Tên bộ sưu tập mới" placeholder="Bộ sưu tập mới" value={newCollectionName} onChange={(_,data)=>setNewCollectionName(data.value)} maxLength={40} disabled={creatingCollection} /><Button type="submit" appearance="primary" aria-label="Tạo và lưu" icon={creatingCollection?<Spinner size="tiny" />:<AddRegular />} disabled={creatingCollection||!newCollectionName.trim()} /></form></PopoverSurface></Popover></span>;
 }

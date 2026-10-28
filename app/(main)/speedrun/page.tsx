@@ -1,9 +1,6 @@
 'use client';
 
-
-
-
-
+import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
 import AppLoading from '@/components/AppLoading';
 import LoadingState from '@/components/LoadingState';
@@ -164,25 +161,7 @@ function SpeedrunContent() {
   }
 
   if (gameState === 'gameover') {
-    return (
-      <div className="flex items-center justify-center py-20 px-4">
-        <div className="panel max-w-md w-full text-center border border-[var(--ink)] relative">
-          <button
-            onClick={() => router.push(exitRoute)}
-            className="absolute top-4 right-4 w-8 h-8 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer text-sm z-10"
-            title={exitLabel}
-           aria-label="Đóng">
-            <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
-          <h2 className="text-5xl font-sans font-semibold mb-4 text-[var(--red)]">Game Over</h2>
-          <p className="text-2xl font-semibold mb-4">Điểm của bạn:</p>
-          <div className="text-7xl font-semibold text-[var(--green)] mb-8">{score}</div>
-
-          <button onClick={() => setGameState('setup')} className="w-full btn-brutal bg-[var(--yellow)] text-[var(--ink)] py-4 text-xl ">
-            Chơi lại
-          </button>
-        </div>
-      </div>
-    );
+    return <GameResult value={score} onReplay={() => setGameState('setup')} exitRoute={exitRoute}></GameResult>;
   }
 
   if (questions.length === 0) {
@@ -192,7 +171,7 @@ function SpeedrunContent() {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className={`max-w-2xl mx-auto py-4 md:py-10 px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center transition-colors duration-200 ${ flashColor === 'green' ? 'bg-green-100' : flashColor === 'red' ? 'bg-red-100' : '' }`}>
+    <div className={`max-w-2xl mx-auto py-4 md:py-10 px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center transition-colors duration-200 ${ flashColor === 'green' ? 'bg-[var(--success-soft)]' : flashColor === 'red' ? 'bg-[var(--danger-soft)]' : '' }`}>
       {/* Top Bar */}
       <div className={`flex items-center mb-4 md:mb-8 bg-[var(--paper)] p-3 md:p-4 pb-5 md:pb-6 border rounded-xl relative shrink-0 gap-4 transition-all duration-300 ${ timeLeft <= 10 ? 'border-[var(--red)] animate-pulse' : 'border-[var(--line)] ' }`}>
         <div className="text-xl md:text-2xl font-semibold text-[var(--ink)] flex-1">
@@ -204,7 +183,7 @@ function SpeedrunContent() {
             <span>x{streak} FLAME</span>
           </div>
         )}
-        <div className={`transition-all duration-300 font-semibold ${timeLeft <= 10 ? 'text-4xl md:text-5xl text-[var(--red)] drop-shadow-lg' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
+        <div className={`transition-all duration-300 font-semibold ${timeLeft <= 10 ? 'text-2xl md:text-3xl text-[var(--red)]' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
           {timeLeft}s
         </div>
         <button
@@ -226,13 +205,13 @@ function SpeedrunContent() {
       {/* Question Card */}
       <div className={`panel text-center mb-4 md:mb-8 flex-1 min-h-[150px] md:min-h-[250px] flex flex-col justify-center items-center relative transition-all duration-300 ${ isShaking ? 'animate-[shake_0.5s_ease-in-out]' : '' } ${ streak >= 3 ? 'animate-fire-glow border-[#ef4444]' : '' }`}>
         <div className="absolute top-4 left-4">
-          <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] font-semibold text-xs px-2.5 py-1 rounded-md ">{currentIndex + 1} / {questions.length}</span>
+          <span className="bg-[var(--bg)] text-[var(--muted)] border border-[var(--line)] font-semibold text-xs px-2.5 py-1 rounded-md ">{currentIndex + 1} / {questions.length}</span>
         </div>
         <div className="absolute top-4 right-4">
           <SaveToCollection wordId={currentQ.id} wordText={currentQ.word} />
         </div>
         <h2 id="speedrun-target-word" className={`text-4xl md:text-6xl font-sans font-semibold text-[var(--ink)] mb-2 mt-6 break-words px-2 w-full transition-all duration-200 ${ explosions.length > 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100' }`}>{currentQ.word}</h2>
-        {currentQ.pos && <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] font-semibold text-sm px-3 py-1 rounded-md ">{currentQ.pos}</span>}
+        {currentQ.pos && <span className="bg-[var(--bg)] text-[var(--muted)] border border-[var(--line)] font-semibold text-sm px-3 py-1 rounded-md ">{currentQ.pos}</span>}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

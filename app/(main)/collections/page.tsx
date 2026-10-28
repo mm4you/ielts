@@ -1,8 +1,5 @@
 'use client';
 
-
-
-
 import { Button, Checkbox, Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, DialogActions, Field, Input, Textarea, MessageBar } from '@fluentui/react-components';
 import { AddRegular } from '@fluentui/react-icons/svg/add';
 import { FolderRegular } from '@fluentui/react-icons/svg/folder';
@@ -548,13 +545,13 @@ function CollectionsContent() {
                                 {word.ipa}
                               </span>
                             )}
-                            <span className="bg-[#f59e0b] text-[#111827] border border-[var(--line)] font-semibold text-[10px] px-2 py-0.5 rounded-md shrink-0">
+                            <span className="bg-[var(--brand-soft)] text-[var(--blue)] border border-[var(--line)] font-semibold text-[10px] px-2 py-0.5 rounded-md shrink-0">
                               {word.level}
                             </span>
                           </div>
                           <div className="text-xs text-[var(--muted)] font-medium mt-1 truncate">
                             {pos && (
-                              <span className="bg-[#0ea5e9] text-[#111827] border border-[var(--line)] px-1.5 py-0.5 rounded-md font-sans text-[9px] font-semibold mr-1.5 ">
+                              <span className="bg-[var(--bg)] text-[var(--muted)] border border-[var(--line)] px-1.5 py-0.5 rounded-md font-sans text-[9px] font-semibold mr-1.5 ">
                                 {pos}
                               </span>
                             )}
@@ -578,7 +575,7 @@ function CollectionsContent() {
             </div>
           ) : (
             <div className="panel bg-[var(--paper)] p-12 border border-solid border-[var(--line)] text-center text-[var(--muted)] font-semibold ">
-              Chọn một bộ sưu tập để hiển thị danh sách từ vựng chi tiết và bắt đầu ôn luyện.
+              Chọn bộ sưu tập để xem từ đã lưu.
             </div>
           )}
         </div>

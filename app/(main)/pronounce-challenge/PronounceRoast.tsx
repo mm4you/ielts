@@ -63,6 +63,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
   // Load voices early and add cleanup for unmount
   useEffect(() => {
+    isUnmountedRef.current = false;
     const loadVoices = () => {
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         const list = window.speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').startsWith('vi'));
@@ -362,7 +363,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
 
     } catch (err: any) {
       console.error('Lỗi truy cập Mic:', err);
-      setError('Không thể truy cập Micro. Vui lòng cấp quyền trong trình duyệt nha sếp!');
+      setError('Không thể truy cập micro. Kiểm tra quyền ghi âm trong trình duyệt.');
     }
   };
 
@@ -390,7 +391,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       setTranscribed(text);
 
       if (!text) {
-        throw new Error('Bạn chưa nói gì cả, nói to lên sếp ơi!');
+        throw new Error('Chưa nhận được giọng nói. Thử ghi âm lại.');
       }
 
       await evaluatePronunciation(text);
@@ -404,9 +405,9 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   const evaluatePronunciation = async (speechResult: string) => {
     setLoading(true);
 
-    // Giới hạn 6 giây cho API, nếu AI quá tải thì báo lỗi ngay thay vì treo
+    // Allow the server's model timeout to return a useful error first.
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
       const res = await fetch(`/api/word/${wordId}/pronounce-roast`, {
@@ -425,7 +426,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       if (onFinish) onFinish();
     } catch (err: any) {
       if (err.name === 'AbortError') {
-        setError('AI đang bận đi đẻ, sếp bấm nút Mic thử lại giùm nha!');
+        setError('AI phản hồi chậm. Thử ghi âm lại sau.');
       } else {
         setError(err.message);
       }
@@ -436,18 +437,18 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
   };
 
   return (
-    <div className="mt-8 border border-[var(--line)] p-6 bg-[var(--paper)] relative">
-      <div className="absolute -top-4 -left-4 bg-[var(--ink)] text-[var(--bg)] px-3 py-1 font-semibold border border-[var(--line)] ">
-        CHẤM ĐIỂM PHÁT ÂM <span className="text-xs text-[var(--red)] ml-2">BETA</span>
+    <div className="pronunciation-recorder">
+      <div className="recorder-heading ">
+        Chấm điểm phát âm
       </div>
       <div className="absolute top-4 right-4">
         <SaveToCollection wordId={wordId} wordText={wordText} />
       </div>
 
       <div className="text-center mb-6 pt-4 relative">
-        <p className="font-semibold text-[var(--muted)] mb-2">Hãy đọc to từ này vào Mic:</p>
+        <p className="font-semibold text-[var(--muted)] mb-2">Đọc từ sau</p>
         <div className="flex items-center justify-center gap-3">
-          <h3 className="text-4xl font-semibold text-[var(--red)] ">{wordText}</h3>
+          <h3 className="recorder-word ">{wordText}</h3>
           <button
             onClick={() => {
               if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -485,8 +486,9 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       <div className="flex justify-center mb-6">
         <button
           onClick={isRecording ? stopRecording : startRecording}
+          aria-label={isRecording ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'}
           disabled={loading || isTranscribing}
-          className={`btn-brutal w-24 h-24 rounded-full flex items-center justify-center transition-transform ${ isRecording ? 'bg-[var(--red)] animate-pulse scale-110 border-[var(--line)] ' : (loading || isTranscribing) ? 'bg-[var(--yellow)]/30 border-[var(--line)] animate-bounce' : result ? 'bg-[#34C759] border-[var(--line)] ' : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] ' } ${loading || isTranscribing ? 'cursor-not-allowed' : ''}`}
+          className={`record-button w-20 h-20 rounded-full flex items-center justify-center transition-transform ${ isRecording ? 'bg-[var(--red)] animate-pulse scale-110 border-[var(--line)] ' : (loading || isTranscribing) ? 'bg-[var(--yellow)]/30 border-[var(--line)] ' : result ? 'bg-[var(--green)] border-[var(--line)] ' : 'bg-[var(--bg)] hover:brightness-95 border-[var(--line)] ' } ${loading || isTranscribing ? 'cursor-not-allowed' : ''}`}
         >
           {isRecording
             ? (
@@ -509,22 +511,20 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
       {isRecording && (
         <div className="text-center animate-pulse">
           <p className="font-semibold text-[var(--red)] text-xl ">Đang nghe...</p>
-          <p className="font-semibold text-[var(--ink)] mt-2">Đọc xong cứ im lặng 1 giây, máy sẽ tự nộp bài!</p>
+          <p className="font-semibold text-[var(--ink)] mt-2">Ngừng nói 1 giây để hoàn tất.</p>
         </div>
       )}
 
-
-
       {transcribed && !isRecording && !isTranscribing && (
         <div className="bg-[var(--bg)] border border-solid border-[var(--muted)] p-3 text-center mb-4">
-          <p className="text-sm text-[var(--muted)] font-semibold">Máy nghe ra chữ:</p>
+          <p className="text-sm text-[var(--muted)] font-semibold">Nội dung nhận diện</p>
           <p className="text-2xl font-semibold text-[var(--ink)]">{transcribed}</p>
         </div>
       )}
 
       {loading && (
         <div className="panel bg-[var(--yellow)]/20 border-[var(--yellow)] text-center">
-          <p className="font-semibold text-[var(--yellow)] animate-pulse"> AI đang soi mói lỗi phát âm của bạn...</p>
+          <p className="font-semibold text-[var(--yellow)] animate-pulse">Đang chấm điểm phát âm</p>
         </div>
       )}
 
@@ -538,7 +538,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         <div className={`panel mt-4 border ${result.score >= 80 ? 'bg-[var(--green)]/20 border-[var(--green)]' : 'bg-[var(--red)]/20 border-[var(--red)]'}`}>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
             <h4 className="font-semibold text-2xl">
-              ĐIỂM: <span className={result.score >= 80 ? 'text-[var(--green)]' : 'text-[var(--red)]'}>{result.score}/100</span>
+              Điểm: <span className={result.score >= 80 ? 'text-[var(--green)]' : 'text-[var(--red)]'}>{result.score}/100</span>
             </h4>
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <button
@@ -546,7 +546,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
                 className={`text-sm px-3 py-1.5 rounded border border-[var(--line)] font-semibold shrink-0 flex items-center gap-1.5 ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
               >
                 <Speaker2Regular aria-hidden="true" className="w-4 h-4 shrink-0" />
-                <span>{isPlaying ? 'Đang la...' : 'Nghe la'}</span>
+                <span>{isPlaying ? 'Đang phát' : 'Nghe phản hồi'}</span>
               </button>
             </div>
           </div>
