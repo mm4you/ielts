@@ -5,11 +5,12 @@ export type TypingState = {
   targets: TypingTarget[]; input: string; locked: number | null; score: number; combo: number;
   bestCombo: number; lives: number; hits: number; hitCharacters: number; typed: number; correct: number;
   lastHit: TypingTarget | null; lastHitAt: number;
+  lastShot: TypingTarget | null; lastShotAt: number;
 };
 export const TYPING_DURATION = 60_000;
 export function normalizeTyping(value: string) { return value.toLowerCase().replace(/[’‘]/g, "'"); }
 export function newTypingGame(): TypingState {
-  return { phase: 'playing', elapsed: 0, spawnIn: 0, serial: 0, targets: [], input: '', locked: null, score: 0, combo: 0, bestCombo: 0, lives: 3, hits: 0, hitCharacters: 0, typed: 0, correct: 0, lastHit: null, lastHitAt: 0 };
+  return { phase: 'playing', elapsed: 0, spawnIn: 0, serial: 0, targets: [], input: '', locked: null, score: 0, combo: 0, bestCombo: 0, lives: 3, hits: 0, hitCharacters: 0, typed: 0, correct: 0, lastHit: null, lastHitAt: 0, lastShot: null, lastShotAt: 0 };
 }
 export function typingTick(state: TypingState, delta: number, pool: TypingWord[]): TypingState {
   if (state.phase !== 'playing' || !pool.length) return state;
@@ -45,7 +46,8 @@ export function typeIntoGame(state: TypingState, value: string): TypingState {
   while (prefix < input.length && prefix < state.input.length && input[prefix] === state.input[prefix]) prefix++;
   const added = input.length - prefix;
   const correct = state.correct + (target?.word.startsWith(input) ? added : 0);
-  const next = { ...state, input, locked: input ? target?.key ?? null : null, typed: state.typed + added, correct };
+  const next = { ...state, input, locked: input ? target?.key ?? null : null, typed: state.typed + added, correct,
+    lastShot: correct > state.correct && target ? target : state.lastShot, lastShotAt: correct > state.correct ? state.elapsed : state.lastShotAt };
   if (!target || input !== target.word) return next;
   const combo = state.combo + 1;
   return { ...next, input: '', locked: null, targets: state.targets.filter(t => t.key !== target.key), hits: state.hits + 1,

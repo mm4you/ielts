@@ -24,7 +24,7 @@ const games = [
   {href:'/match',name:'Lật thẻ',description:'Ghép từ với nghĩa tiếng Việt',icon:GamesRegular},
   {href:'/blockblast',name:'Xếp hình',description:'Học từ vựng qua Block Blast',icon:GridRegular},
   {href:'/sniper',name:'Thiện xạ',description:'Chọn đúng từ, luyện phản xạ',icon:TargetArrowRegular},
-  {href:'/typing',name:'Bắn từ luyện gõ',description:'Gõ đúng từ để bắn mục tiêu',icon:KeyboardRegular},
+  {href:'/typing',name:'Chíu chíu luyện gõ',description:'Gõ đúng từ để bắn mục tiêu',icon:KeyboardRegular},
   {href:'/pronounce-challenge',name:'Phát âm',description:'Luyện phát âm với phản hồi AI',icon:MicRegular},
 ];
 

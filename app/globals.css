@@ -73,6 +73,8 @@ input,select,textarea { color:var(--ink); }
 .typing-hud>div>span { font-size:10px; font-weight:600; letter-spacing:.12em; color:var(--space-muted); }
 .typing-hud strong { display:flex; align-items:center; font-size:24px; line-height:1; font-variant-numeric:tabular-nums; font-weight:600; gap:5px; }
 .typing-hud-score { min-width:80px; }
+.typing-hud>.typing-hud-actions { margin-left:auto; display:flex; flex-direction:row; gap:8px; }
+.typing-hud-actions .typing-pause-button { margin-left:0; }
 .typing-hud-score strong { color:var(--laser); }
 .typing-hud small { font-size:14px; font-weight:400; color:var(--space-muted); }
 .typing-hud .is-combo { color:#ffd17b; }

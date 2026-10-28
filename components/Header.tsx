@@ -44,7 +44,7 @@ const gameLinks = [
   { href: '/match', label: 'Lật thẻ', icon: GamesRegular },
   { href: '/blockblast', label: 'Xếp hình', icon: GridRegular },
   { href: '/sniper', label: 'Thiện xạ', icon: TargetArrowRegular },
-  { href: '/typing', label: 'Bắn từ luyện gõ', icon: KeyboardRegular },
+  { href: '/typing', label: 'Chíu chíu luyện gõ', icon: KeyboardRegular },
   { href: '/pronounce-challenge', label: 'Phát âm', icon: MicRegular },
 ];
 
