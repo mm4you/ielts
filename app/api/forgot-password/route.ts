@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendResetPasswordEmail } from '@/lib/mail';
+import { isMailConfigured } from '@/lib/mail-transport';
 import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
@@ -62,13 +63,7 @@ export async function POST(req: Request) {
         await sendResetPasswordEmail(email.toLowerCase(), verificationCode);
       }
 
-      const isSmtpConfigured = !!(
-        process.env.SMTP_HOST &&
-        process.env.SMTP_PORT &&
-        process.env.SMTP_USER &&
-        process.env.SMTP_PASSWORD
-      );
-      const devMode = !isSmtpConfigured || process.env.NODE_ENV === 'development';
+      const devMode = process.env.NODE_ENV === 'development' && !isMailConfigured();
 
       return NextResponse.json({
         message: 'Nếu email tồn tại trong hệ thống, mã xác minh đã được gửi.',
