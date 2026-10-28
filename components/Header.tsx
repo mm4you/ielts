@@ -103,6 +103,7 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
         {session ? <Menu positioning="below-end">
           <MenuTrigger disableButtonEnhancement><Button appearance="transparent" className="profile-trigger" aria-label="Mở menu tài khoản"><Avatar name={session.user?.name || 'Bạn'} size={32} color="brand" /><span className="profile-name">{session.user?.name || 'Tài khoản'}</span></Button></MenuTrigger>
           <MenuPopover><div className="profile-summary"><strong>{session.user?.name}</strong><span>{session.user?.email}</span></div><MenuList>
+            <MenuItemLink href="/account" icon={<SettingsRegular />}>Tài khoản và đăng nhập</MenuItemLink>
             <MenuItem icon={<ChatHelpRegular />} onClick={() => openFeedbackModal()}>Góp ý hệ thống</MenuItem>
             <MenuItem icon={<ArrowExitRegular />} onClick={() => signOut({ callbackUrl: '/' })}>Đăng xuất</MenuItem>
           </MenuList></MenuPopover>
