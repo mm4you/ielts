@@ -3,6 +3,8 @@ import { randomInt } from 'node:crypto';
 import { parseMeaning } from '@/lib/parse';
 import { answerQuestion, phaseAt, RoomError, roomView } from './engine';
 import type { RoomQuestion, RoomSettings, RoomState } from './types';
+import type { RoomGameAction } from './types';
+import { expireGames, gameMode, initializeGames, playGame } from './games';
 
 const shared = globalThis as unknown as { roomDb?: PrismaClient };
 const db = shared.roomDb ?? new PrismaClient();
@@ -28,7 +30,7 @@ async function throttle(tx: Prisma.TransactionClient, id: string) {
   const rows = await tx.$queryRaw<{ count: number }[]>`INSERT INTO "BattleRoomRate" ("userId") VALUES (${id})
     ON CONFLICT ("userId") DO UPDATE SET "count" = CASE WHEN "BattleRoomRate"."windowStart" < now() - interval '1 minute' THEN 1 ELSE "BattleRoomRate"."count" + 1 END,
     "windowStart" = CASE WHEN "BattleRoomRate"."windowStart" < now() - interval '1 minute' THEN now() ELSE "BattleRoomRate"."windowStart" END RETURNING "count"`;
-  if (rows[0].count > 60) throw new RoomError('Bạn thao tác quá nhanh. Thử lại sau một phút.', 429);
+  if (rows[0].count > 180) throw new RoomError('Bạn thao tác quá nhanh. Thử lại sau một phút.', 429);
 }
 async function read(tx: Prisma.TransactionClient, roomCode: string, lock: boolean) {
   const rows = lock
@@ -40,14 +42,23 @@ async function read(tx: Prisma.TransactionClient, roomCode: string, lock: boolea
 async function questions(tx: Prisma.TransactionClient, settings: RoomSettings): Promise<RoomQuestion[]> {
   const words = await tx.$queryRaw<{ word: string; meaning_vi: string; pos: string | null }[]>`SELECT "word", "meaning_vi", "pos" FROM "Word" WHERE (${settings.level} = 'all' OR "level" = ${settings.level}) ORDER BY random() LIMIT 120`;
   const seen = new Set<string>();
+  const seenMeanings = new Set<string>();
   const pool = words.flatMap(w => {
     const meaning = parseMeaning(w.meaning_vi, w.pos);
     const text = (meaning.vi || meaning.en).trim();
     const normalized = w.word.toLocaleLowerCase();
-    if (!text || seen.has(normalized)) return [];
-    seen.add(normalized); return [{ word: w.word, text }];
+    if (settings.mode === 'typing' && !/^[a-z][a-z '\-]{1,19}$/i.test(w.word)) return [];
+    if (!text || seen.has(normalized) || (settings.mode === 'match' && seenMeanings.has(text.toLocaleLowerCase()))) return [];
+    seen.add(normalized); seenMeanings.add(text.toLocaleLowerCase()); return [{ word: w.word, text }];
   });
   const result = shuffle(pool).flatMap(w => {
+    if (settings.mode === 'sniper') {
+      const other = shuffle(pool.filter(p => p.word !== w.word && p.text !== w.text)).slice(0, 3).map(p => p.word);
+      if (other.length < 3) return [];
+      const choices = shuffle([w.word, ...other]);
+      // Keep the meaning as a separate, non-answer choice field for the sniper prompt.
+      return [{ word: w.word, choices, correctIndex: choices.indexOf(w.word), prompt: w.text }];
+    }
     const other = shuffle([...new Set(pool.filter(p => p.text !== w.text && p.word.toLocaleLowerCase() !== w.word.toLocaleLowerCase()).map(p => p.text))]).slice(0, 3);
     if (other.length < 3) return [];
     const choices = shuffle([w.text, ...other]);
@@ -79,19 +90,25 @@ export async function createRoom(user: Identity, title: string, settings: RoomSe
 
 export async function getRoom(user: Identity, roomCode: string) {
   return transaction(user, roomCode, async tx => {
-    const row = await read(tx, roomCode, false);
+    const row = await read(tx, roomCode, true);
+    if (expireGames(row.state, row.now)) await tx.$executeRaw`UPDATE "BattleRoom" SET "state" = ${JSON.stringify(row.state)}::jsonb WHERE "code" = ${roomCode}`;
     return roomView(roomCode, row.state, user.id, row.now);
   });
 }
 
-export type RoomAction = { action: 'join' | 'ready' | 'start' | 'leave' | 'answer'; ready?: boolean; question?: number; choice?: number };
+export type RoomAction = { action: 'join' | 'ready' | 'start' | 'leave' | 'answer'; ready?: boolean; question?: number; choice?: number } | RoomGameAction;
 export async function actOnRoom(user: Identity, roomCode: string, action: RoomAction) {
   return transaction(user, roomCode, async tx => {
     await throttle(tx, user.id);
     const row = await read(tx, roomCode, true);
     const clock = await tx.$queryRaw<{ now: number }[]>`SELECT (extract(epoch FROM clock_timestamp()) * 1000)::float8 AS "now"`;
     row.now = clock[0].now;
-    const state = row.state, phase = phaseAt(state, row.now).phase;
+    const state = row.state;
+    // Synchronize elapsed flying targets before validating the requested move.
+    if (expireGames(state, row.now)) {
+      await tx.$executeRaw`UPDATE "BattleRoom" SET "state" = ${JSON.stringify(state)}::jsonb WHERE "code" = ${roomCode}`;
+    }
+    const phase = phaseAt(state, row.now).phase;
     const me = state.players.find(p => p.id === user.id);
     if (phase === 'closed') throw new RoomError('Chủ phòng đã đóng phòng.', 410);
     if (action.action === 'join') {
@@ -113,6 +130,10 @@ export async function actOnRoom(user: Identity, roomCode: string, action: RoomAc
         state.questions = await questions(tx, state.settings);
         const now = await tx.$queryRaw<{ now: number }[]>`SELECT (extract(epoch FROM clock_timestamp()) * 1000)::float8 AS "now"`;
         state.startedAt = now[0].now + 3000;
+        if (gameMode(state) !== 'quiz') {
+          initializeGames(state);
+          if (gameMode(state) === 'match') state.decks = Array.from({ length: Math.ceil(state.questions.length / 6) }, (_, batch) => shuffle(Array.from({ length: Math.min(6, state.questions.length - batch * 6) * 2 }, (_, index) => index)));
+        }
         row.now = now[0].now;
       } else if (action.action === 'leave') {
         if (phase === 'waiting') {
@@ -121,6 +142,8 @@ export async function actOnRoom(user: Identity, roomCode: string, action: RoomAc
         } else me.left = true;
       } else if (action.action === 'answer') {
         answerQuestion(state, user.id, action.question!, action.choice!, row.now);
+      } else if (action.action === 'play') {
+        playGame(state, user.id, action, row.now);
       }
     }
     await tx.$executeRaw`UPDATE "BattleRoom" SET "state" = ${JSON.stringify(state)}::jsonb,

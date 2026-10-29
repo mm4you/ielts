@@ -5,10 +5,14 @@ import { RoomError } from '@/lib/rooms/engine';
 import { MAX_ROOM_QUESTIONS } from '@/lib/rooms/settings';
 
 type Context = { params: Promise<{ code: string }> };
-const actionSchema = z.discriminatedUnion('action', [
+const actionSchema = z.union([
   z.object({ action: z.literal('join') }), z.object({ action: z.literal('start') }), z.object({ action: z.literal('leave') }),
   z.object({ action: z.literal('ready'), ready: z.boolean() }),
   z.object({ action: z.literal('answer'), question: z.number().int().min(0).max(MAX_ROOM_QUESTIONS - 1), choice: z.number().int().min(0).max(3) }),
+  z.object({ action: z.literal('play'), revision: z.number().int().min(0).max(10000), kind: z.literal('choice'), choice: z.number().int().min(0).max(3) }),
+  z.object({ action: z.literal('play'), revision: z.number().int().min(0).max(10000), kind: z.literal('type'), text: z.string().min(1).max(40) }),
+  z.object({ action: z.literal('play'), revision: z.number().int().min(0).max(10000), kind: z.literal('flip'), card: z.number().int().min(0).max(11) }),
+  z.object({ action: z.literal('play'), revision: z.number().int().min(0).max(10000), kind: z.literal('place'), piece: z.number().int().min(0).max(2), row: z.number().int().min(0).max(7), column: z.number().int().min(0).max(7) }),
 ]);
 export async function GET(request: Request, context: Context) {
   try { return roomResponse(await getRoom(await roomIdentity(request), roomCode((await context.params).code))); }

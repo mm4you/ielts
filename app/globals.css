@@ -514,5 +514,73 @@ input,select,textarea { color:var(--ink); }
 .battle-choice.is-correct { background:var(--success-soft); border-color:var(--green); color:var(--green); }
 .battle-choice.is-wrong { background:var(--danger-soft); border-color:var(--red); color:var(--red); }
 .room-answer-status { min-height:38px; margin:20px 0 0; font-size:13px; line-height:1.8; color:var(--muted); }
+.room-mode-picker { border:0; padding:0; margin:0; min-width:0; }
+.room-mode-picker legend { font-size:14px; font-weight:500; margin-bottom:12px; }
+.room-mode-picker>div { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.room-mode-option { position:relative; display:flex; align-items:flex-start; gap:10px; padding:14px 12px; border:1px solid var(--line); border-radius:12px; cursor:pointer; background:var(--paper); color:var(--ink); }
+.room-mode-option:hover,.room-mode-option.is-selected { border-color:var(--blue); background:var(--brand-soft); }
+.room-mode-option:focus-within { outline:2px solid var(--blue); outline-offset:2px; }
+.room-mode-option input { position:absolute; width:1px; height:1px; opacity:0; }
+.room-mode-option>svg { width:22px; height:22px; flex:none; color:var(--blue); margin-top:1px; }
+.room-mode-option>span { display:flex; flex-direction:column; gap:5px; min-width:0; }
+.room-mode-option strong { font-size:13px; font-weight:600; line-height:1.5; }
+.room-mode-option small { font-size:11px; color:var(--muted); line-height:1.6; }
+.battle-room:has(.room-mode-game) { max-width:1440px; }
+.room-mode-game { padding:26px; overflow:hidden; }
+.room-game-hud { display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; padding-bottom:22px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+.room-game-hud>div { display:flex; flex-direction:column; gap:8px; }
+.room-game-hud span { font-size:12px; color:var(--muted); }
+.room-game-hud strong { font-size:25px; line-height:1.2; font-weight:600; color:var(--ink); }
+.room-game-hud small { font-size:13px; margin-left:4px; font-weight:400; }
+.room-game-hud .is-low { color:var(--red); }
+.room-game-rule { font-size:13px; line-height:1.8; color:var(--muted); margin:20px 0; max-width:65ch; }
+.room-game-lives { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; color:var(--muted); font-size:12px; }
+.room-game-prompt { text-align:center; color:var(--ink); font-size:clamp(24px,3vw,36px); font-weight:600; line-height:1.5; padding:28px 0 12px; overflow-wrap:anywhere; }
+.room-mode-game .room-hint { margin-top:12px; }
+.room-game-feedback { min-height:48px; padding:18px 0 0; font-size:13px; line-height:1.7; color:var(--muted); overflow-wrap:anywhere; }
+.room-game-feedback.is-correct { color:var(--green); }
+.room-game-feedback.is-wrong { color:var(--red); }
+.room-own-finish { text-align:center; padding:48px 26px; }
+.room-own-finish>svg { width:40px; height:40px; color:var(--green); margin:0 auto 18px; }
+.room-own-finish h2 { color:var(--ink); font-size:23px; font-weight:600; margin-bottom:18px; }
+.room-own-finish p { line-height:1.8; color:var(--muted); }
+.room-sniper-arena { display:grid; grid-template-columns:1fr 1fr; gap:28px 24px; min-height:320px; align-items:center; padding:34px 14px; background:var(--brand-soft); border-radius:16px; margin-top:24px; overflow:hidden; }
+.room-sniper-target { display:flex; align-items:center; justify-content:center; gap:10px; padding:16px 10px; min-height:70px; border:1px solid var(--blue); border-radius:12px; background:var(--paper); color:var(--ink); font-size:16px; font-weight:600; animation:room-target-drift 3.4s ease-in-out infinite alternate; overflow-wrap:anywhere; }
+.room-sniper-target:nth-child(even) { animation-direction:alternate-reverse; animation-duration:2.8s; }
+.room-sniper-target>svg { width:26px; height:26px; color:var(--blue); flex:none; }
+.room-sniper-target:disabled { animation-play-state:paused; }
+@keyframes room-target-drift { from { transform:translateX(-8px); } to { transform:translateX(8px); } }
+.room-memory-meta { display:flex; justify-content:space-between; gap:16px; font-size:12px; color:var(--muted); margin:22px 0 14px; }
+.room-memory-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.room-memory-card { position:relative; min-height:112px; padding:14px 10px; border:1px solid var(--line); border-radius:12px; background:var(--brand-soft); color:var(--blue); font-size:22px; font-variant-numeric:tabular-nums; line-height:1.6; overflow-wrap:anywhere; }
+.room-memory-card.is-open { background:var(--paper); color:var(--ink); font-size:14px; }
+.room-memory-card.is-matched { border-color:var(--green); color:var(--green); background:var(--success-soft); }
+.room-memory-card>svg { position:absolute; top:5px; right:5px; width:15px; height:15px; }
+.room-block-board { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:4px; width:min(100%,420px); margin:24px auto; padding:10px; border:1px solid var(--line); border-radius:12px; background:var(--bg); }
+.room-block-cell { aspect-ratio:1; border-radius:4px; border:1px solid var(--line); background:var(--paper); color:var(--ink); min-width:0; }
+.room-block-cell.is-filled { background:var(--blue); border-color:var(--blue); }
+.room-block-cell.is-blocked { background:var(--danger-soft); border-color:var(--red); color:var(--red); font-size:20px; }
+.room-block-cell:not(:disabled):hover { outline:2px solid var(--blue); outline-offset:-2px; background:var(--brand-soft); }
+.room-block-pieces { display:flex; justify-content:center; gap:14px; }
+.room-block-pieces>button { display:grid; place-items:center; width:90px; min-height:80px; padding:10px; border:1px solid var(--line); border-radius:10px; background:var(--paper); color:var(--muted); }
+.room-block-pieces>button[aria-pressed=true] { border-color:var(--blue); background:var(--brand-soft); outline:1px solid var(--blue); }
+.room-block-pieces>button:disabled { opacity:.5; }
+.room-block-shape { display:grid; gap:3px; }
+.room-block-shape i { display:block; width:16px; height:16px; border-radius:3px; background:var(--blue); }
+.room-typing-arena { height:clamp(330px,55dvh,620px); position:relative; overflow:hidden; background:#0c1a2a; color:#72e2ed; border-radius:16px 16px 0 0; }
+.room-falling-word { position:absolute; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:14px; max-width:95%; transition:top .25s linear; }
+.room-falling-word>span { font-size:12px; color:#b7d5ec; white-space:nowrap; }
+.room-falling-word>svg { width:36px; height:36px; color:#efc47b; }
+.room-falling-word>strong { font-size:clamp(20px,3vw,30px); font-family:var(--font-mono,monospace); font-weight:600; color:#e8f4ff; }
+.room-falling-word b { color:#72e2ed; }
+.room-falling-word.is-wrong>strong,.room-falling-word.is-wrong>span { color:#ffb1b9; }
+.room-typing-ship { position:absolute; bottom:16px; left:calc(50% - 30px); width:60px; height:54px; color:#72e2ed; }
+.room-typing-command { display:flex; align-items:center; gap:12px; padding:16px; background:#101f30; border-radius:0 0 16px 16px; color:#b7d5ec; }
+.room-typing-command>svg { width:22px; height:22px; flex:none; }
+.room-typing-command input { width:100%; min-width:0; min-height:48px; background:#08121e; border:1px solid #72e2ed; border-radius:10px; padding:12px; color:#eef8ff; font-size:18px; outline-offset:2px; }
+.room-typing-command input::placeholder { color:#a5c4db; }
+.room-typing-command>button { color:#b7d5ec !important; flex:none; }
+@media (prefers-reduced-motion:reduce) { .room-sniper-target { animation:none; } .room-falling-word { transition:none; } }
+@media (max-width:650px) { .room-mode-game { padding:18px 14px; } .room-game-hud { gap:12px; } .room-game-hud strong { font-size:22px; } .room-memory-grid { gap:8px; } .room-memory-card { min-height:100px; padding:12px 7px; } .room-memory-card.is-open { font-size:12px; } .room-sniper-arena { gap:22px 18px; padding:24px 12px; } .room-sniper-target { font-size:14px; gap:6px; } .room-sniper-target>svg { width:20px; height:20px; } .room-typing-command { padding:12px 8px; gap:8px; } .room-typing-command>svg { display:none; } }
 @media (max-width:850px) { .battle-columns { grid-template-columns:1fr; } .room-scoreboard li { min-height:60px; } }
 @media (max-width:650px) { .rooms-entry-grid { grid-template-columns:1fr; gap:20px; } .room-form { padding:22px; } .room-share strong { font-size:30px; letter-spacing:5px; } .battle-question { padding:22px 18px; } .battle-question h2 { font-size:29px; } .room-form-pair { gap:12px; } }
