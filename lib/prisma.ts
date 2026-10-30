@@ -45,13 +45,11 @@ const globalForPrisma = globalThis as unknown as {
   prismaInstance: any | undefined;
 };
 
-const basePrisma = globalForPrisma.prismaBase ?? new PrismaClient({
-  datasources: {
-    db: {
-      url: resolvedUrl,
-    },
-  },
-});
+// Importing auth/layout modules during a build must not require a database URL.
+// Without an override Prisma resolves the schema environment when a query runs.
+const basePrisma = globalForPrisma.prismaBase ?? new PrismaClient(
+  resolvedUrl ? { datasources: { db: { url: resolvedUrl } } } : undefined,
+);
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaBase = basePrisma;
 
