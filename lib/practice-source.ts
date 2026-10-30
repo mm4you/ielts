@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { LEVELS, TOPICS } from '@/types';
 import { dueProgressWhere } from './srs';
 import { normalizeAnswer, shuffle, type PracticeResult, type PracticeWord } from './study';
-import { contentIsReviewed, practiceAnswers, maskPracticeText } from './practice-content';
+import { contentIsReviewed, practiceAnswers, maskPracticeText, reviewedPracticeSense } from './practice-content';
 import { parseMeaning } from './parse';
 
 export const practiceSourceSchema = z.object({
@@ -52,20 +52,22 @@ export async function selectPracticeWords(tx: Prisma.TransactionClient, userId: 
   const take = orderedIds ? orderedIds.length : Math.min(count, 500);
   const skip = orderedIds ? 0 : Math.max(0, Math.floor(Math.random() * (count - take + 1)));
   const rows = await tx.word.findMany({ where, orderBy: { id: 'asc' }, take, skip, include: { contentReview: true } });
-  const meanings = rows.map(w=>({ row: w, meaning: parseMeaning(w.meaning_vi, w.pos) }));
+  const meanings = rows.map(w=>{const sense=reviewedPracticeSense(w.contentReview);return {row:w,sense,meaning:parseMeaning(sense?sense.definitionEn+' /// '+sense.meaningVi:w.meaning_vi,sense?.pos??w.pos)};});
   const seen = new Set<string>();
-  const words: PracticeWord[] = meanings.flatMap(({ row: w, meaning }) => {
+  const words: PracticeWord[] = meanings.flatMap(({ row: w, meaning, sense }) => {
     const reviewed=contentIsReviewed(w.contentReview);
     if((source.kind==='stage'||mode==='word-rain') && !reviewed)return [];
     const answer = normalizeAnswer(w.word);
     const vi = meaning.vi || (/[à-ỹđ]/i.test(meaning.en) ? meaning.en : '');
-    const label = normalizeAnswer(vi + '|' + (w.pos || ''));
-    const ambiguous = mode === 'word-rain' && meanings.filter(m => normalizeAnswer((m.meaning.vi || m.meaning.en) + '|' + (m.row.pos || '')) === label).length > 1;
+    const pos=sense?.pos??w.pos;
+    const label = normalizeAnswer(vi + '|' + (pos || ''));
+    const ambiguous = mode === 'word-rain' && meanings.filter(m => normalizeAnswer((m.meaning.vi || m.meaning.en) + '|' + (m.sense?.pos??m.row.pos??'')) === label).length > 1;
     if (!/^[a-z]+(?:[ '-][a-z]+)*$/.test(answer) || answer.length > (mode === 'typing' ? 20 : 40) || seen.has(answer) || (mode === 'word-rain' && (!vi || vi.length>180 || ambiguous || normalizeAnswer(vi).includes(answer)))) return [];
     seen.add(answer);
     const acceptedAnswers=practiceAnswers(w.word,mode,w.contentReview).filter(a=>normalizeAnswer(a)!==answer);
-    const context=mode==='word-rain'&&w.example?maskPracticeText(w.example.split(/\/\/\/|\|\|\|/)[0],[w.word,...acceptedAnswers]):undefined;
-    return [{ id: w.id, word: w.word.trim().replace(/\s+/g,' '), meaning: vi || meaning.en, pos: w.pos, ipa: w.ipa, example: w.example, acceptedAnswers,context,promptMeaning:maskPracticeText(vi||meaning.en,[w.word,...acceptedAnswers]) }];
+    const example=sense?sense.exampleEn+' /// '+sense.exampleVi:w.example;
+    const context=mode==='word-rain'&&example?maskPracticeText(example.split(/\/\/\/|\|\|\|/)[0],[w.word,...acceptedAnswers]):undefined;
+    return [{ id: w.id, word: w.word.trim().replace(/\s+/g,' '), meaning: vi || meaning.en, pos, ipa: sense?.ipa??w.ipa, example, acceptedAnswers,context,promptMeaning:maskPracticeText(vi||meaning.en,[w.word,...acceptedAnswers]) }];
   });
   if (orderedIds && words.length !== orderedIds.length) throw new StudyError('Bộ từ này đang được cập nhật. Bạn chọn bộ khác hoặc quay lại sau nhé.', 409);
   const selected = orderedIds ? orderedIds.map(id=>words.find(w=>w.id===id)!) : shuffle(words).slice(0, source.limit);

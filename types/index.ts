@@ -36,7 +36,9 @@ export const TOPICS = [
   'Gre', 'Sat', 'Gmat', 'Idioms', 'Phrasal verbs', 'Slang', 'Colloquial', 
   'Sports', 'Entertainment', 'Travel', 'Food', 'Cooking', 'Fashion',
   'Fitness', 'Hobby', 'Gaming', 'Internet', 'Marketing', 'Finance', 'Real estate',
-  'Astronomy', 'Geology', 'Meteorology', 'Anthropology', 'Archaeology'
+  'Astronomy', 'Geology', 'Meteorology', 'Anthropology', 'Archaeology',
+  'City', 'Politics', 'Music', 'Feelings', 'School', 'Psychology',
+  'History', 'Colors', 'Literature', 'Society', 'Science'
 ] as const;
 
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
@@ -87,7 +89,11 @@ export const TOPIC_LABELS: Record<string, string> = {
   Geology: 'Địa chất học',
   Meteorology: 'Khí tượng học',
   Anthropology: 'Nhân chủng học',
-  Archaeology: 'Khảo cổ học'
+  Archaeology: 'Khảo cổ học',
+  City: 'Thành phố', Politics: 'Chính trị', Music: 'Âm nhạc',
+  Feelings: 'Cảm xúc', School: 'Trường học', Psychology: 'Tâm lý học',
+  History: 'Lịch sử', Colors: 'Màu sắc', Literature: 'Văn học',
+  Society: 'Xã hội', Science: 'Khoa học'
 };
 
 export const RATING_LABELS: Record<ReviewRating, string> = {

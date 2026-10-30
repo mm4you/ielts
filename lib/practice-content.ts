@@ -1,10 +1,16 @@
 import { z } from 'zod';
 import { normalizeAnswer } from './study';
+import { senseSchema } from './content-quality';
 type Review={status:string;sourceUrl:string|null;reviewedBy:string|null;reviewedAt:Date|null;acceptedAnswers:string[];senses:unknown};
 export function contentIsReviewed(review:Review|null|undefined):review is Review {
   return !!review&&review.status==='reviewed'&&!!review.sourceUrl&&!!review.reviewedBy&&!!review.reviewedAt;
 }
 const senses=z.array(z.object({recallAnswers:z.array(z.string().min(1).max(100)).max(30).default([])}));
+export function reviewedPracticeSense(review:Review|null|undefined){
+  if(!contentIsReviewed(review))return null;
+  const parsed=z.array(senseSchema).min(1).safeParse(review.senses);
+  return parsed.success?parsed.data[0]:null;
+}
 export function practiceAnswers(word:string,mode:string,review:Review|null|undefined) {
   if(!contentIsReviewed(review))return [word];
   const parsed=senses.safeParse(review.senses);

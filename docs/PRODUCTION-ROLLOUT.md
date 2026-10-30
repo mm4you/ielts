@@ -30,3 +30,15 @@ These are explicit operational commands, never build hooks. They use environment
 - `verify-study-rollout.ts`: read-only application-role and archive checks.
 
 The older documents describe the code-delivery boundary before this separately authorized rollout; this document records the subsequent production changes.
+
+## Existing-library expansion
+
+After the owner requested using the full library, `/decks` gained a topic catalog backed by actual `Word` counts and per-level counts, with search and links into typing, spelling bee and the library. For example, Education has 662 entries and Environment has 1,042. Counts describe library entries, not a claim that all entries have been editorially verified or converted to contextual questions. Eleven legacy topic names were added to the shared topic registry so their practice links validate correctly.
+
+The five immutable version-2 learning decks reuse **50 existing Word IDs** and retain the 21 initial starter entries in their final stages. Totals are Education 15, Environment 13, Technology 14, Health 14, Work 15; each has a ten-word first stage and a shorter final stage. Version 1 and its checkpoints remain intact. The library stays at 6,174 entries: this expansion inserted no Word rows and overwrote no existing dictionary fields.
+
+`fixtures/library-practice-review.ts` contains original, separately reviewed practice senses/IPA/examples for those 50 entries. The bound publication plan hash is `578ff2d05574ee983e14a989bad8f040a1c5bd16af819c29896120d3b4bac19a`. `expand-library-decks.ts` checks every source row against the review snapshot, aborts on pre-existing/conflicting reviews and never rewrites a published version. Reviewed practice senses take priority over legacy fields in game prompts, feedback and saved word snapshots. This matters because the old `school` entry refers to fish and some older IPA is malformed. The legacy records remain available unchanged.
+
+Application-role read-only checks passed for all five first stages in typing/bee/rain and verified that the final stages remain locked without the earlier checkpoint. On the signed-in local test account connected to the production database, a full ten-word Education rain stage was played, saved at 100% and opened its next stage. Its displayed `teacher` IPA and `school` meaning came from the reviewed practice sense. This created practice activity/checkpoint only for that test account and did not advance SRS. The three contextual modes still use their separate 61-question bank; expanding dictionary/topic access does not pretend those questions exist for every word.
+
+Build/TypeScript and focused lint/regression checks cover the expansion. Local `npm run build` initially encountered a Windows DLL lock during Prisma generation because the dev server was running; the unchanged-schema build was verified with the already-generated client through `next build`. The normal deployment pipeline generates its client on Vercel. Development mode emitted a Tabster mover initialization warning; the new two-tab switch explicitly supports Left/Right/Home/End and was checked through keyboard interaction.

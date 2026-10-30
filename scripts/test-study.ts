@@ -36,6 +36,7 @@ assert.equal(audit.duplicateCandidates.length,1);
 assert(audit.findings.every(f=>f.issues.includes('review_source_required')));
 assert(!practiceSourceSchema.safeParse({kind:'all',limit:0}).success);
 assert(!practiceSourceSchema.safeParse({kind:'all',level:'invalid'}).success);
+assert(practiceSourceSchema.safeParse({kind:'all',topic:'City'}).success,'Existing library topics must be selectable in practice');
 
 const questionPool=[word(1),word(2,'teach','to instruct /// dạy'),word(3,'read','read /// đọc'),word(4,'write','write /// viết'),word(5,'study','study /// học')];
 assert(meaningQuestions(questionPool).every(q=>new Set(q.choices.map(c=>meaningKey({...word(99),meaning_vi:c}))).size===4));

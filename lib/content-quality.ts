@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { LEVELS, TOPICS } from '@/types';
 import { normalizeAnswer } from './study';
 import { parseMeaning } from './parse';
-export const senseSchema=z.object({definitionEn:z.string().min(1),meaningVi:z.string().min(1),exampleEn:z.string().min(1),exampleVi:z.string().min(1),collocations:z.array(z.string()),wordFamily:z.array(z.string()),commonErrors:z.array(z.string()),recallAnswers:z.array(z.string().min(1).max(100)).max(30).default([])});
+export const senseSchema=z.object({definitionEn:z.string().min(1),meaningVi:z.string().min(1),exampleEn:z.string().min(1),exampleVi:z.string().min(1),ipa:z.string().min(1).optional(),pos:z.string().min(1).optional(),collocations:z.array(z.string()),wordFamily:z.array(z.string()),commonErrors:z.array(z.string()),recallAnswers:z.array(z.string().min(1).max(100)).max(30).default([])});
 export const contentTemplateSchema=z.object({wordId:z.number().int().positive(),word:z.string().min(1),pos:z.string().min(1),ipa:z.string().min(1),audioText:z.string().min(1),senses:z.array(senseSchema).min(1),sourceUrl:z.url(),usageRights:z.string().min(1),status:z.enum(['draft','reviewed']),reviewedBy:z.string().optional(),reviewedAt:z.iso.datetime().optional(),acceptedAnswers:z.array(z.string().trim().min(1).max(100)).max(20)}).refine(v=>v.status!=='reviewed'||!!(v.reviewedBy&&v.reviewedAt),{message:'Reviewed content requires reviewer and date.'});
 type AuditWord={id:number;word:string;pos:string|null;ipa:string|null;meaning_vi:string;example:string|null;topic:string;level:string;contentReview?:{status:string;sourceUrl:string|null;reviewedBy:string|null;reviewedAt:Date|string|null}|null};
 export function auditVocabulary(words:AuditWord[]){
