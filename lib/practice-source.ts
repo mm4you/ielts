@@ -45,6 +45,9 @@ export async function selectPracticeWords(tx: Prisma.TransactionClient, userId: 
     where.id = { in: orderedIds };
   }
   if (orderedIds?.length === 0) throw new StudyError('Không có từ cần luyện lại.', 409);
+  // Filter reviewed content before sampling: a small approved bank must not be
+  // lost inside a random 500-row sample of the entire legacy vocabulary.
+  if(mode==='word-rain'||source.kind==='stage')where.contentReview={is:{status:'reviewed',sourceUrl:{not:null},reviewedBy:{not:null},reviewedAt:{not:null}}};
   const count = await tx.word.count({ where });
   const take = orderedIds ? orderedIds.length : Math.min(count, 500);
   const skip = orderedIds ? 0 : Math.max(0, Math.floor(Math.random() * (count - take + 1)));

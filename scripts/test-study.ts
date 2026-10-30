@@ -58,6 +58,8 @@ async function sources(){
   assert.deepEqual(received,{where:{level:'B1',topic:'Education'}});
   const ambiguous=cast({word:{count:async()=>2,findMany:async()=>[word(1,'learn'),word(2,'study')]}});
   await assert.rejects(()=>selectPracticeWords(ambiguous,'u','word-rain',practiceSourceSchema.parse({kind:'all'})),StudyError);
+  const reviewed=cast({word:{count:async({where}:{where:Prisma.WordWhereInput})=>{assert.deepEqual(where.contentReview,{is:{status:'reviewed',sourceUrl:{not:null},reviewedBy:{not:null},reviewedAt:{not:null}}},'Review metadata must filter SQL before a legacy-pool sample is taken');return 2;},findMany:async()=>[word(1),word(2,'teach','to instruct /// dạy')].map(w=>({...w,contentReview:{status:'reviewed',acceptedAnswers:[],senses:[],sourceUrl:'https://example.org/review',reviewedBy:'Test',reviewedAt:new Date()}}))}});
+  assert.equal((await selectPracticeWords(reviewed,'u','word-rain',practiceSourceSchema.parse({kind:'all',limit:20}))).words.length,2);
   const stage=cast({studyStage:{findUnique:async()=>({id:'s2',deckId:'d',position:2,words:[{wordId:2},{wordId:1}]}),findMany:async()=>[{id:'s1'}]},studyCheckpoint:{count:async()=>1},word:{count:async()=>2,findMany:async()=>[word(1),word(2,'teach','to instruct /// dạy')].map(w=>({...w,contentReview:{status:'reviewed',acceptedAnswers:[],sourceUrl:'https://example.org/review',reviewedBy:'Test',reviewedAt:new Date()}}))}});
   const ordered=await selectPracticeWords(stage,'u','typing',practiceSourceSchema.parse({kind:'stage',stageId:'s2',limit:1}));
   assert.deepEqual(ordered.words.map(w=>w.id),[2,1],'Stages ignore sample limit and retain stable order');
