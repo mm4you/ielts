@@ -1,7 +1,19 @@
 import type { RoomState, RoomView, RoomPhase } from './types';
 import { RoomError } from './error';
 import { gameDeadline, gameMode, gameView } from './games';
+import { roomCapacity } from './settings';
 export { RoomError } from './error';
+
+/** Called only while the store holds the room row lock. Reconnect is idempotent. */
+export function joinRoomPlayer(state: RoomState, user: {id:string;name?:string|null}, now:number) {
+  const phase=phaseAt(state,now).phase;
+  if(phase==='closed')throw new RoomError('Chủ phòng đã đóng phòng.',410);
+  const existing=state.players.find(p=>p.id===user.id);
+  if(existing){existing.left=false;return;}
+  if(phase!=='waiting')throw new RoomError('Trận đấu đã bắt đầu.',409);
+  if(state.players.length>=roomCapacity(state.settings))throw new RoomError('Phòng đã đầy.',409);
+  state.players.push({id:user.id,name:user.name?.trim().slice(0,60)||'Người chơi',ready:false,left:false});
+}
 
 export function phaseAt(state: RoomState, now: number): { phase: RoomPhase; index: number; nextAt: number | null } {
   if (state.closed) return { phase: 'closed', index: 0, nextAt: null };
@@ -50,7 +62,7 @@ export function roomView(code: string, state: RoomState, meId: string, now: numb
   }).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
   const q = gameMode(state) === 'quiz' && (phase === 'question' || phase === 'reveal') ? state.questions[index] : null;
   return {
-    code, title: state.title, hostId: state.hostId, meId, settings: state.settings,
+    code, title: state.title, hostId: state.hostId, meId, settings: { ...state.settings, maxPlayers: roomCapacity(state.settings) },
     phase, serverNow: now, nextAt, questionNumber: state.startedAt === null ? 0 : index + 1, players,
     question: q ? { word: q.word, choices: q.choices, ...(phase === 'reveal' ? { correctIndex: q.correctIndex } : {}), ...(state.answers[index]?.[meId] ? { myChoice: state.answers[index][meId].choice } : {}) } : null,
     ...(gameMode(state) !== 'quiz' ? { game: gameView(state, meId, now) } : {}),

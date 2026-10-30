@@ -1,7 +1,9 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { randomInt } from 'node:crypto';
 import { parseMeaning } from '@/lib/parse';
-import { answerQuestion, phaseAt, RoomError, roomView } from './engine';
+import { answerQuestion, phaseAt, RoomError, roomView, joinRoomPlayer } from './engine';
+import { pollRoom } from './poll';
+import { MAX_ROOM_PLAYERS } from './settings';
 import type { RoomQuestion, RoomSettings, RoomState } from './types';
 import type { RoomGameAction } from './types';
 import { expireGames, gameMode, initializeGames, playGame } from './games';
@@ -69,6 +71,7 @@ async function questions(tx: Prisma.TransactionClient, settings: RoomSettings): 
 }
 
 export async function createRoom(user: Identity, title: string, settings: RoomSettings) {
+  if(settings.maxPlayers !== undefined && (!Number.isInteger(settings.maxPlayers)||settings.maxPlayers<2||settings.maxPlayers>MAX_ROOM_PLAYERS))throw new RoomError('Chọn sức chứa từ 2 đến 40 người.');
   for (let attempt = 0; attempt < 3; attempt++) {
     const roomCode = code();
     try {
@@ -90,8 +93,7 @@ export async function createRoom(user: Identity, title: string, settings: RoomSe
 
 export async function getRoom(user: Identity, roomCode: string) {
   return transaction(user, roomCode, async tx => {
-    const row = await read(tx, roomCode, true);
-    if (expireGames(row.state, row.now)) await tx.$executeRaw`UPDATE "BattleRoom" SET "state" = ${JSON.stringify(row.state)}::jsonb WHERE "code" = ${roomCode}`;
+    const row = await pollRoom(user.id, lock => read(tx, roomCode, lock), state => tx.$executeRaw`UPDATE "BattleRoom" SET "state" = ${JSON.stringify(state)}::jsonb WHERE "code" = ${roomCode}`);
     return roomView(roomCode, row.state, user.id, row.now);
   });
 }
@@ -112,12 +114,7 @@ export async function actOnRoom(user: Identity, roomCode: string, action: RoomAc
     const me = state.players.find(p => p.id === user.id);
     if (phase === 'closed') throw new RoomError('Chủ phòng đã đóng phòng.', 410);
     if (action.action === 'join') {
-      if (me) me.left = false;
-      else {
-        if (phase !== 'waiting') throw new RoomError('Trận đấu đã bắt đầu.', 409);
-        if (state.players.length >= 8) throw new RoomError('Phòng đã đủ 8 người.', 409);
-        state.players.push(player(user));
-      }
+      joinRoomPlayer(state,user,row.now);
     } else {
       if (!me || me.left) throw new RoomError('Bạn chưa tham gia phòng.', 403);
       if (action.action === 'ready') {

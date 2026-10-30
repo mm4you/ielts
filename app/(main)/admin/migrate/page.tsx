@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@fluentui/react-components';
 
 import { useState } from 'react';
 
@@ -47,13 +48,13 @@ export default function MigratePage() {
           {processed} <span className="text-lg text-[var(--muted)] block mt-2">{status}</span>
         </div>
 
-        <button
+        <Button
           onClick={startMigration}
           disabled={isRunning}
-          className={`btn-brutal w-full py-4 text-xl text-white ${isRunning ? 'bg-gray-400' : 'bg-[var(--green)]'}`}
+          className={` w-full py-4 text-xl text-white ${isRunning ? 'bg-gray-400' : 'bg-[var(--green)]'}`}
         >
           {isRunning ? 'Đang chạy...' : 'Bắt đầu quét 4000 từ'}
-        </button>
+        </Button>
       </div>
     </div>
   );

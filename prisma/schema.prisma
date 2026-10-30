@@ -23,6 +23,11 @@ model Word {
 
   progress        UserProgress[]
   collections     CollectionWord[]
+  mistakes        WordMistake[]
+  stageWords      StudyStageWord[]
+  contentReview   WordContentReview?
+  exercises       ExerciseQuestion[]
+  exerciseMistakes ExerciseMistake[]
 
   @@index([word])
   @@index([topic, level])
@@ -43,6 +48,14 @@ model User {
   collections   Collection[]
   battleRooms   BattleRoom[]
   battleRoomRate BattleRoomRate?
+  studyPreference StudyPreference?
+  reviewEvents ReviewEvent[]
+  studyDays StudyWordDay[]
+  practiceSessions PracticeSession[]
+  mistakes WordMistake[]
+  checkpoints StudyCheckpoint[]
+  exerciseSessions ExerciseSession[]
+  exerciseMistakes ExerciseMistake[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -116,6 +129,8 @@ model DailyActivity {
   userId       String
   date         DateTime @db.Date
   wordsLearned Int      @default(0)
+  practiceCount Int     @default(0)
+  legacyInteractionCount Int @default(0)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -164,4 +179,157 @@ model BattleRoomRate {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   windowStart DateTime @default(now()) @db.Timestamptz(6)
   count       Int      @default(1)
+}
+
+model ReviewEvent {
+  id String @id
+  userId String
+  wordId Int
+  rating String
+  result Json
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, wordId])
+}
+
+model StudyPreference {
+  userId String @id
+  timeZone String @default("Asia/Ho_Chi_Minh")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StudyWordDay {
+  userId String
+  wordId Int
+  date DateTime @db.Date
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, date, wordId])
+}
+
+model PracticeSession {
+  id String @id @default(cuid())
+  userId String
+  mode String
+  source Json
+  wordIds Int[]
+  results Json?
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, completedAt])
+}
+
+model WordMistake {
+  userId String
+  wordId Int
+  mode String
+  wrongCount Int @default(0)
+  lastWrongAt DateTime @default(now())
+  resolvedAt DateTime?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  @@id([userId, wordId, mode])
+  @@index([userId, resolvedAt])
+}
+
+model StudyDeck {
+  id String @id
+  name String
+  description String
+  topic String
+  level String
+  version Int
+  stages StudyStage[]
+  @@unique([topic, version])
+}
+
+model StudyStage {
+  id String @id
+  deckId String
+  position Int
+  deck StudyDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  words StudyStageWord[]
+  checkpoints StudyCheckpoint[]
+  @@unique([deckId, position])
+}
+
+model StudyStageWord {
+  stageId String
+  wordId Int
+  position Int
+  stage StudyStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Restrict)
+  @@id([stageId, wordId])
+  @@unique([stageId, position])
+}
+
+model StudyCheckpoint {
+  userId String
+  stageId String
+  mode String
+  completedAt DateTime?
+  lastSessionId String?
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage StudyStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  @@id([userId, stageId, mode])
+}
+
+model WordContentReview {
+  wordId Int @id
+  status String @default("draft")
+  sourceUrl String?
+  reviewedBy String?
+  reviewedAt DateTime?
+  senses Json
+  acceptedAnswers String[]
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+}
+
+model ExerciseQuestion {
+  id String @id
+  version Int @default(1)
+  mode String
+  wordId Int
+  topic String
+  level String
+  status String @default("draft")
+  content Json
+  sourceUrl String?
+  usageRights String?
+  reviewedBy String?
+  reviewedAt DateTime?
+  word Word @relation(fields: [wordId], references: [id], onDelete: Restrict)
+  mistakes ExerciseMistake[]
+  @@index([mode, status, topic, level])
+}
+
+model ExerciseSession {
+  id String @id @default(cuid())
+  userId String
+  mode String
+  difficulty String
+  source Json
+  questionIds String[]
+  snapshots Json
+  results Json @default("[]")
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, completedAt])
+}
+
+model ExerciseMistake {
+  userId String
+  questionId String
+  wordId Int
+  mode String
+  wrongCount Int @default(0)
+  lastWrongAt DateTime @default(now())
+  resolvedAt DateTime?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question ExerciseQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Restrict)
+  @@id([userId, questionId])
+  @@index([userId, resolvedAt])
 }

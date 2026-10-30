@@ -1,3 +1,4 @@
+import { writeAiDraft } from './ai-drafts';
 import { getNvidiaModel } from '../lib/ai-config';
 process.env.IS_SCRIPT = 'true';
 import { prisma } from '../lib/prisma';
@@ -118,15 +119,12 @@ async function main() {
         
         if (newMeaning) {
           try {
-            await prisma.word.update({
-              where: { id: word.id },
-              data: { meaning_vi: newMeaning }
-            });
+            await writeAiDraft(word.id, {meaning_vi:word.meaning_vi}, {meaning_vi:newMeaning});
             successCount++;
             console.log(`  [Thành công] ${word.word} -> ${newMeaning}`);
           } catch (err) {
             errorCount++;
-            console.log(`  [Thất bại lưu DB] ${word.word}`);
+            console.log(`  [Thất bại ghi bản nháp] ${word.word}`);
           }
         } else {
           errorCount++;

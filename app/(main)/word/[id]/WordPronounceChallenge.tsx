@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@fluentui/react-components';
 
 
 import { DismissRegular } from '@fluentui/react-icons/svg/dismiss';
@@ -16,22 +17,22 @@ export default function WordPronounceChallenge({ wordId, wordText }: WordPronoun
   return (
     <div className="mt-6 border-t border-solid border-[var(--line)] pt-6">
       {!isOpen ? (
-        <button
+        <Button
           onClick={() => setIsOpen(true)}
-          className="btn-brutal w-full bg-[var(--blue)] text-white py-3.5 px-6 text-lg font-semibold flex items-center justify-center gap-2 transition-transform "
+          className=" w-full bg-[var(--blue)] text-white py-3.5 px-6 text-lg font-semibold flex items-center justify-center gap-2 transition-transform "
         >
           Luyện phát âm với AI
-        </button>
+        </Button>
       ) : (
         <div className="relative">
           <div className="flex justify-end mb-2">
-            <button
+            <Button
               onClick={() => setIsOpen(false)}
               className="text-xs font-semibold bg-[var(--red)] text-white border border-[var(--line)] px-2.5 py-1.5 transition-all flex items-center gap-1"
             >
               <DismissRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
               <span>Đóng luyện tập</span>
-            </button>
+            </Button>
           </div>
           <PronounceRoast wordId={wordId} wordText={wordText} />
         </div>

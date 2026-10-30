@@ -5,7 +5,8 @@ import { BookOpenRegular } from '@fluentui/react-icons/svg/book-open';
 import { ArrowRepeatAllRegular } from '@fluentui/react-icons/svg/arrow-repeat-all';
 import { LibraryRegular } from '@fluentui/react-icons/svg/library';
 import { GamesRegular } from '@fluentui/react-icons/svg/games';
-import { Button } from '@fluentui/react-components';
+import { Button, Field, Input, Tab, TabList} from '@fluentui/react-components';
+import StudyBackdrop from '@/components/StudyBackdrop';
 import BrandMark from '@/components/BrandMark';
 import { signIn } from 'next-auth/react';
 import { signInWithGoogle } from '@/lib/google-sign-in';
@@ -367,11 +368,11 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
   };
 
   return (
-    <main className="login-screen">
+    <main className="login-screen"><StudyBackdrop login />
       <aside className="login-branding">
         <div className="app-brand"><BrandMark size={38} /><span className="brand-name">IELTS Vocab</span></div>
-        <div className="login-branding-content"><BookOpenRegular style={{fontSize:52,color:'var(--blue)'}} /><h2>Học từ vựng IELTS</h2><ul className="login-feature-list"><li><ArrowRepeatAllRegular />Ôn tập bằng flashcard</li><li><LibraryRegular />Từ vựng theo chủ đề và cấp độ</li><li><GamesRegular />Luyện phản xạ qua trò chơi</li></ul></div>
-        <div className="login-branding-footer">IELTS Vocabulary Studio</div>
+        <div className="login-branding-content"><BookOpenRegular style={{fontSize:52,color:'var(--blue)'}} /><h2>Thêm một từ mới.<br/>Tự tin hơn mỗi ngày.</h2><p>Chọn bộ từ bạn thích, chơi một chút và ghi nhớ lâu hơn.</p><ul className="login-feature-list"><li><ArrowRepeatAllRegular />Ôn tập bằng flashcard</li><li><LibraryRegular />Từ vựng theo chủ đề và cấp độ</li><li><GamesRegular />Luyện phản xạ qua trò chơi</li></ul></div>
+        <div className="login-branding-footer">Một góc nhỏ cho hành trình IELTS của bạn</div>
       </aside>
 
       {/* Right side: Form (Takes full screen on mobile, 50% on desktop) */}
@@ -387,35 +388,12 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
           IELTS Vocab
         </h1>
         <p className="text-[var(--muted)] text-sm font-semibold text-center mb-6">
-          {mode === 'forgot' ? 'Khôi phục tài khoản của bạn' : 'Đăng nhập để tiếp tục học.'}
+          {mode === 'forgot' ? 'Khôi phục tài khoản của bạn' : 'Chào bạn, mình học tiếp nhé.'}
         </p>
 
         {/* Tab Headers (hidden in Forgot Password mode) */}
         {mode !== 'forgot' && (
-          <div className="login-tabs" role="tablist" aria-label="Tài khoản">
-            <button
-              type="button"
-              onClick={() => {
-                setMode('login');
-                setError('');
-                setSuccessMsg('');
-              }}
-              role="tab" aria-selected={mode === 'login'}
-            >
-              Đăng nhập
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode('register');
-                setError('');
-                setSuccessMsg('');
-              }}
-              role="tab" aria-selected={mode === 'register'}
-            >
-              Đăng ký
-            </button>
-          </div>
+          <TabList selectedValue={mode} onTabSelect={(_,d)=>{setMode(d.value as 'login'|'register');setError('');setSuccessMsg('');}} aria-label="Tài khoản"><Tab value="login">Đăng nhập</Tab><Tab value="register">Tạo tài khoản</Tab></TabList>
         )}
 
         {/* Success / Error Message */}
@@ -433,11 +411,9 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
         {/* Forms Switch */}
         {mode === 'login' && (
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                Email
-              </label>
-              <input
+            <Field className="flex flex-col gap-1" label="Email">
+
+              <Input
                 type="email"
                 required
                 disabled={loading}
@@ -446,13 +422,11 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                 placeholder="email@example.com"
                 className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-1">
-              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                Mật khẩu
-              </label>
-              <input
+            <Field className="flex flex-col gap-1" label="Mật khẩu">
+
+              <Input
                 type="password"
                 required
                 disabled={loading}
@@ -462,7 +436,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                 className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
               <div className="text-right mt-1">
-                <button
+                <Button
                   type="button"
                   onClick={() => {
                     setMode('forgot');
@@ -473,29 +447,27 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                   className="text-xs font-sans font-semibold text-[var(--blue)] hover:underline"
                 >
                   Quên mật khẩu?
-                </button>
+                </Button>
               </div>
-            </div>
+            </Field>
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className={`btn-brutal mt-2 bg-[var(--green)] text-white py-3 font-sans font-semibold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
+              className={` mt-2 bg-[var(--green)] text-white py-3 font-sans font-semibold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
               {loading ? 'Đang xác thực...' : 'Đăng nhập'}
-            </button>
+            </Button>
           </form>
         )}
 
         {mode === 'register' && (
           <form onSubmit={handleRegister} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                Họ và Tên
-              </label>
-              <input
+            <Field className="flex flex-col gap-1" label="Họ và Tên">
+
+              <Input
                 type="text"
                 required
                 disabled={loading}
@@ -504,13 +476,11 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                 placeholder="Nguyễn Văn A"
                 className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-1">
-              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                Email
-              </label>
-              <input
+            <Field className="flex flex-col gap-1" label="Email">
+
+              <Input
                 type="email"
                 required
                 disabled={loading}
@@ -519,13 +489,11 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                 placeholder="email@example.com"
                 className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-1">
-              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                Mật khẩu
-              </label>
-              <input
+            <Field className="flex flex-col gap-1" label="Mật khẩu">
+
+              <Input
                 type="password"
                 required
                 disabled={loading}
@@ -534,13 +502,11 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                 placeholder="Tối thiểu 6 ký tự"
                 className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-1">
-              <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                Xác nhận mật khẩu
-              </label>
-              <input
+            <Field className="flex flex-col gap-1" label="Xác nhận mật khẩu">
+
+              <Input
                 type="password"
                 required
                 disabled={loading}
@@ -549,17 +515,17 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                 placeholder="Tối thiểu 6 ký tự"
                 className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
               />
-            </div>
+            </Field>
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className={`btn-brutal mt-2 bg-[var(--yellow)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
+              className={` mt-2 bg-[var(--yellow)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded w-full flex items-center justify-center gap-2 ${
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
               {loading ? 'Đang đăng ký...' : 'Tạo tài khoản'}
-            </button>
+            </Button>
           </form>
         )}
 
@@ -567,11 +533,9 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
           <div className="flex flex-col gap-4">
             {forgotStep === 1 && (
               <form onSubmit={handleForgotVerify} className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                    Nhập Email đã đăng ký
-                  </label>
-                  <input
+                <Field className="flex flex-col gap-1" label="Nhập Email đã đăng ký">
+
+                  <Input
                     type="email"
                     required
                     disabled={loading}
@@ -580,29 +544,29 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                     placeholder="email@example.com"
                     className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
                   />
-                </div>
+                </Field>
 
                 <div className="flex gap-3 mt-2">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => {
                       setMode('login');
                       setError('');
                       setSuccessMsg('');
                     }}
-                    className="btn-brutal bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
+                    className=" bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
                   >
                     Quay lại
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={loading}
-                    className={`btn-brutal bg-[var(--blue)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
+                    className={` bg-[var(--blue)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
                       loading ? 'opacity-50' : ''
                     }`}
                   >
                     {loading ? 'Đang gửi...' : 'Gửi mã'}
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
@@ -620,7 +584,8 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                   </label>
                   <div className="flex justify-center gap-2 md:gap-3">
                     {otp.map((digit, idx) => (
-                      <input
+                      <Input
+                        aria-label={`Chữ số xác minh ${idx+1}`}
                         key={idx}
                         ref={(el) => {
                           inputRefs.current[idx] = el;
@@ -641,7 +606,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                   </div>
 
                   <div className="text-center mt-1">
-                    <button
+                    <Button
                       type="button"
                       disabled={resendCooldown > 0 || loading}
                       onClick={handleResendCode}
@@ -650,42 +615,40 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                       }`}
                     >
                       {resendCooldown > 0 ? `Gửi lại mã (${resendCooldown}s)` : 'Gửi lại mã xác minh'}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
                 <div className="flex gap-3 mt-2">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => {
                       setForgotStep(1);
                       setError('');
                       setSuccessMsg('');
                     }}
-                    className="btn-brutal bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
+                    className=" bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
                   >
                     Quay lại
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={loading}
-                    className={`btn-brutal bg-[var(--blue)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
+                    className={` bg-[var(--blue)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
                       loading ? 'opacity-50' : ''
                     }`}
                   >
                     {loading ? 'Đang xác nhận...' : 'Xác nhận mã'}
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
 
             {forgotStep === 3 && (
               <form onSubmit={handleForgotReset} className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                    Mật khẩu mới
-                  </label>
-                  <input
+                <Field className="flex flex-col gap-1" label="Mật khẩu mới">
+
+                  <Input
                     type="password"
                     required
                     disabled={loading}
@@ -694,13 +657,11 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                     placeholder="Tối thiểu 6 ký tự"
                     className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
                   />
-                </div>
+                </Field>
 
-                <div className="flex flex-col gap-1">
-                  <label className="font-sans text-xs font-semibold text-[var(--ink)] uppercase">
-                    Xác nhận mật khẩu mới
-                  </label>
-                  <input
+                <Field className="flex flex-col gap-1" label="Xác nhận mật khẩu mới">
+
+                  <Input
                     type="password"
                     required
                     disabled={loading}
@@ -709,29 +670,29 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
                     placeholder="Nhập lại mật khẩu mới"
                     className="w-full border border-[var(--line)] p-3 font-sans font-semibold text-base md:text-sm rounded bg-[var(--paper)] text-[var(--ink)] focus:outline-none focus:bg-[var(--brand-soft)]   transition-all"
                   />
-                </div>
+                </Field>
 
                 <div className="flex gap-3 mt-2">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => {
                       setForgotStep(2);
                       setError('');
                       setSuccessMsg('');
                     }}
-                    className="btn-brutal bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
+                    className=" bg-[var(--paper)] text-[var(--ink)] py-3 font-sans font-semibold text-sm uppercase rounded flex-1 text-center border border-[var(--line)]"
                   >
                     Quay lại
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={loading}
-                    className={`btn-brutal bg-[var(--green)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
+                    className={` bg-[var(--green)] text-white py-3 font-sans font-semibold text-sm uppercase rounded flex-[2] text-center border border-[var(--line)] ${
                       loading ? 'opacity-50' : ''
                     }`}
                   >
                     {loading ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}

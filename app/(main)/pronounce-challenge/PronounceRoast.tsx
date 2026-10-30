@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@fluentui/react-components';
 
 
 import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
@@ -449,7 +450,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
         <p className="font-semibold text-[var(--muted)] mb-2">Đọc từ sau</p>
         <div className="flex items-center justify-center gap-3">
           <h3 className="recorder-word ">{wordText}</h3>
-          <button
+          <Button
             onClick={() => {
               if (typeof window !== 'undefined' && window.speechSynthesis) {
                 window.speechSynthesis.cancel();
@@ -479,12 +480,12 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
             title="Nghe cách đọc chuẩn"
           >
             <Speaker2Regular aria-hidden="true" className="w-6 h-6" />
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="flex justify-center mb-6">
-        <button
+        <Button
           onClick={isRecording ? stopRecording : startRecording}
           aria-label={isRecording ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'}
           disabled={loading || isTranscribing}
@@ -505,7 +506,7 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
                 : (
                   <MicRegular aria-hidden="true" className="w-10 h-10 text-[var(--ink)] shrink-0" />
                 )}
-        </button>
+        </Button>
       </div>
 
       {isRecording && (
@@ -541,13 +542,13 @@ export default function PronounceRoast({ wordId, wordText, onFinish }: Pronounce
               Điểm: <span className={result.score >= 80 ? 'text-[var(--green)]' : 'text-[var(--red)]'}>{result.score}/100</span>
             </h4>
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <button
+              <Button
                 onClick={() => speakRoast(result.roast)}
                 className={`text-sm px-3 py-1.5 rounded border border-[var(--line)] font-semibold shrink-0 flex items-center gap-1.5 ${isPlaying ? 'bg-[var(--ink)] text-[var(--bg)]' : 'bg-[var(--bg)] text-[var(--ink)] hover:brightness-95'}`}
               >
                 <Speaker2Regular aria-hidden="true" className="w-4 h-4 shrink-0" />
                 <span>{isPlaying ? 'Đang phát' : 'Nghe phản hồi'}</span>
-              </button>
+              </Button>
             </div>
           </div>
           <p className="font-semibold text-lg leading-relaxed whitespace-pre-wrap text-[var(--ink)] mb-4">{result.roast}</p>

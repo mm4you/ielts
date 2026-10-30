@@ -3,6 +3,7 @@ import Dashboard from '@/components/Dashboard';
 import LoginWall from './LoginWall';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { dueProgressWhere } from '@/lib/srs';
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
@@ -12,7 +13,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const userId = session.user.id;
   const [totalWords, dueWords, collectionsCount, savedWordsCount] = await Promise.all([
     prisma.word.count(),
-    prisma.userProgress.count({where:{userId,next_review_date:{lte:new Date()},repetition_count:{gt:0}}}),
+    prisma.userProgress.count({where:dueProgressWhere(userId)}),
     prisma.collection.count({where:{userId}}),
     prisma.collectionWord.count({where:{collection:{userId}}}),
   ]);

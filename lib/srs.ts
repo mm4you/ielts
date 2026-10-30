@@ -1,5 +1,12 @@
 import { ReviewRating } from '@/types';
 
+export const MASTERY_INTERVAL_DAYS = 21;
+// Old reviewed rows can have repetition_count=0 after forgetting, but interval=1.
+export const studiedProgressWhere = { OR: [{ interval_days: { gt: 0 } }, { repetition_count: { gt: 0 } }] };
+export function dueProgressWhere(userId: string, now = new Date()) {
+  return { userId, next_review_date: { lte: now }, ...studiedProgressWhere };
+}
+
 export function calculateSRS(
   rating: ReviewRating,
   currentEaseFactor: number,
@@ -60,7 +67,7 @@ export function getReviewStatus(
   repetition_count: number,
   interval_days: number
 ): 'new' | 'learning' | 'known' {
-  if (repetition_count === 0) return 'new';
-  if (interval_days >= 21) return 'known';
+  if (repetition_count === 0 && interval_days === 0) return 'new';
+  if (interval_days >= MASTERY_INTERVAL_DAYS) return 'known';
   return 'learning';
 }

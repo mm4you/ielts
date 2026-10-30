@@ -321,12 +321,12 @@ function CollectionsContent() {
           <p className="text-sm font-semibold text-[var(--muted)] mb-8">
             Đăng nhập để tạo và quản lý các danh mục từ vựng cá nhân, lưu giữ các từ khó và luyện tập riêng biệt.
           </p>
-          <button
+          <Button
             onClick={() => signInWithGoogle()}
-            className="btn-brutal bg-[var(--blue)] text-white w-full py-3 text-sm font-semibold "
+            className=" bg-[var(--blue)] text-white w-full py-3 text-sm font-semibold "
           >
             Đăng Nhập Bằng Google
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -357,12 +357,12 @@ function CollectionsContent() {
           ) : collections.length === 0 ? (
             <div className="panel p-6 text-center bg-[var(--bg)] border border-solid border-[var(--line)] shadow-none">
               <p className="font-semibold text-[var(--muted)] mb-4">Bạn chưa tạo bộ sưu tập nào.</p>
-              <button
+              <Button
                 onClick={() => openModal('create')}
                 className="text-sm font-semibold text-[var(--blue)] underline font-sans"
               >
                 Tạo bộ sưu tập
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
@@ -400,45 +400,45 @@ function CollectionsContent() {
                       {/* Study Buttons */}
                       <div className="flex flex-wrap gap-1.5" onClick={e => e.stopPropagation()}>
                         <Link
-                          href={`/review?collectionId=${col.id}`}
+                          href={`/review?collectionId=${col.id}&source=new`}
                           className="text-[10px] font-sans font-semibold px-2 py-1 rounded bg-[var(--blue)] text-white hover:brightness-110 border border-[var(--line)]"
                         >
                           Ôn tập
                         </Link>
                         <Link
-                          href={`/speedrun?collectionId=${col.id}`}
+                          href={`/typing?collectionId=${col.id}`}
                           className="text-[10px] font-sans font-semibold px-2 py-1 rounded bg-[var(--brand-soft)] text-[var(--blue)] hover:brightness-105 border border-[var(--line)]"
                         >
-                          Tốc chiến
+                          Luyện Gõ
                         </Link>
                         <Link
-                          href={`/sniper?collectionId=${col.id}`}
+                          href={`/word-rain?collectionId=${col.id}`}
                           className="text-xs font-sans font-medium px-2 py-1 rounded bg-[var(--bg)] text-[var(--ink)] hover:brightness-110 border border-[var(--line)]"
                         >
-                          Thiện xạ
+                          Mưa Từ Vựng
                         </Link>
                         <Link
-                          href={`/match?collectionId=${col.id}`}
+                          href={`/spelling-bee?collectionId=${col.id}`}
                           className="text-xs font-sans font-medium px-2 py-1 rounded bg-[var(--bg)] text-[var(--ink)] hover:brightness-110 border border-[var(--line)]"
                         >
-                          Ghép cặp
+                          Ong Chính Tả
                         </Link>
                       </div>
 
                       {/* Edit/Delete Actions */}
                       <div className="flex gap-1" onClick={e => e.stopPropagation()}>
-                        <button
+                        <Button
                           onClick={() => openModal('edit', col)}
                           className="text-[10px] font-sans font-semibold text-[var(--blue)] hover:underline px-1 py-1"
                         >
                           Sửa
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => handleDeleteCollection(col)}
                           className="text-[10px] font-sans font-semibold text-[var(--red)] hover:underline px-1 py-1"
                         >
                           Xóa
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -471,24 +471,25 @@ function CollectionsContent() {
 
                 {/* Mode indicators inside details panel */}
                 <div className="flex flex-wrap gap-2">
+                  <Button as="a" href={`/collocations?collectionId=${selectedCollection.id}`}>Ghép cụm từ</Button><Button as="a" href={`/context-practice?collectionId=${selectedCollection.id}`}>Điền từ theo ngữ cảnh</Button><Button as="a" href={`/spelling-hunt?collectionId=${selectedCollection.id}`}>Săn lỗi chính tả</Button>
                   <Link
-                    href={`/review?collectionId=${selectedCollection.id}`}
-                    className="btn-brutal bg-[var(--blue)] text-white text-xs px-3 py-1.5 font-semibold "
+                    href={`/review?collectionId=${selectedCollection.id}&source=new`}
+                    className=" bg-[var(--blue)] text-white text-xs px-3 py-1.5 font-semibold "
                   >
                     Ôn tập
                   </Link>
                   <Link
-                    href={`/speedrun?collectionId=${selectedCollection.id}`}
-                    className="btn-brutal bg-[var(--brand-soft)] text-[var(--blue)] text-xs px-3 py-1.5 font-semibold "
+                    href={`/spelling-bee?collectionId=${selectedCollection.id}`}
+                    className=" bg-[var(--brand-soft)] text-[var(--blue)] text-xs px-3 py-1.5 font-semibold "
                   >
-                    Tốc chiến
+                    Ong Chính Tả
                   </Link>
                 </div>
               </div>
 
               {/* Word Search Inside Selected Collection */}
               <div className="mb-4">
-                <input
+                <Input
                   type="text"
                   placeholder="Tìm từ vựng trong bộ này..."
                   value={wordSearchQuery}
@@ -529,7 +530,7 @@ function CollectionsContent() {
                             >
                               {word.word}
                             </Link>
-                            <button
+                            <Button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -543,7 +544,7 @@ function CollectionsContent() {
                               ) : (
                                 <Speaker2Regular aria-hidden="true" className="w-3.5 h-3.5" />
                               )}
-                            </button>
+                            </Button>
                             {word.ipa && (
                               <span className="text-xs text-[var(--muted)] font-sans">
                                 {word.ipa}
@@ -565,12 +566,12 @@ function CollectionsContent() {
                         </div>
 
                         {/* Remove Action */}
-                        <button
+                        <Button
                           onClick={() => handleRemoveWord(word.id, word.word)}
                           className="font-sans text-xs text-[var(--red)] font-semibold border border-[var(--red)] px-2 py-1 rounded bg-[var(--danger-soft)] hover:bg-[var(--danger-soft)] select-none cursor-pointer"
                         >
                           Gỡ
-                        </button>
+                        </Button>
                       </div>
                     );
                   })}

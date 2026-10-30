@@ -1,4 +1,5 @@
 'use client';
+import ChoiceSelect from '@/components/ChoiceSelect';
 
 import PageHeader from '@/components/PageHeader';
 import AppLoading from '@/components/AppLoading';
@@ -8,7 +9,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Word, TOPICS, LEVELS, TOPIC_LABELS } from '@/types';
 import Card from '@/components/Card';
 import RecentWordsList from './RecentWordsList';
-import { Button, Skeleton, SkeletonItem } from '@fluentui/react-components';
+import { Field, Button, Skeleton, SkeletonItem, Input } from '@fluentui/react-components';
 
 function LibraryContent() {
   const router = useRouter();
@@ -109,9 +110,9 @@ function LibraryContent() {
       <RecentWordsList />
 
       <div className="panel library-filters">
-        <label>Từ khóa<input type="search" placeholder="Tìm từ vựng" value={search} onChange={e=>{setSearch(e.target.value);setCurrentPage(1);}} /></label>
-        <label>Chủ đề<select value={selectedTopic} onChange={e=>{setSelectedTopic(e.target.value);setCurrentPage(1);}}><option value="">Tất cả chủ đề</option>{TOPICS.map(topic=><option key={topic} value={topic}>{TOPIC_LABELS[topic]}</option>)}</select></label>
-        <label>Cấp độ<select value={selectedLevel} onChange={e=>{setSelectedLevel(e.target.value);setCurrentPage(1);}}><option value="">Tất cả cấp độ</option>{LEVELS.map(level=><option key={level} value={level}>{level}</option>)}</select></label>
+        <Field label="Bạn muốn tìm từ nào?"><Input type="search" placeholder="Tìm từ vựng" value={search} onChange={e=>{setSearch(e.target.value);setCurrentPage(1);}} /></Field>
+        <Field label="Chủ đề"><ChoiceSelect value={selectedTopic} onChange={e=>{setSelectedTopic(e.target.value);setCurrentPage(1);}}><option value="">Tất cả chủ đề</option>{TOPICS.map(topic=><option key={topic} value={topic}>{TOPIC_LABELS[topic]}</option>)}</ChoiceSelect></Field>
+        <Field label="Độ khó"><ChoiceSelect value={selectedLevel} onChange={e=>{setSelectedLevel(e.target.value);setCurrentPage(1);}}><option value="">Tất cả cấp độ</option>{LEVELS.map(level=><option key={level} value={level}>{level}</option>)}</ChoiceSelect></Field>
       </div>
 
       {loading ? (
@@ -138,7 +139,7 @@ function LibraryContent() {
 
               <div className="flex items-center gap-2 flex-wrap justify-center">
                 {/* Prev Button */}
-                <button
+                <Button
                   disabled={currentPage === 1 || loading}
                   onClick={() => {
                     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -148,7 +149,7 @@ function LibraryContent() {
                   title="Trang trước"
                 >
                   &lt;
-                </button>
+                </Button>
 
                 {/* Page Numbers */}
                 {getPageNumbers().map((p, idx) => {
@@ -162,7 +163,7 @@ function LibraryContent() {
 
                   const isCurrent = p === currentPage;
                   return (
-                    <button
+                    <Button
                       key={`page-${p}`}
                       disabled={loading}
                       onClick={() => {
@@ -172,12 +173,12 @@ function LibraryContent() {
                       className={`w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold transition-all cursor-pointer ${ isCurrent ? 'bg-[var(--blue)] text-white ' : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-[var(--surface-hover)]' }`}
                     >
                       {p}
-                    </button>
+                    </Button>
                   );
                 })}
 
                 {/* Next Button */}
-                <button
+                <Button
                   disabled={currentPage === totalPages || loading}
                   onClick={() => {
                     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
@@ -187,7 +188,7 @@ function LibraryContent() {
                   title="Trang sau"
                 >
                   &gt;
-                </button>
+                </Button>
               </div>
             </div>
           )}

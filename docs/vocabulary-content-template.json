@@ -1,0 +1,29 @@
+{
+  "wordId": 1,
+  "word": "example",
+  "pos": "noun",
+  "ipa": "/ɪɡˈzɑːmpəl/",
+  "audioText": "example",
+  "senses": [
+    {
+      "definitionEn": "A case used to explain an idea.",
+      "meaningVi": "ví dụ giúp giải thích một ý tưởng",
+      "exampleEn": "The teacher used a local project as an example.",
+      "exampleVi": "Giáo viên lấy một dự án địa phương làm ví dụ.",
+      "collocations": [
+        "give an example",
+        "a clear example"
+      ],
+      "wordFamily": [
+        "exemplify"
+      ],
+      "commonErrors": [
+        "Use 'an example of', not 'an example about'."
+      ]
+    }
+  ],
+  "sourceUrl": "https://dictionary.cambridge.org/dictionary/english/example",
+  "usageRights": "Original draft definitions and examples; verify source and licensing before publication.",
+  "status": "draft",
+  "acceptedAnswers": []
+}

@@ -8,9 +8,8 @@ import { FluentProvider, SSRProvider, webLightTheme, webDarkTheme, type Theme } 
 const ThemeContext = createContext({ dark: false, toggle: () => {} });
 export const useAppTheme = () => useContext(ThemeContext);
 
-const neutrals = { colorNeutralBackground1: 'var(--paper)', colorNeutralBackground2: 'var(--bg)', colorNeutralForeground1: 'var(--ink)', colorNeutralForeground2: 'var(--muted)', colorNeutralStroke1: 'var(--line)' };
-const light: Theme = { ...webLightTheme, ...neutrals, colorBrandBackground: '#0f6cbd', colorBrandBackgroundHover: '#115ea3', colorBrandBackgroundPressed: '#0f548c', colorBrandForeground1: '#0f6cbd', colorBrandForegroundLink: '#0f6cbd', borderRadiusMedium:'8px', fontFamilyBase: '"Segoe UI", system-ui, -apple-system, sans-serif' };
-const darkTheme: Theme = { ...webDarkTheme, ...neutrals, borderRadiusMedium:'8px', fontFamilyBase: light.fontFamilyBase };
+const light: Theme = { ...webLightTheme, colorBrandBackground: '#0f6cbd', colorBrandBackgroundHover: '#115ea3', colorBrandBackgroundPressed: '#0f548c', colorBrandForeground1: '#0f6cbd', colorBrandForegroundLink: '#0f6cbd', borderRadiusMedium:'8px', fontFamilyBase: '"Segoe UI", system-ui, -apple-system, sans-serif' };
+const darkTheme: Theme = { ...webDarkTheme, borderRadiusMedium:'8px', fontFamilyBase: light.fontFamilyBase };
 
 function getDarkTheme() {
   const stored = localStorage.getItem('theme');

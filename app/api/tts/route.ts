@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { EdgeTTS } from 'node-edge-tts';
 import fs from 'fs';
 import path from 'path';
+import { tmpdir } from 'node:os';
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -34,15 +35,20 @@ export async function GET(request: Request) {
     });
 
     // Tạo file tạm trong thư mục /tmp (được Vercel hỗ trợ cho serverless)
-    const tmpFilePath = path.join('/tmp', `tts_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.mp3`);
+    const tmpFilePath = path.join(tmpdir(), `tts_${Date.now()}_${Math.random().toString(36).slice(2, 11)}.mp3`);
     
     // Set a timeout of 2.5 seconds for EdgeTTS to prevent API hang
     const ttsPromise = tts.ttsPromise(text, tmpFilePath);
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('EdgeTTS Timeout')), 2500)
-    );
-
-    await Promise.race([ttsPromise, timeoutPromise]);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeoutPromise = new Promise((_, reject) => {
+      timer=setTimeout(() => reject(new Error('EdgeTTS Timeout')), 2500);
+    });
+    try { await Promise.race([ttsPromise, timeoutPromise]); }
+    catch (error) {
+      // A timed-out provider can finish later; clean up its eventual file too.
+      void ttsPromise.finally(()=>{try{fs.unlinkSync(tmpFilePath);}catch{}}).catch(()=>{});
+      throw error;
+    } finally { clearTimeout(timer); }
 
     const buffer = fs.readFileSync(tmpFilePath);
 

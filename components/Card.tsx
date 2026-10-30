@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@fluentui/react-components';
 
 
 import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
@@ -56,24 +57,24 @@ export default function Card({ word }: { word: Word }) {
 
   return (
     <div className="word-card group">
-      <Link href={`/word/${word.id}`} className="absolute inset-0 z-0"></Link>
+
       <div className="flex items-start justify-between mb-4 relative z-10">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <Link href={`/word/${word.id}`} className="block">
               <h3 className="text-xl font-semibold font-sans group-hover:text-[var(--blue)] transition-colors">{word.word}</h3>
             </Link>
-            <button
+            <Button
               onClick={handlePlayAudio}
               className={`audio-button relative z-20 ${isPlaying ? 'bg-[var(--green)] text-white translate-y-0.5 shadow-none' : 'bg-[var(--bg)] hover:bg-[var(--brand-soft)] text-[var(--blue)] active:shadow-none' }`}
-              title="Phát âm"
+              aria-label={`Nghe từ ${word.word}`} title="Phát âm"
             >
               {isPlaying ? (
                 <Speaker2Regular aria-hidden="true" className="w-3.5 h-3.5 " />
               ) : (
                 <Speaker2Regular aria-hidden="true" className="w-3.5 h-3.5" />
               )}
-            </button>
+            </Button>
           </div>
           {word.ipa && (
             <span className="text-sm text-[var(--muted)]">{word.ipa}</span>

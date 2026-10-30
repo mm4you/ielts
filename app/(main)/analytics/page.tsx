@@ -1,5 +1,7 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { MASTERY_INTERVAL_DAYS, studiedProgressWhere } from '@/lib/srs';
+import { studyDay } from '@/lib/study';
 import { redirect } from 'next/navigation';
 import AnalyticsClient from './AnalyticsClient';
 
@@ -17,20 +19,20 @@ export default async function AnalyticsPage() {
 
   // Lấy các chỉ số từ UserProgress
   const learnedWords = await prisma.userProgress.count({
-    where: { userId }
+    where: { userId, ...studiedProgressWhere }
   });
 
   const masteredCount = await prisma.userProgress.count({
     where: {
       userId,
-      interval_days: { gt: 15 }
+      interval_days: { gte: MASTERY_INTERVAL_DAYS }
     }
   });
 
   const learningCount = await prisma.userProgress.count({
     where: {
       userId,
-      interval_days: { lte: 15 }
+      ...studiedProgressWhere, interval_days: { lt: MASTERY_INTERVAL_DAYS }
     }
   });
 
@@ -59,25 +61,26 @@ export default async function AnalyticsPage() {
   const activityDates = new Set(
     activities.map((a: any) => {
       const d = new Date(a.date);
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const date = String(d.getDate()).padStart(2, '0');
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const date = String(d.getUTCDate()).padStart(2, '0');
       return `${year}-${month}-${date}`;
     })
   );
 
   let streak = 0;
-  const today = new Date();
+  const preference = await prisma.studyPreference.findUnique({where:{userId}}).catch(()=>null);
+  const today = studyDay(new Date(), preference?.timeZone);
   const formatDate = (d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const date = String(d.getDate()).padStart(2, '0');
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const date = String(d.getUTCDate()).padStart(2, '0');
     return `${year}-${month}-${date}`;
   };
 
   const todayStr = formatDate(today);
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
+  const yesterday = new Date(today);
+  yesterday.setUTCDate(today.getUTCDate() - 1);
   const yesterdayStr = formatDate(yesterday);
 
   let hasActivityToday = activityDates.has(todayStr);
@@ -87,7 +90,7 @@ export default async function AnalyticsPage() {
     let checkDate = hasActivityToday ? today : yesterday;
     while (activityDates.has(formatDate(checkDate))) {
       streak++;
-      checkDate.setDate(checkDate.getDate() - 1);
+      checkDate.setUTCDate(checkDate.getUTCDate() - 1);
     }
   }
 
@@ -95,9 +98,9 @@ export default async function AnalyticsPage() {
   const heatmapData: Record<string, number> = {};
   activities.forEach((a: any) => {
     const d = new Date(a.date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const date = String(d.getDate()).padStart(2, '0');
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const date = String(d.getUTCDate()).padStart(2, '0');
     const key = `${year}-${month}-${date}`;
     heatmapData[key] = (heatmapData[key] || 0) + a.wordsLearned;
   });
@@ -133,7 +136,7 @@ export default async function AnalyticsPage() {
       id: true
     },
     where: {
-      interval_days: { gt: 15 }
+      interval_days: { gte: MASTERY_INTERVAL_DAYS }
     },
     orderBy: {
       _count: {

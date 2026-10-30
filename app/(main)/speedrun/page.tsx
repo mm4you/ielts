@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@fluentui/react-components';
 
 import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
@@ -37,6 +38,8 @@ function SpeedrunContent() {
   const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
 
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
+  const [loadError,setLoadError]=useState('');
+  const [loading,setLoading]=useState(false);
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -56,24 +59,28 @@ function SpeedrunContent() {
   const fetchQuestions = async () => {
     try {
       const collectionParam = collectionId ? `&collectionId=${collectionId}` : '';
-      const res = await fetch(`/api/speedrun?level=${selectedLevel}${collectionParam}`);
+      const res = await fetch(`/api/speedrun?level=${selectedLevel}${collectionParam}`,{signal:AbortSignal.timeout(15000)});
       const data = await res.json();
+      if(!res.ok)throw new Error(data.error||'Chưa tải được bộ từ. Bạn thử lại nhé.');
       if (!data.error) {
         setQuestions(data);
       }
+      return true;
     } catch (e) {
-      console.error(e);
+      setLoadError(e instanceof Error?e.message:'Chưa tải được từ.');
+      return false;
     }
   };
 
   const startGame = async () => {
-    setGameState('playing');
+    if(loading)return;setLoading(true);setLoadError('');
     setScore(0);
     setTimeLeft(45);
     setCurrentIndex(0);
     setStreak(0);
     setScorePops([]);
-    await fetchQuestions();
+    const ready=await fetchQuestions();
+    setLoading(false);if(!ready)return;setGameState('playing');
   };
 
   // Timer logic
@@ -96,7 +103,7 @@ function SpeedrunContent() {
     };
   }, [gameState, questions]);
 
-  const handleAnswer = (choiceIdx: number, e: React.MouseEvent<HTMLDivElement>) => {
+  const handleAnswer = (choiceIdx: number, e: React.MouseEvent<HTMLButtonElement>) => {
     if (questions.length === 0 || answerStatus) return;
 
     const currentQ = questions[currentIndex];
@@ -133,7 +140,7 @@ function SpeedrunContent() {
       setTimeLeft(t => t + 2);
       setStreak(s => s + 1);
       setFlashColor('green');
-      fetch('/api/activity', { method: 'POST' }).catch(() => {});
+
 
       setTimeout(() => {
         setFlashColor(null);
@@ -157,11 +164,11 @@ function SpeedrunContent() {
   };
 
   if (gameState === 'setup') {
-    return <PracticeSetup mode="speedrun" title="Tốc chiến" rules={['Bắt đầu với 45 giây.','Đúng: thêm 2 giây và 10 điểm.','Sai: trừ 3 giây. Hết giờ thì kết thúc.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} />;
+    return <PracticeSetup mode="speedrun" title="Tốc chiến" rules={['Bắt đầu với 45 giây.','Đúng: thêm 2 giây và 10 điểm.','Sai: trừ 3 giây. Hết giờ thì kết thúc.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} loading={loading} error={loadError} />;
   }
 
   if (gameState === 'gameover') {
-    return <GameResult value={score} onReplay={() => setGameState('setup')} exitRoute={exitRoute}></GameResult>;
+    return <GameResult error={loadError} value={score} onReplay={() => setGameState('setup')} exitRoute={exitRoute}></GameResult>;
   }
 
   if (questions.length === 0) {
@@ -186,12 +193,12 @@ function SpeedrunContent() {
         <div className={`transition-all duration-300 font-semibold ${timeLeft <= 10 ? 'text-2xl md:text-3xl text-[var(--red)]' : 'text-2xl md:text-4xl text-[var(--ink)]'}`}>
           {timeLeft}s
         </div>
-        <button
+        <Button
           onClick={() => router.push(exitRoute)}
           className="w-8 h-8 md:w-10 md:h-10 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 ml-2 cursor-pointer z-10"
           title="Thoát game"
          aria-label="Thoát game">
-          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
+          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></Button>
 
         {/* Progress Bar */}
         <div className="absolute bottom-0 left-0 right-0 h-2 bg-gray-200 rounded-b-lg overflow-hidden border-t border-[var(--line)]">
@@ -218,16 +225,16 @@ function SpeedrunContent() {
         {currentQ.choices.map((choice, idx) => {
           const { en, vi } = parseMeaning(choice, currentQ.pos || '');
           return (
-            <div
+            <Button
               key={idx}
               onClick={(e) => handleAnswer(idx, e)}
-              className={`btn-brutal text-left block w-full h-auto min-h-[60px] md:min-h-[80px] py-3 px-4 md:py-6 md:px-6 cursor-pointer transition-colors active:scale-95 ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--brand-soft)] group' : (idx === currentQ.correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
+              className="answer-choice" appearance="secondary" disabled={!!answerStatus} data-result={answerStatus ? idx === currentQ.correctIndex ? 'correct' : idx === answerStatus.selectedIdx ? 'wrong' : undefined : undefined}
             >
               <div className="flex flex-col h-full justify-center">
                 <span className={`block text-lg md:text-xl font-semibold mb-1 text-center ${ !answerStatus ? 'text-[var(--ink)] group-hover:text-[var(--ink)]' : (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]' : 'text-[var(--ink)]') }`}>{en}</span>
                 {vi && <span className={`block text-sm font-semibold text-center ${ !answerStatus ? 'text-[var(--muted)] group-hover:text-[var(--ink)]/80' : (idx === currentQ.correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]/80' : 'text-[var(--muted)]') }`}>{vi}</span>}
               </div>
-            </div>
+            {answerStatus && (idx === currentQ.correctIndex ? <span> ✓ Đáp án đúng</span> : idx === answerStatus.selectedIdx ? <span> — Bạn đã chọn</span> : null)}</Button>
           );
         })}
       </div>

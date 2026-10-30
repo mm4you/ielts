@@ -1,3 +1,4 @@
+import { writeAiDraft } from './ai-drafts';
 import { getNvidiaModel } from '../lib/ai-config';
 process.env.IS_SCRIPT = 'true';
 import { prisma } from '../lib/prisma';
@@ -182,22 +183,15 @@ async function main() {
       }
 
       try {
-        await prisma.word.update({
-          where: { id: w.id },
-          data: {
-            ipa: result.ipa.trim(),
-            example: result.example.trim(),
-            topic: finalTopic
-          }
-        });
+        await writeAiDraft(w.id, {ipa:w.ipa,example:w.example,topic:w.topic}, {ipa:result.ipa.trim(),example:result.example.trim(),topic:finalTopic});
         successCount++;
-        console.log(`  ✓ Cập nhật thành công: "${w.word}"`);
+        console.log(`  ✓ Đã tạo bản nháp: "${w.word}"`);
         console.log(`    + IPA: ${result.ipa}`);
         console.log(`    + Ví dụ: ${result.example}`);
         console.log(`    + Chủ đề mới: ${finalTopic}`);
       } catch (dbErr: any) {
         failCount++;
-        console.error(`  ✗ Lỗi lưu DB cho "${w.word}":`, dbErr.message || dbErr);
+        console.error(`  ✗ Lỗi ghi bản nháp cho "${w.word}":`, dbErr.message || dbErr);
       }
     } else {
       failCount++;

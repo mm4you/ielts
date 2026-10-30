@@ -1,4 +1,5 @@
 'use client';
+import { Button, Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent } from '@fluentui/react-components';
 
 import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
@@ -189,19 +190,19 @@ export default function BlockBlastClient() {
     currY: number;
   } | null>(null);
 
-  const startGame = () => {
-    setGameState('playing');
+  const [loading,setLoading]=useState(false),[loadError,setLoadError]=useState('');
+  const startGame = async () => {
+    if(loading)return;setLoading(true);setLoadError('');
+    try {
+      const res=await fetch('/api/speedrun?level='+encodeURIComponent(selectedLevel),{signal:AbortSignal.timeout(15000)});
+      const data=await res.json();if(!res.ok)throw new Error(data.error||'Chưa tải được từ.');
+      setQuestions(data);setGameState('playing');
     setBoard(Array(8).fill(0).map(() => Array(8).fill(0)));
     setShapes(getSmartShapes(3, Array(8).fill(0).map(() => Array(8).fill(0))));
     setScore(0);
     setCurrentQIndex(0);
 
-    fetch(`/api/speedrun?level=${selectedLevel}`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data.error) setQuestions(data);
-      })
-      .catch(console.error);
+    }catch(e){setLoadError(e instanceof Error?e.message:'Chưa tải được từ.');}finally{setLoading(false);}
   };
 
   const { data: session } = useSession();
@@ -494,7 +495,7 @@ export default function BlockBlastClient() {
 
     if (isCorrect) {
       setScore(s => s + 500);
-      fetch('/api/activity', { method: 'POST' }).catch(() => {});
+
 
       setTimeout(() => {
         setShapes(getSmartShapes(3, board));
@@ -538,7 +539,7 @@ export default function BlockBlastClient() {
     }
   };
   if (gameState === 'setup') {
-    return <PracticeSetup mode="blockblast" title="Xếp hình" rules={['Kéo khối vào bàn cờ để ghi điểm.','Xếp hết 3 khối rồi trả lời câu hỏi từ vựng.','Trả lời sai sẽ thêm ô bị chặn. Hết chỗ thì kết thúc.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} highScore={highScore} />;
+    return <PracticeSetup mode="blockblast" title="Xếp hình" rules={['Kéo khối vào bàn cờ để ghi điểm.','Xếp hết 3 khối rồi trả lời câu hỏi từ vựng.','Trả lời sai sẽ thêm ô bị chặn. Hết chỗ thì kết thúc.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} highScore={highScore} loading={loading} error={loadError} />;
   }
 
   return (
@@ -555,12 +556,12 @@ export default function BlockBlastClient() {
             </div>
           )}
         </div>
-        <button
+        <Button
           onClick={() => router.push(exitRoute)}
           className="w-8 h-8 md:w-10 md:h-10 border border-[var(--line)] bg-[var(--red)] text-white font-semibold rounded-lg hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center shrink-0 cursor-pointer"
           title="Thoát game"
          aria-label="Thoát game">
-          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></button>
+          <UiDismissRegular aria-hidden="true" className="w-4 h-4 ui-close-icon" /></Button>
       </div>
 
       {/* Board */}
@@ -616,8 +617,7 @@ export default function BlockBlastClient() {
 
         {/* Vocab Overlay */}
         {gameState === 'vocab' && questions.length > 0 && (
-          <div className={`fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-4 ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
-            <div className="bg-[var(--paper)] p-4 md:p-6 rounded-xl border border-[var(--ink)] w-full max-w-md max-h-[90vh] flex flex-col relative pt-10 animate-[comboPop_0.3s_ease-out]">
+          <Dialog open onOpenChange={(_,d)=>{if(!d.open)setGameState('gameover');}}><DialogSurface><DialogBody><DialogTitle action={<Button aria-label="Kết thúc lượt chơi" onClick={()=>setGameState('gameover')}>Đóng</Button>}>Một câu hỏi nhỏ</DialogTitle><DialogContent>
               <div className="absolute top-4 right-4">
                 <SaveToCollection wordId={questions[currentQIndex].id} wordText={questions[currentQIndex].word} />
               </div>
@@ -627,19 +627,17 @@ export default function BlockBlastClient() {
                 {questions[currentQIndex].choices.map((choice, idx) => {
                   const { en, vi } = parseMeaning(choice, questions[currentQIndex].pos || '');
                   return (
-                    <div
+                    <Button
                       key={idx}
                       onClick={() => handleVocabAnswer(idx)}
-                      className={`btn-brutal py-3 px-4 text-sm text-left block w-full h-auto min-h-[60px] ${ !answerStatus ? 'bg-[var(--paper)] hover:bg-[var(--brand-soft)] cursor-pointer group' : (idx === questions[currentQIndex].correctIndex ? '!bg-green-400 !border-green-700 !text-green-950' : (idx === answerStatus.selectedIdx ? '!bg-red-400 !border-red-700 !text-red-950' : 'bg-[var(--paper)] opacity-50')) }`}
+                      className="answer-choice" appearance="secondary" disabled={!!answerStatus} data-result={answerStatus ? idx === questions[currentQIndex].correctIndex ? 'correct' : idx === answerStatus.selectedIdx ? 'wrong' : undefined : undefined}
                     >
                       <span className={`block font-semibold text-base leading-tight mb-1 ${ !answerStatus ? 'text-[var(--ink)] group-hover:text-[var(--ink)]' : (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]' : 'text-[var(--ink)]') }`}>{en}</span>
                       {vi && <span className={`block font-semibold text-xs ${ !answerStatus ? 'text-[var(--muted)] group-hover:text-[var(--ink)]/80' : (idx === questions[currentQIndex].correctIndex || idx === answerStatus.selectedIdx ? 'text-[var(--ink)]/80' : 'text-[var(--muted)]') }`}>{vi}</span>}
-                    </div>
+                    {answerStatus && (idx === questions[currentQIndex].correctIndex ? <span> ✓ Đáp án đúng</span> : idx === answerStatus.selectedIdx ? <span> — Bạn đã chọn</span> : null)}</Button>
                   );
                 })}
-              </div>
-            </div>
-          </div>
+              </div></DialogContent></DialogBody></DialogSurface></Dialog>
         )}
 
         {gameState === 'gameover' && <div className="game-result-overlay"><GameResult embedded value={score} onReplay={() => setGameState('setup')} exitRoute={exitRoute}>{score>=highScore&&score>0&&<p className="new-record">Kỷ lục mới</p>}</GameResult></div>}

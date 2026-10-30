@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import { pollRoom } from '../lib/rooms/poll';
+import { initializeGames, expireGames } from '../lib/rooms/games';
+import { RoomError } from '../lib/rooms/error';
+import type { RoomState } from '../lib/rooms/types';
+const state:RoomState={version:1,title:'Poll test',hostId:'u',settings:{level:'all',questionCount:5,secondsPerQuestion:10,mode:'typing',maxPlayers:40},players:[{id:'u',name:'U',ready:true,left:false}],questions:Array.from({length:5},()=>({word:'learn',choices:['học','viết','đọc','nói'],correctIndex:0})),startedAt:1000,closed:false,answers:{}};
+initializeGames(state);
+(async()=>{
+  const reads:boolean[]=[];let saves=0;
+  await pollRoom('u',async lock=>{reads.push(lock);return {state:structuredClone(state),now:2000};},async()=>{saves++;});
+  assert.deepEqual(reads,[false]);assert.equal(saves,0);
+  reads.length=0;
+  const expired=await pollRoom('u',async lock=>{reads.push(lock);return {state:structuredClone(state),now:12000};},async()=>{saves++;});
+  assert.deepEqual(reads,[false,true]);assert.equal(saves,1);assert.equal(expired.state.games!.u.lives,2);
+  const concurrent=structuredClone(state);expireGames(concurrent,12000);reads.length=0;saves=0;
+  await pollRoom('u',async lock=>{reads.push(lock);return {state:structuredClone(lock?concurrent:state),now:12000};},async()=>{saves++;});
+  assert.deepEqual(reads,[false,true]);assert.equal(saves,0,'Recheck avoids writing an expiration another request already saved');
+  await assert.rejects(()=>pollRoom('outsider',async()=>({state:structuredClone(state),now:12000}),async()=>{saves++;}),RoomError);
+  console.log('Room polls: unlocked ordinary reads, locked fresh expiration, concurrent expiry recheck and membership passed.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

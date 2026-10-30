@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@fluentui/react-components';
 
 
 import { PlayRegular } from '@fluentui/react-icons/svg/play';
@@ -73,7 +74,7 @@ export default function SeedBotPage() {
               { id: 'B', label: 'Nhóm B', desc: 'Trung cấp (B1-B2)' },
               { id: 'C', label: 'Nhóm C', desc: 'Cao cấp (C1-C2)' }
             ].map(g => (
-              <button
+              <Button
                 key={g.id}
                 disabled={isRunning}
                 onClick={() => setSelectedGroup(g.id)}
@@ -81,7 +82,7 @@ export default function SeedBotPage() {
               >
                 <span className="text-sm font-semibold ">{g.label}</span>
                 <span className="text-[10px] font-semibold opacity-75 mt-1">{g.desc}</span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -91,9 +92,9 @@ export default function SeedBotPage() {
           <div className="text-xl font-semibold text-[var(--ink)]">{status}</div>
         </div>
 
-        <button
+        <Button
           onClick={isRunning ? stopBot : startBot}
-          className={`btn-brutal w-full py-4 text-xl text-white mb-8 ${isRunning ? 'bg-[var(--red)]' : 'bg-[var(--blue)]'}`}
+          className={` w-full py-4 text-xl text-white mb-8 ${isRunning ? 'bg-[var(--red)]' : 'bg-[var(--blue)]'}`}
         >
           {isRunning ? 'Dừng Bot Ngay!' : (
             <span className="flex items-center justify-center gap-2">
@@ -101,7 +102,7 @@ export default function SeedBotPage() {
               <PlayRegular aria-hidden="true" className="w-5 h-5 shrink-0" />
             </span>
           )}
-        </button>
+        </Button>
 
         <div className="bg-[var(--paper)] border border-[var(--line)] rounded-xl p-4 h-64 overflow-y-auto font-sans text-sm">
           {logs.map((log, idx) => (

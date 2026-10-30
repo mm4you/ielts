@@ -1,3 +1,4 @@
+import type { PracticeResult } from './study';
 export type TypingWord = { id: number; word: string; meaning: string };
 export type TypingTarget = TypingWord & { key: number; lane: number; y: number };
 export type TypingState = {
@@ -6,8 +7,11 @@ export type TypingState = {
   bestCombo: number; lives: number; hits: number; hitCharacters: number; typed: number; correct: number;
   lastHit: TypingTarget | null; lastHitAt: number;
   lastShot: TypingTarget | null; lastShotAt: number;
+  results: PracticeResult[]; mistypedIds: number[];
 };
 export const TYPING_DURATION = 60_000;
+export function boundedGameDelta(delta: number) { return Math.max(0, Math.min(250, delta)); }
+export function fallingPosition(y: number, delta: number, speed: number) { return y + boundedGameDelta(delta) * speed / 1000; }
 export function normalizeTyping(value: string) { return value.toLowerCase().replace(/[’‘]/g, "'"); }
 export function typingWordFeedback(word: string, input: string) {
   let matched = 0;
@@ -15,18 +19,29 @@ export function typingWordFeedback(word: string, input: string) {
   return { matched, wrong: !!input && !word.startsWith(input) };
 }
 export function newTypingGame(): TypingState {
-  return { phase: 'playing', elapsed: 0, spawnIn: 0, serial: 0, targets: [], input: '', locked: null, score: 0, combo: 0, bestCombo: 0, lives: 3, hits: 0, hitCharacters: 0, typed: 0, correct: 0, lastHit: null, lastHitAt: 0, lastShot: null, lastShotAt: 0 };
+  return { phase: 'playing', elapsed: 0, spawnIn: 0, serial: 0, targets: [], input: '', locked: null, score: 0, combo: 0, bestCombo: 0, lives: 3, hits: 0, hitCharacters: 0, typed: 0, correct: 0, lastHit: null, lastHitAt: 0, lastShot: null, lastShotAt: 0, results: [], mistypedIds: [] };
+}
+function recordResult(results: PracticeResult[], result: PracticeResult) {
+  const previous = results.find(r=>r.wordId===result.wordId);
+  // Preserve a miss in this run even when a later repeat was correct.
+  const outcome = previous?.outcome === 'missed' ? previous : result;
+  const attempts = (previous ? previous.attempts ?? 1 : 0) + (result.attempts ?? 1);
+  const failedAttempts = (previous ? previous.failedAttempts ?? (previous.outcome !== 'correct' ? 1 : 0) : 0) + (result.failedAttempts ?? (result.outcome !== 'correct' ? 1 : 0));
+  return [...results.filter(r=>r.wordId!==result.wordId), { ...outcome, corrected: !!previous?.corrected || result.corrected, attempts, failedAttempts }];
 }
 export function typingTick(state: TypingState, delta: number, pool: TypingWord[]): TypingState {
   if (state.phase !== 'playing' || !pool.length) return state;
-  const dt = Math.max(0, Math.min(250, delta));
+  const dt = boundedGameDelta(delta);
   const elapsed = Math.min(TYPING_DURATION, state.elapsed + dt);
   const speed = 7 + Math.min(5, elapsed / 12_000);
-  const moved = state.targets.map(target => ({ ...target, y: target.y + dt * speed / 1000 }));
+  const moved = state.targets.map(target => ({ ...target, y: fallingPosition(target.y, dt, speed) }));
   const missed = moved.filter(target => target.y >= 93);
   let targets = moved.filter(target => target.y < 93);
   const lives = Math.max(0, state.lives - missed.length);
   const lostLock = missed.some(target => target.key === state.locked);
+  let results = state.results;
+  const finished = lives === 0 || elapsed >= TYPING_DURATION;
+  for (const target of [...missed, ...(finished ? targets : [])]) results = recordResult(results, { wordId: target.id, answer: target.key === state.locked ? state.input : '', outcome: 'missed', hinted: false, corrected: false });
   let spawnIn = state.spawnIn - dt;
   let serial = state.serial;
   if (spawnIn <= 0 && targets.length < 5 && lives > 0 && elapsed < TYPING_DURATION) {
@@ -39,7 +54,7 @@ export function typingTick(state: TypingState, delta: number, pool: TypingWord[]
     }
     spawnIn = Math.max(1250, 2600 - elapsed / 40);
   }
-  return { ...state, elapsed, targets, lives, serial, spawnIn, combo: missed.length ? 0 : state.combo,
+  return { ...state, elapsed, targets, lives, serial, spawnIn, results, combo: missed.length ? 0 : state.combo,
     input: lostLock ? '' : state.input, locked: lostLock ? null : state.locked,
     phase: lives === 0 || elapsed >= TYPING_DURATION ? 'finished' : 'playing' };
 }
@@ -51,11 +66,13 @@ export function typeIntoGame(state: TypingState, value: string): TypingState {
   while (prefix < input.length && prefix < state.input.length && input[prefix] === state.input[prefix]) prefix++;
   const added = input.length - prefix;
   const correct = state.correct + (target?.word.startsWith(input) ? added : 0);
-  const next = { ...state, input, locked: input ? target?.key ?? null : null, typed: state.typed + added, correct,
+  const mistypedIds = target && input && !target.word.startsWith(input) ? [...new Set([...state.mistypedIds, target.id])] : state.mistypedIds;
+  const next = { ...state, input, locked: input ? target?.key ?? null : null, typed: state.typed + added, correct, mistypedIds,
     lastShot: correct > state.correct && target ? target : state.lastShot, lastShotAt: correct > state.correct ? state.elapsed : state.lastShotAt };
   if (!target || input !== target.word) return next;
   const combo = state.combo + 1;
   return { ...next, input: '', locked: null, targets: state.targets.filter(t => t.key !== target.key), hits: state.hits + 1,
     hitCharacters: state.hitCharacters + target.word.length, combo, bestCombo: Math.max(state.bestCombo, combo),
-    score: state.score + target.word.length * 10 + Math.min(100, (combo - 1) * 10), lastHit: target, lastHitAt: state.elapsed };
+    score: state.score + target.word.length * 10 + Math.min(100, (combo - 1) * 10), lastHit: target, lastHitAt: state.elapsed,
+    results: recordResult(state.results, { wordId: target.id, answer: input, outcome: 'correct', hinted: false, corrected: mistypedIds.includes(target.id) }) };
 }

@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@fluentui/react-components';
 
 import PageHeader from '@/components/PageHeader';
 import { DismissRegular as UiDismissRegular } from '@fluentui/react-icons/svg/dismiss';
@@ -347,13 +348,13 @@ export default function AnalyticsClient({
             { id: 'blockblast', label: 'Xếp hình', color: 'bg-[var(--brand-soft)] text-[var(--blue)]' },
             { id: 'sniper', label: 'Thiện xạ', color: 'bg-[var(--brand-soft)] text-[var(--blue)]' }
           ].map(tab => (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${ activeTab === tab.id ? `${tab.color} border border-[var(--line)] ` : 'text-[var(--muted)] hover:text-[var(--ink)] bg-transparent border border-transparent' }`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
 

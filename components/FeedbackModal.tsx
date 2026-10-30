@@ -1,8 +1,9 @@
 'use client';
+import ChoiceSelect from '@/components/ChoiceSelect';
 
 
 import { DismissRegular } from '@fluentui/react-icons/svg/dismiss';
-import { Button, Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, DialogActions, Field, Input, Select, Textarea, Spinner } from '@fluentui/react-components';
+import { Button, Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, DialogActions, Field, Input, Textarea, Spinner } from '@fluentui/react-components';
 import { useState, useEffect } from 'react';
 import { showToast } from '@/components/GlobalToast';
 
@@ -81,7 +82,7 @@ export default function FeedbackModal() {
     <DialogSurface className="feedback-dialog"><form onSubmit={handleSubmit}><DialogBody>
       <DialogTitle action={<Button appearance="subtle" icon={<DismissRegular />} aria-label="Đóng góp ý" disabled={isSubmitting} onClick={onClose} />}>Góp ý hệ thống</DialogTitle>
       <DialogContent className="feedback-fields">
-        <Field label="Phân loại"><Select value={type} onChange={e=>setType(e.target.value)} disabled={isSubmitting}><option value="bug">Lỗi hệ thống</option><option value="feature">Đề xuất tính năng</option><option value="vocab">Góp ý từ vựng</option><option value="other">Ý kiến khác</option></Select></Field>
+        <Field label="Phân loại"><ChoiceSelect value={type} onChange={e=>setType(e.target.value)} disabled={isSubmitting}><option value="bug">Lỗi hệ thống</option><option value="feature">Đề xuất tính năng</option><option value="vocab">Góp ý từ vựng</option><option value="other">Ý kiến khác</option></ChoiceSelect></Field>
         <Field label="Nội dung" required hint={message.length+'/1000 ký tự'}><Textarea value={message} onChange={(_,data)=>setMessage(data.value)} required maxLength={1000} rows={5} disabled={isSubmitting} resize="vertical" placeholder="Mô tả vấn đề hoặc đề xuất" /></Field>
         <Field label="Liên hệ" hint="Không bắt buộc"><Input value={contact} onChange={(_,data)=>setContact(data.value)} disabled={isSubmitting} placeholder="Email hoặc số điện thoại" /></Field>
       </DialogContent>

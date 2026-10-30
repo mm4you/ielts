@@ -11,6 +11,8 @@ export async function POST(req: Request) {
     }
 
     const { limit = 10 } = await req.json().catch(() => ({ limit: 10 }));
+    if(!Number.isInteger(limit)||limit<1||limit>10)return NextResponse.json({error:'Chọn từ 1 đến 10 từ mỗi lượt.'},{status:400});
+    const drafts: {wordId:number;word:string;before:string;after:string;status:string}[]=[];
     
     // Check if API Key exists with filesystem fallback
     let apiKey = process.env.NVIDIA_API_KEY;
@@ -105,10 +107,7 @@ export async function POST(req: Request) {
                 
                 if (cleanText) {
                   // Update the word in database
-                  await prisma.word.update({
-                    where: { id: word.id },
-                    data: { meaning_vi: cleanText }
-                  });
+                  drafts.push({wordId:word.id,word:word.word,before:word.meaning_vi,after:cleanText,status:'draft'});
                   successCount++;
                 }
               }
@@ -127,8 +126,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ 
-      success: true, 
-      message: `Đã cải thiện thành công ${successCount}/${wordsToImprove.length} từ vựng.` 
+      success: true, drafts,
+      message: `Đã tạo ${successCount} bản nháp. Hãy đối chiếu nguồn trước khi sửa từng từ.`
     });
 
   } catch (error: any) {

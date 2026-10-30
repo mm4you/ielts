@@ -1,4 +1,5 @@
 'use client';
+import ChoiceSelect from '@/components/ChoiceSelect';
 
 import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
@@ -45,6 +46,7 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
 
+  const [loadError,setLoadError]=useState('');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [difficulty, setDifficulty] = useState<'normal' | 'hardcore'>('normal');
 
@@ -76,19 +78,23 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
   const fetchQuestions = async () => {
     try {
       const collectionParam = collectionId ? `&collectionId=${collectionId}` : '';
-      const res = await fetch(`/api/sniper?level=${selectedLevel}${collectionParam}`);
+      const res = await fetch(`/api/sniper?level=${selectedLevel}${collectionParam}`,{signal:AbortSignal.timeout(15000)});
       const data = await res.json();
+      if(!res.ok)throw new Error(data.error||'Chưa tải được bộ từ. Bạn thử lại nhé.');
       if (!data.error) {
         setQuestions(data);
       }
+      return true;
     } catch (e) {
-      console.error(e);
+      setLoadError(e instanceof Error?e.message:'Chưa tải được từ.');
+      return false;
     }
   };
 
   const startGame = async () => {
-    setLoading(true);
-    await fetchQuestions();
+    if(loading)return;setLoadError('');setLoading(true);
+    const ready=await fetchQuestions();
+    setLoading(false);if(!ready)return;setGameState('playing');
     setScore(0);
     setLives(3);
     setCurrentQIndex(0);
@@ -208,11 +214,11 @@ export default function SniperClient({ collectionId }: { collectionId?: string }
   };
 
   if (gameState === 'setup') {
-    return <PracticeSetup mode="sniper" title="Thiện xạ" rules={['Đọc nghĩa tiếng Việt và chọn từ tiếng Anh tương ứng.','Chọn sai hoặc bỏ lỡ mục tiêu sẽ mất 1 lượt.','Bạn có 3 lượt.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} loading={loading}><label className="setup-field">Tốc độ<select value={difficulty} onChange={e=>setDifficulty(e.target.value as 'normal'|'hardcore')}><option value="normal">Bình thường</option><option value="hardcore">Nhanh</option></select></label></PracticeSetup>;
+    return <PracticeSetup mode="sniper" title="Thiện xạ" rules={['Đọc nghĩa tiếng Việt và chọn từ tiếng Anh tương ứng.','Chọn sai hoặc bỏ lỡ mục tiêu sẽ mất 1 lượt.','Bạn có 3 lượt.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} loading={loading} error={loadError}><label className="setup-field">Tốc độ<ChoiceSelect value={difficulty} onChange={e=>setDifficulty(e.target.value as 'normal'|'hardcore')}><option value="normal">Bình thường</option><option value="hardcore">Nhanh</option></ChoiceSelect></label></PracticeSetup>;
   }
 
   if (gameState === 'gameover') {
-    return <GameResult value={score} onReplay={startGame} loading={loading} exitRoute={exitRoute}>          {playedWords.length > 0 && (
+    return <GameResult error={loadError} value={score} onReplay={startGame} loading={loading} exitRoute={exitRoute}>          {playedWords.length > 0 && (
             <div className="bg-[var(--paper)] p-4 border border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
               <h3 className="font-semibold text-sm mb-2 border-b border-solid border-[var(--line)] pb-2 text-[var(--blue)]">Các từ đã xuất hiện:</h3>
               <ul className="space-y-2">

@@ -26,6 +26,12 @@ import { ArrowRepeatAllRegular } from '@fluentui/react-icons/svg/arrow-repeat-al
 import { ChartMultipleRegular } from '@fluentui/react-icons/svg/chart-multiple';
 import { FlashRegular } from '@fluentui/react-icons/svg/flash';
 import { PeopleTeamRegular } from '@fluentui/react-icons/svg/people-team';
+import { WeatherRainRegular } from '@fluentui/react-icons/svg/weather-rain';
+import { HeadphonesRegular } from '@fluentui/react-icons/svg/headphones';
+import { MapRegular } from '@fluentui/react-icons/svg/map';
+import { LinkRegular } from '@fluentui/react-icons/svg/link';
+import { TextDescriptionRegular } from '@fluentui/react-icons/svg/text-description';
+import { TextProofingToolsRegular } from '@fluentui/react-icons/svg/text-proofing-tools';
 import { KeyboardRegular } from '@fluentui/react-icons/svg/keyboard';
 import ThemeToggle from './ThemeToggle';
 import BrandMark from './BrandMark';
@@ -44,6 +50,11 @@ const gameLinks = [
   { href: '/match', label: 'Lật thẻ', icon: GamesRegular },
   { href: '/blockblast', label: 'Xếp hình', icon: GridRegular },
   { href: '/sniper', label: 'Thiện xạ', icon: TargetArrowRegular },
+  { href: '/word-rain', label: 'Mưa Từ Vựng', icon: WeatherRainRegular },
+  { href: '/spelling-bee', label: 'Ong Chính Tả', icon: HeadphonesRegular },
+  { href: '/collocations', label: 'Ghép cụm từ', icon: LinkRegular },
+  { href: '/context-practice', label: 'Điền từ theo ngữ cảnh', icon: TextDescriptionRegular },
+  { href: '/spelling-hunt', label: 'Săn lỗi chính tả', icon: TextProofingToolsRegular },
   { href: '/typing', label: 'Chíu chíu luyện gõ', icon: KeyboardRegular },
   { href: '/pronounce-challenge', label: 'Phát âm', icon: MicRegular },
 ];
@@ -64,18 +75,18 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
       const link = <Link href={href} className={`nav-link ${active ? 'is-active' : ''}`} aria-current={active ? 'page' : undefined} aria-label={compact ? label : undefined} onClick={() => setMobileOpen(false)}><Icon aria-hidden="true" />{!compact && <span>{label}</span>}</Link>;
       return compact ? <Tooltip key={href} content={label} relationship="label" positioning="after">{link}</Tooltip> : <div key={href}>{link}</div>;
     }
-    const feedbackButton = <button className="nav-link" onClick={() => { setMobileOpen(false); openFeedbackModal(); }} aria-label={compact ? 'Góp ý hệ thống' : undefined}><ChatHelpRegular />{!compact && <span>Góp ý hệ thống</span>}</button>;
+    const feedbackButton = <Button appearance="subtle" className="nav-link" onClick={() => { setMobileOpen(false); openFeedbackModal(); }} aria-label={compact ? 'Góp ý hệ thống' : undefined}><ChatHelpRegular />{!compact && <span>Góp ý hệ thống</span>}</Button>;
     return <>
       <Link href="/" className="app-brand" aria-label="IELTS Vocab, trang chủ" onClick={() => setMobileOpen(false)}>
         <BrandMark size={36} />
         {!compact && <span className="brand-name">IELTS Vocab</span>}
       </Link>
       <nav className="sidebar-navigation" aria-label="Điều hướng chính">
-        <div className="nav-group">{!compact && <p className="nav-section-label">Học tập</p>}{studyLinks.slice(0,4).map(navLink)}</div>
+        <div className="nav-group">{!compact && <p className="nav-section-label">Học tập</p>}{studyLinks.slice(0,4).map(navLink)}{navLink({href:'/decks',label:'Bộ IELTS & Lộ trình',icon:MapRegular})}</div>
         <div className="nav-group">{!compact && <p className="nav-section-label">Luyện tập</p>}
           {navLink(studyLinks[5])}
           {navLink({href:'/pronounce-challenge',label:'Phát âm',icon:MicRegular})}
-          {compact ? <Menu positioning="after"><MenuTrigger disableButtonEnhancement><Button appearance="subtle" className="nav-link" icon={<GamesRegular />} aria-label="Trò chơi" /></MenuTrigger><MenuPopover><MenuList>{gameLinks.filter(item => item.href !== '/pronounce-challenge').map(({href,label,icon:Icon})=><MenuItemLink href={href} key={href} icon={<Icon />}>{label}</MenuItemLink>)}</MenuList></MenuPopover></Menu> : <><button className="nav-link" onClick={()=>setGamesOpen(value=>!value)} aria-expanded={gamesOpen} aria-controls={gamesId}><GamesRegular /><span>Trò chơi</span><ChevronDownRegular className={`nav-chevron ${gamesOpen?'is-open':''}`} /></button><div id={gamesId} className="nav-subgroup" hidden={!gamesOpen}>{gameLinks.filter(item => item.href !== '/pronounce-challenge').map(navLink)}</div></>}
+          {compact ? <Menu positioning="after"><MenuTrigger disableButtonEnhancement><Button appearance="subtle" className="nav-link" icon={<GamesRegular />} aria-label="Trò chơi" /></MenuTrigger><MenuPopover><MenuList>{gameLinks.filter(item => item.href !== '/pronounce-challenge').map(({href,label,icon:Icon})=><MenuItemLink href={href} key={href} icon={<Icon />}>{label}</MenuItemLink>)}</MenuList></MenuPopover></Menu> : <><Button appearance="subtle" className="nav-link" onClick={()=>setGamesOpen(value=>!value)} aria-expanded={gamesOpen} aria-controls={gamesId}><GamesRegular /><span>Trò chơi</span><ChevronDownRegular className={`nav-chevron ${gamesOpen?'is-open':''}`} /></Button><div id={gamesId} className="nav-subgroup" hidden={!gamesOpen}>{gameLinks.filter(item => item.href !== '/pronounce-challenge').map(navLink)}</div></>}
         </div>
         <div className="nav-group">{navLink(studyLinks[4])}</div>
       </nav>
@@ -116,7 +127,7 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
     </OverlayDrawer>
     <nav className="mobile-bottom-nav" aria-label="Lối tắt học tập">
       {[studyLinks[0], studyLinks[1], studyLinks[2], studyLinks[3]].map(({href,label,icon:Icon}) => <Link href={href} key={href} aria-current={pathname === href ? 'page' : undefined} className={pathname === href ? 'is-active' : ''}><Icon /><span>{label}</span></Link>)}
-      <button onClick={() => setMobileOpen(true)} aria-label="Xem tất cả chế độ"><NavigationRegular /><span>Thêm</span></button>
+      <Button appearance="subtle" onClick={() => setMobileOpen(true)} aria-label="Xem tất cả chế độ"><NavigationRegular /><span>Thêm</span></Button>
     </nav>
   </>;
 }

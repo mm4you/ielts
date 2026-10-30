@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { config } from 'dotenv';
 config();
 
@@ -54,6 +54,15 @@ const basePrisma = globalForPrisma.prismaBase ?? new PrismaClient({
 });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaBase = basePrisma;
+
+/** Keep RLS identity, idempotency and study writes on one connection. */
+export async function studyTransaction<T>(userId: string, run: (tx: Prisma.TransactionClient) => Promise<T>) {
+  return basePrisma.$transaction(async tx => {
+    await tx.$executeRaw`SELECT set_config('app.current_user_id', ${userId}, true)`;
+    await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
+    return run(tx);
+  }, { maxWait: 10000, timeout: 15000 });
+}
 
 // Auth.js must resolve an identity before a user session exists. Keep this
 // transaction-local RLS context separate from normal application queries.

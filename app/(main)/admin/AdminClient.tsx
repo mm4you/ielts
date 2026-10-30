@@ -1,8 +1,9 @@
 'use client';
+import ChoiceSelect from '@/components/ChoiceSelect';
 import PageHeader from '@/components/PageHeader';
 
 
-import { Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, Button } from '@fluentui/react-components';
+import { Dialog, DialogSurface, DialogBody, DialogTitle, DialogContent, Button, Input, Field, Textarea } from '@fluentui/react-components';
 import { DismissRegular } from '@fluentui/react-icons/svg/dismiss';
 import { useConfirmation } from '@/components/ConfirmationProvider';
 import { showToast } from '@/components/GlobalToast';
@@ -27,6 +28,7 @@ interface UserData {
 
 export default function AdminClient({ initialWords, initialUsers }: { initialWords: Word[], initialUsers: UserData[] }) {
   const { confirm, password: requestPassword } = useConfirmation();
+  const [aiDrafts,setAiDrafts] = useState<{wordId:number;word:string;before:string;after:string}[]>([]);
   const [activeTab, setActiveTab] = useState<'words' | 'users'>('words');
   const [words, setWords] = useState<Word[]>(initialWords);
   const [users, setUsers] = useState<UserData[]>(initialUsers);
@@ -202,40 +204,40 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
             <>
               <Link
                 href="/admin/seed-bot"
-                className="btn-brutal bg-[var(--green)] text-white px-4 md:px-6 py-3 flex items-center justify-center text-sm md:text-base font-semibold whitespace-nowrap"
+                className=" bg-[var(--green)] text-white px-4 md:px-6 py-3 flex items-center justify-center text-sm md:text-base font-semibold whitespace-nowrap"
               >
                 Tạo từ bằng AI
               </Link>
               <Link
                 href="/admin/migrate"
-                className="btn-brutal bg-[var(--blue)] text-white px-4 md:px-6 py-3 flex items-center justify-center text-sm md:text-base font-semibold whitespace-nowrap"
+                className=" bg-[var(--blue)] text-white px-4 md:px-6 py-3 flex items-center justify-center text-sm md:text-base font-semibold whitespace-nowrap"
               >
                 Cập nhật loại từ
               </Link>
-              <button
+              <Button
                 onClick={() => handleOpenModal()}
-                className="btn-brutal bg-[var(--brand-soft)] text-[var(--blue)] px-4 md:px-6 py-3 text-sm md:text-base whitespace-nowrap"
+                className=" bg-[var(--brand-soft)] text-[var(--blue)] px-4 md:px-6 py-3 text-sm md:text-base whitespace-nowrap"
               >
                 Thêm từ
-              </button>
+              </Button>
             </>
           )}
         </div>} />
 
       {/* Tabs */}
       <div className="flex gap-4 mb-8 border-b border-[var(--line)]">
-        <button
+        <Button
           onClick={() => setActiveTab('words')}
           className={`px-4 py-3 font-semibold text-sm transition-colors border-b -mb-1 ${activeTab === 'words' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
         >
           Từ vựng ({words.length})
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setActiveTab('users')}
           className={`px-4 py-3 font-semibold text-sm transition-colors border-b -mb-1 ${activeTab === 'users' ? 'border-[var(--blue)] text-[var(--blue)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'}`}
         >
           Người dùng ({users.length})
-        </button>
+        </Button>
       </div>
 
       {/* WORD TAB CONTENT */}
@@ -244,14 +246,14 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
           {/* Action buttons & filters */}
           <div className="panel mb-8 flex flex-col gap-4">
             <div className="flex flex-col md:flex-row gap-4">
-              <input
+              <Input
                 type="text"
                 placeholder="Tìm kiếm từ hoặc nghĩa..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="flex-1 px-4 py-3 border border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none transition-shadow font-semibold"
               />
-              <select
+              <ChoiceSelect
                 value={selectedTopic}
                 onChange={(e) => setSelectedTopic(e.target.value)}
                 className="px-4 py-3 border border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none transition-shadow font-semibold appearance-none cursor-pointer"
@@ -262,9 +264,9 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     {TOPIC_LABELS[topic] || topic}
                   </option>
                 ))}
-              </select>
+              </ChoiceSelect>
 
-              <select
+              <ChoiceSelect
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value)}
                 className="px-4 py-3 border border-[var(--line)] rounded-xl bg-[var(--paper)] focus:outline-none transition-shadow font-semibold appearance-none cursor-pointer"
@@ -275,11 +277,11 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     {level}
                   </option>
                 ))}
-              </select>
+              </ChoiceSelect>
             </div>
 
             <div className="flex gap-3 flex-wrap pt-2 border-t border-solid border-[var(--line)]">
-              <button
+              <Button
                 onClick={async () => {
                   try {
                     const res = await fetch('/api/seed-basic');
@@ -290,33 +292,33 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                     showMessage('Lỗi nạp từ cơ bản');
                   }
                 }}
-                className="btn-brutal bg-[var(--brand-soft)] text-[var(--blue)] text-xs py-2 px-4 "
+                className=" bg-[var(--brand-soft)] text-[var(--blue)] text-xs py-2 px-4 "
               >
                 + Nạp 50 từ cơ bản (A1)
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={async () => {
                   try {
                     const res = await fetch('/api/admin/improve-meanings', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ limit: 50 })
+                      body: JSON.stringify({ limit: 10 })
                     });
                     const data = await res.json();
                     if (data.error) showMessage('Lỗi: ' + data.error);
                     else {
                       showToast(data.message, true);
-                      window.location.reload();
+                      setAiDrafts(data.drafts || []);
                     }
                   } catch (e) {
                     showMessage('Lỗi kết nối AI');
                   }
                 }}
-                className="btn-brutal bg-[var(--blue)] text-white text-xs py-2 px-4 flex items-center justify-center gap-1.5"
+                className=" bg-[var(--blue)] text-white text-xs py-2 px-4 flex items-center justify-center gap-1.5"
               >
                 <WandRegular aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
-                <span>AI Sửa Nghĩa Tự Động (50 từ)</span>
-              </button>
+                <span>Tạo bản nháp nghĩa (10 từ)</span>
+              </Button>
             </div>
           </div>
 
@@ -376,15 +378,15 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       </div>
 
                       <div className="flex items-center gap-2 mt-auto pt-4 border-t border-solid border-[var(--line)]">
-                        <Link href={`/word/${word.id}`} className="btn-brutal bg-[var(--paper)] text-[var(--ink)] text-[11px] px-2.5 py-1.5 font-semibold flex-1 text-center select-none ">
+                        <Link href={`/word/${word.id}`} className=" bg-[var(--paper)] text-[var(--ink)] text-[11px] px-2.5 py-1.5 font-semibold flex-1 text-center select-none ">
                           Xem
                         </Link>
-                        <button onClick={() => handleOpenModal(word)} className="btn-brutal bg-[var(--blue)] text-white text-[11px] px-2.5 py-1.5 font-semibold flex-1 ">
+                        <Button onClick={() => handleOpenModal(word)} className=" bg-[var(--blue)] text-white text-[11px] px-2.5 py-1.5 font-semibold flex-1 ">
                           Sửa
-                        </button>
-                        <button onClick={() => handleDelete(word.id)} className="btn-brutal bg-[var(--red)] text-white text-[11px] px-2.5 py-1.5 font-semibold ">
+                        </Button>
+                        <Button onClick={() => handleDelete(word.id)} className=" bg-[var(--red)] text-white text-[11px] px-2.5 py-1.5 font-semibold ">
                           Xóa
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   );
@@ -399,7 +401,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                   </p>
 
                   <div className="flex items-center gap-2 flex-wrap justify-center">
-                    <button
+                    <Button
                       disabled={wordPage === 1}
                       onClick={() => {
                         setWordPage((prev) => Math.max(prev - 1, 1));
@@ -407,7 +409,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &lt;
-                    </button>
+                    </Button>
 
                     {getPageNumbers(wordPage, totalWordPages).map((p, idx) => {
                       if (p === '...') {
@@ -420,7 +422,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
 
                       const isCurrent = p === wordPage;
                       return (
-                        <button
+                        <Button
                           key={`page-${p}`}
                           onClick={() => {
                             setWordPage(p as number);
@@ -428,11 +430,11 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           className={`w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold transition-all cursor-pointer ${ isCurrent ? 'bg-[var(--green)] text-white ' : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-[var(--green)]/10' }`}
                         >
                           {p}
-                        </button>
+                        </Button>
                       );
                     })}
 
-                    <button
+                    <Button
                       disabled={wordPage === totalWordPages}
                       onClick={() => {
                         setWordPage((prev) => Math.min(prev + 1, totalWordPages));
@@ -440,7 +442,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &gt;
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -454,7 +456,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
         <>
           {/* User filters */}
           <div className="panel mb-8">
-            <input
+            <Input
               type="text"
               placeholder="Tìm kiếm học viên theo tên hoặc email..."
               value={userSearch}
@@ -521,7 +523,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           <td className="p-4 text-right">
                             {user.email !== 'ungnhutkhang53@gmail.com' ? (
                               <div className="flex justify-end gap-2">
-                                <button
+                                <Button
                                   onClick={async () => {
                                     const newPass = await requestPassword({title:'Đặt lại mật khẩu',description:`Nhập mật khẩu mới cho ${user.name || user.email}.`,confirmLabel:'Đặt lại mật khẩu'});
                                     if (newPass) {
@@ -546,11 +548,11 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                       }
                                     }
                                   }}
-                                  className="btn-brutal bg-[var(--blue)] text-white text-[10px] py-1 px-2.5 font-semibold cursor-pointer transition-all shrink-0"
+                                  className=" bg-[var(--blue)] text-white text-[10px] py-1 px-2.5 font-semibold cursor-pointer transition-all shrink-0"
                                 >
                                   Đổi mật khẩu
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                   onClick={async () => {
                                     if (await confirm({title:'Xóa người dùng',description:`Xóa tài khoản ${user.name || user.email}? Hành động này không thể hoàn tác.`,confirmLabel:'Xóa người dùng',danger:true})) {
                                       try {
@@ -565,10 +567,10 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                                       }
                                     }
                                   }}
-                                  className="btn-brutal bg-[var(--red)] text-white text-[10px] py-1 px-2.5 font-semibold cursor-pointer transition-all shrink-0"
+                                  className=" bg-[var(--red)] text-white text-[10px] py-1 px-2.5 font-semibold cursor-pointer transition-all shrink-0"
                                 >
                                   Xóa
-                                </button>
+                                </Button>
                               </div>
                             ) : (
                               <span className="text-[10px] text-[var(--muted)] font-semibold italic">Bảo vệ</span>
@@ -589,7 +591,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                   </p>
 
                   <div className="flex items-center gap-2 flex-wrap justify-center">
-                    <button
+                    <Button
                       disabled={userPage === 1}
                       onClick={() => {
                         setUserPage((prev) => Math.max(prev - 1, 1));
@@ -597,7 +599,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &lt;
-                    </button>
+                    </Button>
 
                     {getPageNumbers(userPage, totalUserPages).map((p, idx) => {
                       if (p === '...') {
@@ -610,7 +612,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
 
                       const isCurrent = p === userPage;
                       return (
-                        <button
+                        <Button
                           key={`page-${p}`}
                           onClick={() => {
                             setUserPage(p as number);
@@ -618,11 +620,11 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                           className={`w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold transition-all cursor-pointer ${ isCurrent ? 'bg-[var(--green)] text-white ' : 'bg-[var(--bg)] text-[var(--ink)] hover:bg-[var(--green)]/10' }`}
                         >
                           {p}
-                        </button>
+                        </Button>
                       );
                     })}
 
-                    <button
+                    <Button
                       disabled={userPage === totalUserPages}
                       onClick={() => {
                         setUserPage((prev) => Math.min(prev + 1, totalUserPages));
@@ -630,7 +632,7 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
                       className="w-10 h-10 flex items-center justify-center border border-[var(--line)] rounded-lg font-semibold bg-[var(--bg)] text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                     >
                       &gt;
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -639,62 +641,63 @@ export default function AdminClient({ initialWords, initialUsers }: { initialWor
         </>
       )}
 
+      <Dialog open={aiDrafts.length>0} onOpenChange={(_,d)=>{if(!d.open)setAiDrafts([]);}}><DialogSurface><DialogBody><DialogTitle action={<Button onClick={()=>setAiDrafts([])}>Đóng</Button>}>Bản nháp cần duyệt</DialogTitle><DialogContent><p>Nội dung chưa được lưu. Đối chiếu nguồn rồi sửa từng từ trong thư viện.</p>{aiDrafts.map(d=><article key={d.wordId}><h3>{d.word}</h3><p>Hiện tại: {d.before}</p><p>Đề xuất: {d.after}</p></article>)}</DialogContent></DialogBody></DialogSurface></Dialog>
       <Dialog open={isModalOpen} onOpenChange={(_,data)=>{if(!data.open&&!isSubmitting)handleCloseModal();}}><DialogSurface className="admin-word-dialog"><DialogBody><DialogTitle action={<Button appearance="subtle" aria-label="Đóng" disabled={isSubmitting} onClick={handleCloseModal} icon={<DismissRegular />} />}>{editingWord?'Sửa từ vựng':'Thêm từ vựng'}</DialogTitle><DialogContent>            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Từ vựng (Tiếng Anh)</label>
-                  <input aria-label="Từ vựng (Tiếng Anh)" required value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Loại từ</label>
-                  <select aria-label="Loại từ" value={formData.pos} onChange={e => setFormData({...formData, pos: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
+                <Field label="Từ vựng (Tiếng Anh)">
+
+                  <Input aria-label="Từ vựng (Tiếng Anh)" required value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" />
+                </Field>
+                <Field label="Loại từ">
+
+                  <ChoiceSelect aria-label="Loại từ" value={formData.pos} onChange={e => setFormData({...formData, pos: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     <option value="">Không phân loại</option>
                     {POS_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Phiên âm (IPA) - Tùy chọn</label>
-                  <input aria-label="Phiên âm (IPA) - Tùy chọn" value={formData.ipa} onChange={e => setFormData({...formData, ipa: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-sans bg-[var(--paper)] focus:outline-none" />
-                </div>
+                  </ChoiceSelect>
+                </Field>
+                <Field label="Phiên âm (IPA) - Tùy chọn">
+
+                  <Input aria-label="Phiên âm (IPA) - Tùy chọn" value={formData.ipa} onChange={e => setFormData({...formData, ipa: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-sans bg-[var(--paper)] focus:outline-none" />
+                </Field>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-1">Nghĩa (Định dạng: Nghĩa tiếng Anh ||| Nghĩa tiếng Việt)</label>
-                <textarea required rows={3} value={formData.meaning_vi} onChange={e => setFormData({...formData, meaning_vi: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" placeholder="to be extremely happy ||| Vô cùng hạnh phúc"></textarea>
-              </div>
+              <Field label="Nghĩa (Định dạng: Nghĩa tiếng Anh ||| Nghĩa tiếng Việt)">
 
-              <div>
-                <label className="block text-sm font-semibold mb-1">Ví dụ (Tùy chọn)</label>
-                <textarea rows={2} value={formData.example} onChange={e => setFormData({...formData, example: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none"></textarea>
-              </div>
+                <Textarea required rows={3} value={formData.meaning_vi} onChange={e => setFormData({...formData, meaning_vi: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] focus:outline-none" placeholder="to be extremely happy ||| Vô cùng hạnh phúc"></Textarea>
+              </Field>
 
-              <div>
-                <label className="block text-sm font-semibold mb-1">Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)</label>
-                <input aria-label="Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)" value={formData.synonyms} onChange={e => setFormData({...formData, synonyms: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none" placeholder="happy, joyful" />
-              </div>
+              <Field label="Ví dụ (Tùy chọn)">
+
+                <Textarea rows={2} value={formData.example} onChange={e => setFormData({...formData, example: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none"></Textarea>
+              </Field>
+
+              <Field label="Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)">
+
+                <Input aria-label="Từ đồng nghĩa (Tùy chọn - Phân cách bằng dấu phẩy)" value={formData.synonyms} onChange={e => setFormData({...formData, synonyms: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg bg-[var(--paper)] focus:outline-none" placeholder="happy, joyful" />
+              </Field>
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Chủ đề</label>
-                  <select aria-label="Chủ đề" value={formData.topic} onChange={e => setFormData({...formData, topic: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
+                <Field label="Chủ đề">
+
+                  <ChoiceSelect aria-label="Chủ đề" value={formData.topic} onChange={e => setFormData({...formData, topic: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     {TOPICS.map(t => <option key={t} value={t}>{TOPIC_LABELS[t] || t}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Mức độ</label>
-                  <select aria-label="Mức độ" value={formData.level} onChange={e => setFormData({...formData, level: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
+                  </ChoiceSelect>
+                </Field>
+                <Field label="Mức độ">
+
+                  <ChoiceSelect aria-label="Mức độ" value={formData.level} onChange={e => setFormData({...formData, level: e.target.value})} className="w-full px-3 py-2 border border-[var(--line)] rounded-lg font-semibold bg-[var(--paper)] cursor-pointer">
                     {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                  </select>
-                </div>
+                  </ChoiceSelect>
+                </Field>
               </div>
 
               <div className="flex gap-4 pt-4 mt-4 border-t border-solid border-[var(--line)]">
-                <button type="submit" disabled={isSubmitting} className="btn-brutal bg-[var(--green)] text-white flex-1 py-3 ">
+                <Button type="submit" disabled={isSubmitting} className=" bg-[var(--green)] text-white flex-1 py-3 ">
                   {isSubmitting ? 'Đang lưu...' : 'Lưu lại'}
-                </button>
-                <button type="button" onClick={handleCloseModal} className="btn-brutal bg-[var(--paper)] text-[var(--ink)] px-6 py-3 ">
+                </Button>
+                <Button type="button" onClick={handleCloseModal} className=" bg-[var(--paper)] text-[var(--ink)] px-6 py-3 ">
                   Hủy
-                </button>
+                </Button>
               </div>
             </form></DialogContent></DialogBody></DialogSurface></Dialog>
 

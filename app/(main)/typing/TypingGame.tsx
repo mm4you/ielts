@@ -14,7 +14,9 @@ import { SpeakerOffRegular } from '@fluentui/react-icons/svg/speaker-off';
 import { TypingAudio } from '@/lib/typing-audio';
 import PageHeader from '@/components/PageHeader';
 import PracticeSetup from '@/components/PracticeSetup';
-import GameResult from '@/components/GameResult';
+import PracticeResults from '@/components/PracticeResults';
+import WordSourceFields, { initialPracticeSource } from '@/components/WordSourceFields';
+import type { PracticeSource, PracticeWord } from '@/lib/study';
 import { newTypingGame, normalizeTyping, typeIntoGame, typingTick, typingWordFeedback, TYPING_DURATION, type TypingState, type TypingWord } from '@/lib/typing-game';
 
 function Ship({ enemy = false }: { enemy?: boolean }) {
@@ -31,7 +33,10 @@ function reducer(state: TypingState, action: Action): TypingState {
     case 'resume': return state.phase === 'paused' ? { ...state, phase: 'playing' } : state;
   }
 }
-export default function TypingGame() {
+export default function TypingGame({initialQuery=''}:{initialQuery?:string}) {
+  const [source,setSource] = useState<PracticeSource>(()=>({...initialPracticeSource(initialQuery),limit:160}));
+  const [sessionId,setSessionId] = useState('');
+  const [practiceWords,setPracticeWords] = useState<PracticeWord[]>([]);
   const [screen, setScreen] = useState<'setup' | 'game'>('setup');
   const [state, dispatch] = useReducer(reducer, undefined, newTypingGame);
   const [pool, setPool] = useState<TypingWord[]>([]);
@@ -133,16 +138,17 @@ export default function TypingGame() {
     window.addEventListener('keydown', keydown);
     return () => window.removeEventListener('keydown', keydown);
   }, [screen, state.phase]);
-  async function start() {
+  async function start(nextSource = source) {
     if (loading) return;
     unlockAudio();
     setLoading(true); setError('');
     const controller = new AbortController(); request.current = controller;
     try {
-      const response = await fetch(`/api/typing?level=${encodeURIComponent(level)}`, { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
+      const response = await fetch('/api/practice', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({mode:'typing',source:{...nextSource,level}}), signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Chưa tải được từ vựng.');
-      const words = [...data] as TypingWord[];
+      setSessionId(data.id); setPracticeWords(data.words); setSource(nextSource);
+      const words = data.words.map((w: PracticeWord)=>({...w,word:normalizeTyping(w.word)})) as TypingWord[];
       for (let i = words.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [words[i], words[j]] = [words[j], words[i]]; }
       setPool(words); dispatch({ type: 'start' }); setExpanded(true); setScreen('game');
     } catch (e) { if (!controller.signal.aborted) setError(e instanceof Error && e.name !== 'TimeoutError' ? e.message : 'Kết nối chậm. Vui lòng thử lại.'); }
@@ -153,8 +159,8 @@ export default function TypingGame() {
   const locked = state.targets.find(target => target.key === state.locked);
   const wrong = !!state.input && !locked?.word.startsWith(state.input);
   const feedbackTarget = locked || (wrong ? [...state.targets].sort((a,b)=>b.y-a.y)[0] : undefined);
-  if (screen === 'setup') return <>{error && <MessageBar intent="error">{error}</MessageBar>}<PracticeSetup mode="typing" title="Chíu chíu luyện gõ" level={level} onLevelChange={setLevel} onStart={start} exitRoute="/" loading={loading} rules={['Gõ đúng từ đang rơi để bắn tự động, không cần nhấn cách.', 'Dùng Backspace để sửa. Xóa hết để đổi mục tiêu.', 'Bắn liên tiếp để tăng combo. Mỗi lượt có 60 giây và 3 lá chắn.', 'Rời tab sẽ tạm dừng. Trên điện thoại, chạm ô gõ để mở bàn phím.']} /></>;
-  if (state.phase === 'finished') return <><GameResult title="Hoàn thành lượt luyện gõ" value={state.score} onReplay={start} exitRoute="/" loading={loading}><dl className="typing-results"><div><dt>Từ đã bắn</dt><dd>{state.hits}</dd></div><div><dt>Tốc độ</dt><dd>{wpm} WPM</dd></div><div><dt>Độ chính xác</dt><dd>{accuracy}%</dd></div><div><dt>Combo cao nhất</dt><dd>{state.bestCombo}</dd></div></dl></GameResult>{error && <MessageBar intent="error">{error}</MessageBar>}</>;
+  if (screen === 'setup') return <>{error && <MessageBar intent="error">{error}</MessageBar>}<PracticeSetup mode="typing" hideLevel={source.kind==='replay'} title="Chíu chíu luyện gõ" level={level} onLevelChange={setLevel} onStart={()=>start()} exitRoute="/" loading={loading} rules={['Gõ đúng từ đang rơi để bắn tự động, không cần nhấn cách.', 'Dùng Backspace để sửa. Xóa hết để đổi mục tiêu.', 'Bắn liên tiếp để tăng combo. Mỗi lượt có 60 giây và 3 lá chắn.', 'Rời tab sẽ tạm dừng. Trên điện thoại, chạm ô gõ để mở bàn phím.']}><WordSourceFields value={source} onChange={setSource}/><Button as="a" href="/decks">Vượt màn — chọn bộ IELTS</Button></PracticeSetup></>;
+  if (state.phase === 'finished') return <>{error && <MessageBar intent="error">{error}</MessageBar>}<PracticeResults key={sessionId} sessionId={sessionId} mode="typing" words={practiceWords} results={state.results} onRestart={()=>start()} onReplay={ids=>start({kind:'replay',sessionId,replayIds:ids} as PracticeSource)} /></>;
   const consoleView = <div className="typing-console">
       <div className="typing-hud">
         {expanded && <span className="typing-fullscreen-title">Chíu chíu luyện gõ</span>}

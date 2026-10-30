@@ -12,7 +12,19 @@
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate",
     "ai:improve": "tsx scripts/improve_all_words.ts",
-    "ai:optimize": "tsx scripts/improve_words_ai.ts"
+    "ai:optimize": "tsx scripts/improve_words_ai.ts",
+    "test:study": "tsx scripts/test-study.ts",
+    "audit:vocabulary": "tsx scripts/audit-vocabulary.ts",
+    "decks:prepare": "tsx scripts/prepare-study-decks.ts",
+    "content:fixtures": "tsx scripts/create-study-fixtures.ts",
+    "test:exercises": "tsx scripts/test-exercises.ts",
+    "test:room-poll": "tsx scripts/test-room-poll.ts",
+    "exercises:prepare": "tsx scripts/prepare-exercise-questions.ts",
+    "test:practice-content": "tsx scripts/test-practice-content.ts",
+    "test:local-integration": "tsx scripts/test-local-integration.ts",
+    "test:local-http": "tsx scripts/test-local-http.ts",
+    "qa:database": "tsx scripts/qa-local-database.ts --init",
+    "qa:app": "tsx scripts/qa-local-app.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

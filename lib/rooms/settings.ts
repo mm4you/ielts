@@ -1,3 +1,8 @@
+export const MAX_ROOM_PLAYERS = 40;
+export const DEFAULT_ROOM_PLAYERS = 8;
+export function roomCapacity(settings: {maxPlayers?:number}) {
+  return Number.isInteger(settings.maxPlayers) && settings.maxPlayers! >= 2 && settings.maxPlayers! <= MAX_ROOM_PLAYERS ? settings.maxPlayers! : DEFAULT_ROOM_PLAYERS;
+}
 export const ROOM_QUESTION_COUNTS = [5, 10, 15, 20, 30, 50] as const;
 export const MAX_ROOM_QUESTIONS = 50;
 

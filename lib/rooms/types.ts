@@ -1,5 +1,5 @@
 import type { RoomMode } from './settings';
-export type RoomSettings = { level: string; questionCount: number; secondsPerQuestion: number; mode?: RoomMode; durationSeconds?: number };
+export type RoomSettings = { level: string; questionCount: number; secondsPerQuestion: number; mode?: RoomMode; durationSeconds?: number; maxPlayers?: number };
 export type RoomPlayer = { id: string; name: string; ready: boolean; left: boolean };
 export type RoomQuestion = { word: string; choices: string[]; correctIndex: number; prompt?: string };
 export type RoomAnswer = { choice: number; points: number };

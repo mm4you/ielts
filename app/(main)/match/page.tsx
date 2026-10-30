@@ -1,5 +1,6 @@
 'use client';
 
+import { shuffle } from '@/lib/study';
 import GameResult from '@/components/GameResult';
 import PracticeSetup from '@/components/PracticeSetup';
 import AppLoading from '@/components/AppLoading';
@@ -38,6 +39,8 @@ function MatchContent() {
   const exitLabel = collectionId ? 'Quay lại Bộ sưu tập' : 'Về Trang Chủ';
 
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'gameover'>('setup');
+  const [loadError,setLoadError]=useState('');
+  const [loading,setLoading]=useState(false);
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
 
   const [cards, setCards] = useState<Card[]>([]);
@@ -51,8 +54,10 @@ function MatchContent() {
   const fetchAndSetupCards = async () => {
     try {
       const collectionParam = collectionId ? `&collectionId=${collectionId}` : '';
-      const res = await fetch(`/api/match?level=${selectedLevel}${collectionParam}`);
-      const data: Word[] = await res.json();
+      const res = await fetch(`/api/match?level=${selectedLevel}${collectionParam}`,{signal:AbortSignal.timeout(15000)});
+      const payload=await res.json();
+      if(!res.ok)throw new Error(payload.error||'Chưa tải được bộ từ. Bạn thử lại nhé.');
+      const data:Word[]=payload;
       if (data.length > 0) {
         setPlayedWords(data);
         const generatedCards: Card[] = [];
@@ -75,21 +80,24 @@ function MatchContent() {
         });
 
         // Shuffle cards
-        const shuffled = generatedCards.sort(() => 0.5 - Math.random());
+        const shuffled = shuffle(generatedCards);
         setCards(shuffled);
       }
+      return true;
     } catch (e) {
-      console.error(e);
+      setLoadError(e instanceof Error?e.message:'Chưa tải được từ.');
+      return false;
     }
   };
 
   const startGame = async () => {
-    setGameState('playing');
+    if(loading)return;setLoading(true);setLoadError('');
     setMoves(0);
     setFlippedIndices([]);
     setMatchedIndices([]);
     setMismatchIndices([]);
-    await fetchAndSetupCards();
+    const ready=await fetchAndSetupCards();
+    setLoading(false);if(!ready)return;setGameState('playing');
   };
 
   const handleCardClick = (index: number) => {
@@ -135,11 +143,11 @@ function MatchContent() {
   }, [matchedIndices, cards, gameState]);
 
   if (gameState === 'setup') {
-    return <PracticeSetup mode="match" title="Lật thẻ" rules={['Ghép 6 cặp từ tiếng Anh và nghĩa tiếng Việt.','Lật 2 thẻ mỗi lượt.','Hoàn thành với ít lượt lật nhất.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} />;
+    return <PracticeSetup mode="match" title="Lật thẻ" rules={['Ghép 6 cặp từ tiếng Anh và nghĩa tiếng Việt.','Lật 2 thẻ mỗi lượt.','Hoàn thành với ít lượt lật nhất.']} level={selectedLevel} onLevelChange={setSelectedLevel} onStart={startGame} exitRoute={exitRoute} loading={loading} error={loadError} />;
   }
 
   if (gameState === 'gameover') {
-    return <GameResult title="Đã ghép đủ 6 cặp" value={moves} label="Lượt lật" onReplay={startGame} exitRoute={exitRoute}>          <div className="bg-[var(--paper)] p-4 border border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
+    return <GameResult error={loadError} title="Đã ghép đủ 6 cặp" value={moves} label="Lượt lật" onReplay={startGame} exitRoute={exitRoute}>          <div className="bg-[var(--paper)] p-4 border border-[var(--line)] mb-6 text-left rounded-xl max-h-[200px] overflow-y-auto w-full">
             <h3 className="font-semibold text-sm mb-2 border-b border-solid border-[var(--line)] pb-2 text-[var(--blue)]">Các từ đã ghép cặp:</h3>
             <ul className="space-y-2">
               {playedWords.map(w => {
