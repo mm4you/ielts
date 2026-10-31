@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { recordingExtension } from '@/lib/pronunciation';
 
 export async function POST(request: Request) {
   try {
@@ -14,9 +15,9 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
-    const file = formData.get('file') as Blob;
+    const file = formData.get('file');
     
-    if (!file) {
+    if (!(file instanceof Blob) || file.size === 0) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
     }
 
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
 
     // Prepare Groq API request
     const groqFormData = new FormData();
-    groqFormData.append('file', file, 'audio.webm');
+    groqFormData.append('file', file, 'audio.' + recordingExtension(file.type));
     groqFormData.append('model', 'whisper-large-v3');
     groqFormData.append('temperature', '0');
     groqFormData.append('response_format', 'json');
@@ -37,7 +38,8 @@ export async function POST(request: Request) {
       headers: {
         'Authorization': `Bearer ${apiKey}`
       },
-      body: groqFormData
+      body: groqFormData,
+      signal: AbortSignal.timeout(30000)
     });
 
     if (!response.ok) {
@@ -48,7 +50,7 @@ export async function POST(request: Request) {
 
     const data = await response.json();
     return NextResponse.json({ text: data.text });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Transcription error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -43,3 +43,16 @@ Phần ôn từ cần các bảng study đã áp dụng trong đợt rollout tr�
 - Công cụ CUA và Node REPL đều không khởi tạo được, trả `failed to write kernel assets: ... path ... (os error 3)`, kể cả sau reset. Vì vậy chưa xác minh giao diện thực tế desktop/mobile, sáng/tối, bàn phím và focus menu/dialog trong lượt này. Không dùng HTTP/build để tuyên bố đã kiểm tra UI. Đã dùng Fluent và theme chung; cần kiểm tra trình duyệt khi công cụ hoạt động lại.
 
 Các tài khoản, thời gian mô phỏng, dữ liệu fixture và kiểm thử tải chỉ dùng cluster QA loopback riêng. Không đưa fixture vào production, không sửa tài khoản hay SRS production và không gửi email.
+
+
+## Cập nhật 31/10/2026: chủ phòng chỉ điều hành
+
+- Phòng mới có chủ phòng riêng và bắt đầu với 0 người thi đấu. Sức chứa 2–40 chỉ tính người chơi; chủ phòng không được sẵn sàng, gửi đáp án, nhận điểm hoặc tạo lượt ôn từ chỉ vì xem trận.
+- Bắt đầu cần ít nhất 2 người chơi và tất cả đã sẵn sàng. Chủ phòng xem tiến độ/bảng xếp hạng đầy đủ; trắc nghiệm hiển thị câu đang diễn ra với đáp án bị khóa.
+- Chuyển quyền ở sảnh hoặc sau trận: người được chọn rời danh sách thi đấu để làm host. Host cũ ở lại xem và có thể được mời ra. Cấm chuyển host giữa trận để không rút một người khỏi cuộc thi.
+- Host rời giữa trận sẽ đóng phòng, có xác nhận rõ trong UI. Rời ở sảnh/sau trận chuyển quyền cho người chơi còn lại; không có người chơi thì đóng phòng.
+- Trận cũ đang chạy giữ dữ liệu lịch sử. Khi lưu cài đặt/chơi lại, phòng chuyển sang mô hình host riêng; không xóa kết quả trận trước.
+- Danh sách người thi đấu vẫn đầy đủ tối đa 40 người, cuộn được khi dài; top 3 chỉ là phần nổi bật. Người xem không có thứ hạng.
+- Các route game và phòng đang mở dùng khung toàn vùng trình duyệt, có nút Fullscreen/thoát Fullscreen. Mobile xếp bảng điểm dưới vùng chơi.
+
+Kiểm chứng: test-room-engine, test-room-modes, test-room-poll, test-room-lifecycle, test-room-features, test-local-integration và test-room-http. QA PostgreSQL cách ly chạy với app role không bypass RLS; kiểm tra host bị từ chối ready/answer/play, chuyển host, người xem bị mời ra, đủ 40 người, last-seat race, kết quả riêng tư và tập luyện lại. REA kiểm tra tạo phòng thật: host riêng, 0 người chơi và nút bắt đầu bị khóa; không có lỗi JavaScript/console trong các luồng đã chạy.

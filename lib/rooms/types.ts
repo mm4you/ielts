@@ -6,6 +6,7 @@ export type RoomWordAttempt={outcome:'correct'|'wrong'|'missed';answer:string;at
 export type RoomAnswer = { choice: number; points: number };
 export type RoomState = {
   version: 1; title: string; hostId: string; settings: RoomSettings;
+  hostOnly?:boolean; hostName?:string; observers?:{id:string;name:string}[];
   players: RoomPlayer[]; questions: RoomQuestion[]; startedAt: number | null; closed: boolean;
   answers: Record<string, Record<string, RoomAnswer>>;
   games?: Record<string, RoomGameProgress>;
@@ -13,11 +14,12 @@ export type RoomState = {
   roundId?:string; previousRoundId?:string; finishedAt?:number; removedIds?:string[]; sourceLabel?:string;
   learning?:Record<string,Record<string,RoomWordAttempt>>;
   previousRanks?:Record<string,number>; rankRevision?:number;
-  lastFinishedRoundId?:string;lastFinishedParticipants?:string[];
+  lastFinishedRoundId?:string;lastFinishedParticipants?:string[];finishedParticipants?:string[];
 };
 export type RoomPhase = 'waiting' | 'countdown' | 'question' | 'reveal' | 'finished' | 'closed';
 export type RoomView = {
   code: string; title: string; hostId: string; meId: string; settings: RoomSettings;
+  hostName?:string; isObserver?:boolean; observers?:{id:string;name:string}[];
   phase: RoomPhase; serverNow: number; nextAt: number | null; questionNumber: number;
   players: (RoomPlayer & { score: number; correct: number; answered: boolean; rank:number; rankDelta:number })[];
   question: { word: string; choices: string[]; correctIndex?: number; myChoice?: number } | null;

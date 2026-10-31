@@ -14,7 +14,16 @@ const missed=fixture();missed.settings.mode='typing';initializeGames(missed);exp
 const matched=fixture();matched.settings.mode='match';matched.decks=[[0,1,2,3,4,5,6,7,8,9]];initializeGames(matched);
 playGame(matched,'a',{action:'play',revision:0,kind:'flip',card:0},2000);playGame(matched,'a',{action:'play',revision:1,kind:'flip',card:3},2100);playGame(matched,'a',{action:'play',revision:2,kind:'flip',card:0},3100);playGame(matched,'a',{action:'play',revision:3,kind:'flip',card:1},3200);
 assert.equal(roomLearningResult('ABC234',matched,'a').results[0].corrected,true);assert.equal(roomLearningResult('ABC234',matched,'b').results[0].attempts,0);
-const old=fixture();old.startedAt=null;delete old.roundId;resetRoom(old,'a',old.settings,'new','Library',0);assert.equal(old.roundId,'new');assert.deepEqual(old.players.map(p=>p.ready),[true,false,false]);assert.equal(old.settings.maxPlayers,40);
+const old=fixture();old.startedAt=null;delete old.roundId;resetRoom(old,'a',old.settings,'new','Library',0);assert.equal(old.roundId,'new');assert.deepEqual(old.players.map(p=>p.ready),[false,false]);assert(old.hostOnly);assert(!old.players.some(p=>p.id===old.hostId));assert.equal(old.settings.maxPlayers,40);
 const unbound=fixture();unbound.questions.forEach(q=>{delete q.wordId;});resetRoom(unbound,'a',unbound.settings,'next','Library',100000);assert.equal(unbound.lastFinishedRoundId,undefined,'Legacy rooms without word bindings must not offer a nonexistent result');
 assert.throws(()=>manageRoom(old,'b','kick','c',0));manageRoom(old,'a','kick','c',0);assert.throws(()=>joinRoomPlayer(old,{id:'c'},0));manageRoom(old,'a','transfer','b',0);assert.equal(old.hostId,'b');assert.throws(()=>resetRoom(old,'a',old.settings,'invalid','Library',0));
 console.log('Room lifecycle: hidden scores, rank ties/deltas, frozen finish, expired-target learning, corrected matching, legacy reset, readiness and host permissions passed.');
+
+const hosted=fixture();hosted.hostOnly=true;hosted.hostId='host';hosted.hostName='Only host';hosted.startedAt=null;
+assert(roomView('ABC234',hosted,'host',0).isObserver);
+assert(!roomView('ABC234',hosted,'host',0).players.some(p=>p.id==='host'));
+joinRoomPlayer(hosted,{id:'host'},0);assert.equal(hosted.players.length,3);
+assert.throws(()=>answerQuestion(hosted,'host',0,0,1));
+manageRoom(hosted,'host','transfer','a',0);assert.equal(hosted.hostId,'a');assert(!hosted.players.some(p=>p.id==='a'));assert(roomView('ABC234',hosted,'host',0).isObserver);
+manageRoom(hosted,'a','kick','host',0);assert.throws(()=>roomView('ABC234',hosted,'host',0));assert.throws(()=>joinRoomPlayer(hosted,{id:'host'},0));
+console.log('Host-only role: host stays outside roster, cannot answer, transfer removes competitor, former observer can be removed.');

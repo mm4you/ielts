@@ -6,15 +6,17 @@ import { roomRoundId } from './round';
 import { logRoomWord } from './learning';
 export { RoomError } from './error';
 
+export const isRoomObserver=(state:RoomState,id:string)=>!!state.hostOnly&&(state.hostId===id||!!state.observers?.some(p=>p.id===id));
 /** Called only while the store holds the room row lock. Reconnect is idempotent. */
 export function joinRoomPlayer(state: RoomState, user: {id:string;name?:string|null}, now:number) {
   const phase=phaseAt(state,now).phase;
   if(state.removedIds?.includes(user.id))throw new RoomError('Chủ phòng đã mời bạn ra khỏi phòng.',410);
   if(phase==='closed')throw new RoomError('Chủ phòng đã đóng phòng.',410);
+  if(isRoomObserver(state,user.id))return;
   const existing=state.players.find(p=>p.id===user.id);
   if(existing){existing.left=false;return;}
   if(phase!=='waiting')throw new RoomError('Trận đấu đã bắt đầu.',409);
-  if(state.players.length>=roomCapacity(state.settings))throw new RoomError('Phòng đã đầy.',409);
+  if(state.players.filter(p=>!p.left).length>=roomCapacity(state.settings))throw new RoomError('Phòng đã đầy.',409);
   state.players.push({id:user.id,name:user.name?.trim().slice(0,60)||'Người chơi',ready:false,left:false});
 }
 
@@ -51,11 +53,11 @@ export function answerQuestion(state: RoomState, userId: string, index: number, 
 
 export function assertRoomMember(state:RoomState,userId:string){
  if(state.removedIds?.includes(userId))throw new RoomError('Chủ phòng đã mời bạn ra khỏi phòng.',410);
- if(!state.players.some(p=>p.id===userId&&!p.left))throw new RoomError('Bạn chưa tham gia phòng.',403);
+ if(!isRoomObserver(state,userId)&&!state.players.some(p=>p.id===userId&&!p.left))throw new RoomError('Bạn chưa tham gia phòng.',403);
 }
 export function settleRoom(state:RoomState,now:number){
  let changed=expireGames(state,now);
- if(state.startedAt!==null&&state.finishedAt===undefined&&phaseAt(state,now).phase==='finished'){state.finishedAt=now;changed=true;}
+ if(state.startedAt!==null&&state.finishedAt===undefined&&phaseAt(state,now).phase==='finished'){state.finishedAt=now;state.finishedParticipants=state.players.map(p=>p.id);changed=true;}
  return changed;
 }
 export function rankedPlayers(state:RoomState,now:number,through?:number){
@@ -75,11 +77,11 @@ export function roomView(code: string, state: RoomState, meId: string, now: numb
   const players=rankedPlayers(state,now).map(p=>({...p,rankDelta:(before[p.id]??p.rank)-p.rank}));
   const q = gameMode(state) === 'quiz' && (phase === 'question' || phase === 'reveal') ? state.questions[index] : null;
   return {
-    code, title: state.title, hostId: state.hostId, meId, settings: { ...state.settings, maxPlayers: roomCapacity(state.settings) },
+    code, title: state.title, hostId: state.hostId, meId, hostName:state.hostName??state.players.find(p=>p.id===state.hostId)?.name??'Chủ phòng',isObserver:isRoomObserver(state,meId),observers:state.observers??[], settings: { ...state.settings, maxPlayers: roomCapacity(state.settings) },
     phase, serverNow: now, nextAt, questionNumber: state.startedAt === null ? 0 : index + 1, players,
     roundId:roomRoundId(state),sourceLabel:state.sourceLabel||'Kho từ vựng',rankingEvent:gameMode(state)==='quiz'?'Sau câu '+Math.max(0,publishedThrough+1):'Lượt ghi điểm gần nhất',
     ...(state.lastFinishedRoundId&&state.lastFinishedParticipants?.includes(meId)?{previousReviewSessionId:'room:'+code+':'+state.lastFinishedRoundId+':'+meId}:{}),
     question: q ? { word: q.word, choices: q.choices, ...(phase === 'reveal' ? { correctIndex: q.correctIndex } : {}), ...(state.answers[index]?.[meId] ? { myChoice: state.answers[index][meId].choice } : {}) } : null,
-    ...(gameMode(state) !== 'quiz' ? { game: gameView(state, meId, now) } : {}),
+    ...(gameMode(state) !== 'quiz'&&!isRoomObserver(state,meId) ? { game: gameView(state, meId, now) } : {}),
   };
 }

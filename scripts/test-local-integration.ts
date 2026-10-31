@@ -73,14 +73,15 @@ async function main(){
   }
   const room=await import('../lib/rooms/store');
   const settings={mode:'quiz' as const,level:'all',questionCount:10,secondsPerQuestion:10,maxPlayers:40};
-  const created=await room.createRoom({id:'qa_room_0'},'QA capacity',settings);
-  for(let i=1;i<39;i++)await room.actOnRoom({id:'qa_room_'+i},created.code,{action:'join'});
+  const created=await room.createRoom({id:'qa_browser'},'QA capacity',settings);
+  for(let i=0;i<39;i++)await room.actOnRoom({id:'qa_room_'+i},created.code,{action:'join'});
   const last=await Promise.allSettled([39,40].map(i=>room.actOnRoom({id:'qa_room_'+i},created.code,{action:'join'})));
   assert.equal(last.filter(r=>r.status==='fulfilled').length,1);
   const state=await room.getRoom({id:'qa_room_0'},created.code);assert.equal(state.players.length,40);
   await Promise.all(Array.from({length:40},(_,i)=>room.getRoom({id:'qa_room_'+(i===39?(last[0].status==='fulfilled'?39:40):i)},created.code)));
   const small=await room.createRoom({id:'qa_room_0'},'QA two players',settings);
-  await room.actOnRoom({id:'qa_room_1'},small.code,{action:'join'});await room.actOnRoom({id:'qa_room_1'},small.code,{action:'ready',ready:true,roundId:small.roundId});
+  await room.actOnRoom({id:'qa_room_2'},small.code,{action:'join'});await room.actOnRoom({id:'qa_room_2'},small.code,{action:'ready',ready:true,roundId:small.roundId});
+    await room.actOnRoom({id:'qa_room_1'},small.code,{action:'join'});await room.actOnRoom({id:'qa_room_1'},small.code,{action:'ready',ready:true,roundId:small.roundId});
   const started=await room.actOnRoom({id:'qa_room_0'},small.code,{action:'start',roundId:small.roundId});assert(!('left' in started));
   console.log('Isolated PostgreSQL integration passed: migrations, RLS/ACL, sparse sources, duplicate transactions, exact replay, unchanged SRS, saved variants, last-seat race (40) and 40 concurrent polls.');
  }finally{await db.$disconnect();await (globalThis as unknown as {roomDb?:PrismaClient}).roomDb?.$disconnect();}

@@ -492,7 +492,7 @@ input,select,textarea { color:var(--ink); }
 .analytics-page .panel { padding:24px; }
 .decorative-icon { display:inline-flex; align-items:center; justify-content:center; flex:none; color:var(--blue); background:none; border:0; }
 .decorative-icon>svg { display:block; width:24px; height:24px; color:inherit; }
-.pronunciation-page { max-width:760px; margin:0 auto; color:var(--ink); }
+.pronunciation-page { max-width:960px; margin:0 auto; color:var(--ink); }
 .pronunciation-toolbar { display:flex; align-items:flex-end; justify-content:flex-start; gap:14px; padding:20px 22px; margin-bottom:22px; }
 .pronunciation-toolbar>.fui-Field { width:220px; max-width:100%; }
 .pronunciation-toolbar>.fui-Button { min-height:32px; }
@@ -691,3 +691,130 @@ input,select,textarea { color:var(--ink); }
 .spelling-difference del { color:var(--red); }
 .spelling-difference mark { background:var(--success-soft); color:var(--green); padding:0 2px; border-bottom:2px solid var(--green); }
 @media(max-width:480px) { .exercise-question { gap:20px; } .exercise-question h2 { font-size:21px; } .exercise-sentence { font-size:18px; } .exercise-game .study-toolbar h1 { flex-basis:100%; } }
+
+.pronunciation-intro ol { display:flex; flex-wrap:wrap; gap:12px 26px; list-style:none; padding:0; margin:22px 0 26px; color:var(--muted); font-size:13px; }
+.pronunciation-intro li { display:flex; align-items:center; gap:8px; }
+.pronunciation-intro li>span { display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--brand-soft); color:var(--blue); font-weight:600; }
+.pronunciation-toolbar { padding:0 0 22px; border-bottom:1px solid var(--line); gap:16px; margin-bottom:24px; }
+.pronunciation-toolbar p { flex:1; color:var(--muted); font-size:13px; margin:0; }
+.pronunciation-recorder { margin-top:0; padding:24px; border-radius:20px; }
+.recorder-topline { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:26px; }
+.pronunciation-workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:32px; align-items:center; }
+.pronunciation-word-card { padding:12px 6px 20px; min-width:0; }
+.pronunciation-eyebrow { font-size:13px; color:var(--muted); margin:0 0 12px; }
+.pronunciation-recorder .recorder-word { font-size:clamp(30px,4vw,48px); letter-spacing:-.035em; margin:0 0 10px; font-weight:650; }
+.pronunciation-ipa { color:var(--muted); margin:0 0 12px; font-size:18px; }
+.pronunciation-meaning { font-size:16px; line-height:1.7; margin:0 0 18px; }
+.pronunciation-listen { display:flex; gap:8px; flex-wrap:wrap; }
+.pronunciation-example { margin:22px 0 0; padding:0 0 0 14px; border-left:3px solid var(--line); font-size:14px; line-height:1.7; color:var(--muted); }
+.pronunciation-example p { margin:0 0 4px; color:var(--ink); }
+.pronunciation-record-card { background:var(--bg); border-radius:16px; padding:28px 22px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; }
+.pronunciation-record-card h3 { font-size:20px; margin:0; }
+.pronunciation-record-card p { margin:0; font-size:14px; color:var(--muted); line-height:1.65; max-width:28ch; }
+.pronunciation-record-card>.fui-Button { min-height:48px; margin-top:6px; }
+.pronunciation-mic-symbol { display:grid; place-items:center; width:72px; height:72px; border-radius:50%; color:var(--blue); background:var(--brand-soft); }
+.pronunciation-mic-symbol svg { width:32px; height:32px; }
+.pronunciation-mic-symbol.is-recording { color:var(--red); background:var(--danger-soft); outline:5px solid var(--line); }
+.pronunciation-record-hint { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.pronunciation-recorder>.fui-MessageBar { margin-top:18px; }
+.pronunciation-playback { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); font-size:13px; }
+.pronunciation-playback audio { max-width:100%; height:40px; }
+.pronunciation-feedback { margin-top:20px; padding:20px; border-radius:14px; background:var(--brand-soft); display:flex; flex-wrap:wrap; gap:18px; justify-content:space-between; align-items:center; }
+.pronunciation-feedback>div { display:flex; flex-direction:column; gap:5px; min-width:0; }
+.pronunciation-feedback span { color:var(--muted); font-size:13px; }
+.pronunciation-feedback strong { font-size:24px; overflow-wrap:anywhere; }
+.pronunciation-feedback p { flex-basis:100%; margin:0; font-size:14px; line-height:1.7; }
+.pronunciation-note { color:var(--muted); font-size:12px; line-height:1.7; margin:22px 0 0; }
+@media(max-width:680px) { .pronunciation-workspace { grid-template-columns:1fr; gap:12px; } .pronunciation-recorder { padding:18px; } .pronunciation-word-card { padding:0 0 14px; } .pronunciation-record-card { padding:22px 16px; } .pronunciation-toolbar { flex-wrap:wrap; padding:0 0 18px; } .pronunciation-toolbar p { flex-basis:100%; order:3; } .pronunciation-toolbar>.fui-Field { flex:1; width:auto; } .pronunciation-intro ol { gap:12px; } }
+
+.game-viewport { min-height:100dvh; width:100%; background:var(--bg); color:var(--ink); display:flex; flex-direction:column; }
+.game-viewport:fullscreen { overflow:auto; }
+.game-viewport-bar { display:flex; align-items:center; justify-content:space-between; flex-shrink:0; gap:12px; padding:10px 20px; border-bottom:1px solid var(--line); background:var(--paper); }
+.game-viewport-bar>span { font-size:13px; color:var(--muted); }
+.game-viewport-content { flex:1; min-width:0; padding:24px clamp(16px,3vw,48px); }
+.game-viewport-content>.battle-room { max-width:none; }
+.game-viewport-content .battle-columns { grid-template-columns:minmax(0,1fr) minmax(260px,320px); }
+.game-viewport-content .room-mode-game { min-height:calc(100dvh - 230px); }
+.game-viewport-content .room-typing-arena { height:clamp(260px,52dvh,680px); }
+.game-viewport-content .room-scoreboard ol { max-height:65dvh; overflow:auto; }
+.game-viewport-notice { margin:8px 20px 0; color:var(--muted); font-size:13px; }
+.room-host-watch { text-align:center; padding:60px 24px; }
+.room-host-watch>strong { display:block; margin:24px; font-size:40px; font-variant-numeric:tabular-nums; }
+.room-host-label { font-size:13px; color:var(--muted); }
+@media(max-width:760px){ .game-viewport-bar { padding:8px; gap:4px; } .game-viewport-bar>span { display:none; } .game-viewport-content { padding:16px 12px; } .game-viewport-content .battle-columns { grid-template-columns:minmax(0,1fr); } .game-viewport-content .room-scoreboard ol { max-height:none; } }
+
+.recall-game.study-panel { max-width:none; width:100%; margin:0; }
+.recall-game>h1 { font-size:22px; margin:0 0 14px; }
+.recall-game>.study-toolbar { margin-bottom:12px; }
+.recall-arena { position:relative; min-height:340px; height:clamp(340px,55dvh,700px); overflow:hidden; border:1px solid var(--line); border-radius:20px; margin:14px 0; isolation:isolate; }
+.recall-meadow { background:color-mix(in srgb,var(--paper) 88%,#f3c651); color:var(--ink); }
+.recall-rain { background:color-mix(in srgb,var(--paper) 90%,#55a4c0); color:var(--ink); }
+.recall-rain::before { content:''; position:absolute; inset:-100% 0 0; pointer-events:none; opacity:.18; background-image:repeating-linear-gradient(110deg,transparent 0 42px,#559bb5 43px 44px,transparent 45px 86px); background-size:100% 180px; mask-image:repeating-linear-gradient(to bottom,#000 0 18px,transparent 18px 90px); animation:recall-rainfall 8s linear infinite; }
+.recall-arena-caption { position:absolute; inset:16px 20px auto; display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:12px; z-index:2; }
+.recall-falling-target { position:absolute; left:50%; transform:translateX(-50%); width:min(70%,640px); text-align:center; transition:top .1s linear; z-index:2; }
+.recall-falling-target h2 { font-size:clamp(20px,3vw,32px); line-height:1.4; text-wrap:balance; margin:0 0 8px; }
+.recall-falling-target>p { margin:8px 0; font-size:14px; color:var(--muted); }
+.recall-letter-slots { display:flex; justify-content:center; gap:4px; flex-wrap:wrap; margin:12px auto; }
+.recall-letter-slots>span { display:grid; place-items:center; min-width:24px; height:32px; border-bottom:2px solid var(--line); color:var(--ink); font-weight:600; font-size:21px; }
+.recall-letter-slots>.is-filled { border-color:var(--blue); color:var(--blue); }
+.recall-landscape { position:absolute; inset:auto 0 0; width:100%; height:140px; color:var(--blue); pointer-events:none; }
+.recall-meadow .recall-landscape { color:#7d9a59; }
+.recall-bee-home { position:absolute; bottom:16px; left:calc(50% - 72px); width:144px; }
+.bee-mascot { display:block; width:100%; max-width:180px; color:var(--ink); overflow:visible; }
+.bee-float { animation:bee-hover 3s ease-in-out infinite; transform-origin:center; }
+.bee-listening .bee-wings { animation:bee-wings .18s ease-in-out infinite alternate; transform-origin:90px 80px; }
+.bee-correct .bee-float { animation:bee-hover .8s ease-in-out infinite; }
+.recall-floor { position:absolute; bottom:0; width:100%; height:3px; background:var(--blue); opacity:.3; }
+.recall-answer-dock { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:center; gap:16px; margin:0 auto; max-width:860px; padding:8px 0; }
+.recall-answer-dock>.fui-Field { flex:1; min-width:220px; }
+.recall-answer-dock .fui-Input { min-height:46px; font-size:20px; }
+.recall-answer-dock>.study-actions { margin:0; }
+.recall-feedback { min-height:clamp(340px,55dvh,700px); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.recall-feedback>.bee-mascot { width:130px; }
+.recall-feedback .study-actions { justify-content:center; }
+@keyframes bee-hover { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-8px) rotate(2deg); } }
+@keyframes bee-wings { to { transform:scaleY(.8); } }
+@keyframes recall-rainfall { to { transform:translateY(180px); } }
+@media(prefers-reduced-motion:reduce){ .bee-float,.bee-listening .bee-wings,.recall-rain::before { animation:none; } .recall-falling-target { transition:none; } }
+@media(max-width:600px){ .recall-arena { height:45dvh; min-height:300px; border-radius:14px; } .recall-arena-caption { inset:12px 12px auto; font-size:11px; } .recall-arena-caption>span { max-width:65%; } .recall-falling-target { width:90%; } .recall-letter-slots>span { min-width:19px; height:28px; font-size:18px; } .recall-answer-dock { gap:10px; } .recall-answer-dock>.study-actions { width:100%; justify-content:center; gap:6px; } .recall-bee-home { width:110px; left:calc(50% - 55px); bottom:4px; } }
+
+.recall-setup-preview { display:flex; align-items:center; gap:16px; margin-bottom:12px; } .recall-setup-preview .bee-mascot { width:108px; flex:none; } .recall-setup-preview p { font-size:14px; color:var(--muted); line-height:1.7; } .room-observer-list { border-top:1px solid var(--line); margin-top:16px; padding-top:12px; } .room-observer-list h3 { font-size:13px; color:var(--muted); } .room-observer-list>div { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:13px; padding:6px 0; }
+
+.recall-game.study-panel { gap:8px; }
+.recall-game>h1 { margin:0; }
+.recall-game>.study-toolbar { margin-bottom:0; }
+.recall-arena { margin:6px 0; height:clamp(230px,calc(100dvh - 390px),740px); min-height:230px; }
+.recall-answer-dock.study-answer { flex-direction:row; gap:12px; max-width:900px; width:100%; }
+.recall-answer-dock>.fui-Field { max-width:440px; }
+.pronunciation-example-details { margin-top:18px; color:var(--muted); font-size:13px; }
+.pronunciation-example-details>summary { cursor:pointer; padding:4px 0; }
+.pronunciation-example-details .pronunciation-example { margin-top:10px; }
+@media(max-width:680px){ .pronunciation-intro { display:none; } .pronunciation-toolbar p { display:none; } .pronunciation-record-card { gap:10px; padding:20px 14px; } .pronunciation-mic-symbol { width:44px; height:44px; } .pronunciation-mic-symbol svg { width:24px; height:24px; } .recorder-topline { margin-bottom:16px; } .pronunciation-page .page-header { margin-bottom:20px; } }
+@media(max-width:600px){ .recall-arena { height:clamp(220px,calc(100dvh - 370px),440px); min-height:220px; } .recall-answer-dock.study-answer { flex-direction:column; align-items:stretch; } .recall-answer-dock>.fui-Field { max-width:none; width:100%; flex:auto; } }
+
+@media(max-width:680px){ .pronunciation-record-card>.pronunciation-mic-symbol { display:none; } .pronunciation-record-card>h3 { order:0; } .pronunciation-record-card>.fui-Button { order:1; } .pronunciation-record-card>p { order:2; } .pronunciation-record-card>.pronunciation-record-hint { order:3; } .pronunciation-record-card>.fui-MessageBar { order:4; } }
+
+/* Active recall games use one viewport: HUD and answer dock belong to the scene. */
+.game-viewport:has(.recall-game) { height:var(--game-viewport-height,100dvh); min-height:0; overflow:hidden; }
+.game-viewport-content:has(.recall-game) { display:flex; padding:0; min-height:0; overflow:hidden; }
+.recall-game.study-panel { position:relative; height:100%; min-height:0; flex:1; gap:0; overflow:hidden; }
+.recall-game>h1 { position:absolute; z-index:4; top:18px; left:24px; margin:0; font-size:22px; }
+.recall-game>.study-toolbar { position:absolute; z-index:4; top:16px; right:24px; margin:0; gap:10px; }
+.recall-game>.study-toolbar>span { padding-right:16px; }
+.recall-game>.fui-ProgressBar { position:absolute; z-index:4; top:62px; left:24px; right:24px; width:auto; }
+.recall-game>.fui-MessageBar { position:absolute; z-index:6; top:80px; left:24px; right:24px; width:auto; max-width:720px; }
+.recall-arena { --recall-target-top:112px; --recall-dock-height:120px; height:100%; min-height:0; width:100%; margin:0; border:0; border-radius:0; }
+.recall-arena-caption { top:80px; left:24px; right:24px; }
+.recall-falling-target { width:min(76%,760px); transition:transform .1s linear; }
+.recall-falling-target h2 { font-size:clamp(24px,3vw,38px); }
+.recall-landscape { bottom:var(--recall-dock-height); height:170px; }
+.recall-bee-home { bottom:calc(var(--recall-dock-height) + 8px); }
+.recall-floor { bottom:var(--recall-dock-height); }
+.recall-answer-dock.study-answer { position:absolute; z-index:5; bottom:16px; left:50%; transform:translateX(-50%); display:flex; flex-direction:row; align-items:flex-end; flex-wrap:wrap; gap:14px; width:min(calc(100% - 48px),1200px); max-width:none; padding:14px 18px; border:1px solid var(--line); border-radius:16px; background:var(--paper); }
+.recall-answer-dock>.fui-Field { flex:1; min-width:200px; max-width:none; }
+.recall-answer-dock>.study-actions { width:auto; margin:0; }
+.recall-game>.study-card { height:100%; min-height:0; width:100%; border:0; border-radius:0; margin:0; padding:100px 24px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+@media(max-width:700px){ .recall-game>h1 { top:14px; left:16px; font-size:18px; } .recall-game>.study-toolbar { top:48px; left:16px; right:16px; gap:8px; } .recall-game>.study-toolbar>span { margin-right:auto; padding:0; font-size:12px; } .recall-game>.fui-ProgressBar { top:94px; left:16px; right:16px; } .recall-arena { --recall-target-top:132px; } .recall-arena-caption { top:108px; left:16px; right:16px; font-size:11px; } .recall-falling-target { width:92%; } .recall-answer-dock.study-answer { bottom:8px; width:calc(100% - 20px); padding:10px; gap:8px; } .recall-answer-dock>.fui-Field { flex-basis:100%; min-width:0; } .recall-answer-dock>.study-actions { width:100%; justify-content:center; gap:6px; } .recall-answer-dock>.study-actions .fui-Button { min-width:0; font-size:12px; padding-left:8px; padding-right:8px; } .recall-landscape { height:110px; } .recall-bee-home { width:94px; left:calc(50% - 47px); } .recall-game>.fui-MessageBar { top:100px; left:10px; right:10px; } }
+@media(max-height:550px) and (max-width:700px){ .recall-game>h1 { display:none; } .recall-game>.study-toolbar { top:8px; } .recall-game>.fui-ProgressBar { top:48px; } .recall-arena { --recall-target-top:66px; } .recall-arena-caption { display:none; } .recall-falling-target>p { margin:3px 0; font-size:12px; } .recall-falling-target h2 { font-size:20px; } .recall-landscape,.recall-bee-home { opacity:.35; } }
+
+.game-viewport.is-viewport-short .recall-game>h1 { display:none; } .game-viewport.is-viewport-short .recall-game>.study-toolbar { top:8px; } .game-viewport.is-viewport-short .recall-game>.fui-ProgressBar { top:48px; } .game-viewport.is-viewport-short .recall-arena { --recall-target-top:64px; } .game-viewport.is-viewport-short .recall-arena-caption,.game-viewport.is-viewport-short .recall-context { display:none; } .game-viewport.is-viewport-short .recall-answer-dock { padding:6px 10px; gap:6px; } .game-viewport.is-viewport-short .recall-answer-dock .fui-Label { display:none; } .game-viewport.is-viewport-short .recall-answer-dock .fui-Input { min-height:36px; } .game-viewport.is-viewport-short .recall-answer-dock .fui-Button { min-height:32px; } .game-viewport.is-viewport-short .recall-falling-target>p { margin:3px 0; font-size:12px; } .game-viewport.is-viewport-short .recall-landscape,.game-viewport.is-viewport-short .recall-bee-home { display:none; }

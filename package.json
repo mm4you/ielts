@@ -29,7 +29,8 @@
     "test:room-features": "tsx scripts/test-room-features.ts",
     "test:room-http": "tsx scripts/test-room-http.ts",
     "qa:start-cluster": "tsx scripts/qa-cluster.ts --start",
-    "qa:stop-cluster": "tsx scripts/qa-cluster.ts --stop"
+    "qa:stop-cluster": "tsx scripts/qa-cluster.ts --stop",
+    "test:pronunciation": "tsx scripts/test-pronunciation.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

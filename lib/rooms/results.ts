@@ -6,6 +6,7 @@ import { roomRoundId } from './round';
 import { recordStudy } from '../study-server';
 import { Prisma as SQL } from '@prisma/client';
 export async function archiveRoomResult(tx:Prisma.TransactionClient,code:string,state:RoomState,userId:string,recordActivity=false){
+ if(state.hostOnly&&!state.finishedParticipants?.includes(userId)&&!state.players.some(p=>p.id===userId))return undefined;
  const {id,words,results}=roomLearningResult(code,state,userId);if(!words.length)return undefined;
  await tx.$executeRaw`SELECT set_config('app.current_user_id',${userId},true)`;
  const existing=await tx.practiceSession.findUnique({where:{id}});

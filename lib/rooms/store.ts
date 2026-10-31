@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { randomInt, randomUUID } from 'node:crypto';
-import { answerQuestion, phaseAt, RoomError, roomView, joinRoomPlayer, rankedPlayers, settleRoom } from './engine';
+import { answerQuestion, phaseAt, RoomError, roomView, joinRoomPlayer, rankedPlayers, settleRoom, assertRoomMember, isRoomObserver } from './engine';
 import { pollRoom } from './poll';
 import { MAX_ROOM_PLAYERS } from './settings';
 import type { RoomSettings, RoomState } from './types';
@@ -24,7 +24,6 @@ function shuffle<T>(items: T[]) {
   for (let i = result.length - 1; i > 0; i--) { const j = randomInt(i + 1); [result[i], result[j]] = [result[j], result[i]]; }
   return result;
 }
-function player(user: Identity, ready = false) { return { id: user.id, name: user.name?.trim().slice(0, 60) || 'Người chơi', ready, left: false }; }
 
 async function transaction<T>(user: Identity, roomCode: string, run: (tx: Prisma.TransactionClient) => Promise<T>) {
   return db.$transaction(async tx => {
@@ -55,7 +54,7 @@ export async function createRoom(user: Identity, title: string, settings: RoomSe
         const count = await tx.$queryRaw<{ count: number }[]>`SELECT count(*)::int AS "count" FROM "BattleRoom" WHERE "hostUserId" = ${user.id} AND "createdAt" > now() - interval '1 hour'`;
         if (count[0].count >= 10) throw new RoomError('Bạn đã tạo nhiều phòng. Thử lại sau.', 429);
         const source=await roomSource(tx,user.id,settings);
-        const state: RoomState = { roundId:randomUUID(),sourceLabel:source.label,version: 1, title, hostId: user.id, settings, players: [player(user, true)], questions: [], startedAt: null, closed: false, answers: {} };
+        const state: RoomState = { roundId:randomUUID(),sourceLabel:source.label,version: 1, title, hostId: user.id, settings, hostOnly:true,hostName:user.name?.trim().slice(0,60)||'Chủ phòng',observers:[],players: [], questions: [], startedAt: null, closed: false, answers: {} };
         const rows = await tx.$queryRaw<{ now: number }[]>`INSERT INTO "BattleRoom" ("code", "hostUserId", "state") VALUES (${roomCode}, ${user.id}, ${JSON.stringify(state)}::jsonb) RETURNING (extract(epoch FROM clock_timestamp()) * 1000)::float8 AS "now"`;
         return roomView(roomCode, state, user.id, rows[0].now);
       });
@@ -100,7 +99,7 @@ export async function actOnRoom(user: Identity, roomCode: string, action: RoomAc
     if (action.action === 'join') {
       joinRoomPlayer(state,user,row.now);
     } else {
-      if (!me || me.left) throw new RoomError('Bạn chưa tham gia phòng.', 403);
+      assertRoomMember(state,user.id);
       if(action.action==='settings'||action.action==='rematch'){
         if(user.id!==state.hostId)throw new RoomError('Chỉ chủ phòng được chuẩn bị trận mới.',403);
         if(action.action==='settings'&&phase!=='waiting'||action.action==='rematch'&&phase!=='finished')throw new RoomError('Trạng thái phòng đã thay đổi.',409);
@@ -113,11 +112,12 @@ export async function actOnRoom(user: Identity, roomCode: string, action: RoomAc
         manageRoom(state,user.id,action.action,action.targetId??'',row.now);
       }else if (action.action === 'ready') {
         if (phase !== 'waiting') throw new RoomError('Trận đấu đã bắt đầu.', 409);
+        if (!me || isRoomObserver(state,user.id)) throw new RoomError('Chủ phòng chỉ điều hành, không tham gia thi đấu.',403);
         if (me.id !== state.hostId) me.ready = !!action.ready;
       } else if (action.action === 'start') {
         if (state.hostId !== user.id) throw new RoomError('Chỉ chủ phòng được bắt đầu.', 403);
         if (phase !== 'waiting') throw new RoomError('Trận đấu đã bắt đầu.', 409);
-        if (state.players.length < 2 || state.players.some(p => !p.ready)) throw new RoomError('Cần ít nhất 2 người và tất cả đã sẵn sàng.', 409);
+        if (state.players.filter(p=>!p.left).length < 2 || state.players.some(p => !p.left&&!p.ready)) throw new RoomError('Cần ít nhất 2 người và tất cả đã sẵn sàng.', 409);
         const selected=await selectRoomQuestions(tx,state.hostId,state.settings);state.questions=selected.questions;state.sourceLabel=selected.label;state.learning={};
         const now = await tx.$queryRaw<{ now: number }[]>`SELECT (extract(epoch FROM clock_timestamp()) * 1000)::float8 AS "now"`;
         state.startedAt = now[0].now + 3000;
@@ -129,8 +129,14 @@ export async function actOnRoom(user: Identity, roomCode: string, action: RoomAc
       } else if (action.action === 'leave') {
         if (phase === 'waiting') {
           state.players=state.players.filter(p=>p.id!==user.id);
-        } else {if(phase==='finished')await archiveRoomResult(tx,roomCode,state,user.id,true);me.left=true;}
-        if(state.hostId===user.id){const next=state.players.find(p=>!p.left);if(next){state.hostId=next.id;next.ready=true;}else state.closed=true;}
+        } else {if(phase==='finished')await archiveRoomResult(tx,roomCode,state,user.id,true);if(me)me.left=true;}
+        state.observers=state.observers?.filter(p=>p.id!==user.id);
+        if(state.hostId===user.id){const next=state.players.find(p=>!p.left);if(next){
+          if(state.hostOnly){
+            if(!['waiting','finished'].includes(phase)){state.closed=true;}
+            else{state.players=state.players.filter(p=>p.id!==next.id);state.hostName=next.name;state.hostId=next.id;}
+          }else{state.hostId=next.id;next.ready=true;}
+        }else state.closed=true;}
       } else if (action.action === 'answer') {
         answerQuestion(state, user.id, action.question!, action.choice!, row.now);
       } else if (action.action === 'play') {

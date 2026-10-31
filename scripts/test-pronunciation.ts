@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {recognitionScore,recognitionFeedback,recordingExtension} from '../lib/pronunciation';
+assert.equal(recognitionScore('Decision',' decision. '),100);
+assert.equal(recognitionScore('school',''),0);
+assert.equal(recognitionScore('school','skool'),67);
+assert.equal(recognitionScore('take off','take   off'),100);
+assert.equal(recognitionScore('school','!!!'),0);
+assert(!/hoàn hảo|bản xứ|trọng âm/.test(recognitionFeedback(100)));
+assert(recognitionFeedback(10).includes('micro'));
+assert.equal(recordingExtension('audio/mp4'), 'm4a');
+assert.equal(recordingExtension('audio/webm;codecs=opus'), 'webm');
+assert.equal(recordingExtension('audio/ogg;codecs=opus'), 'ogg');
+console.log('Pronunciation: recognition-only agreement, punctuation/empty input, friendly feedback, and browser recording formats passed.');
