@@ -10,6 +10,7 @@ import type { RoomState } from '../lib/rooms/types';
 import { createRoomSchema } from '../lib/rooms/validation';
 import { meaningQuestions, englishQuestions, meaningKey, matchingWords } from '../lib/game-questions';
 import { roomCapacity } from '../lib/rooms/settings';
+import { recordStudy } from '../lib/study-server';
 
 function cast(tx:unknown){return tx as Prisma.TransactionClient;}
 const forgot=calculateSRS('forgot',2.5,30,4);
@@ -87,6 +88,11 @@ async function persistence(){
   const wrong=await completePractice(tx,'u','s',[{...r(1),answer:'lern'}]);
   assert.equal(wrong.passed,false);assert.equal((wrong.results as PracticeResult[])[0].outcome,'wrong');assert.equal(mistakes,1);
 }
+async function activityDate(){
+ let stored:Date|undefined;
+ await recordStudy(cast({studyPreference:{findUnique:async()=>({timeZone:'America/New_York'})},studyWordDay:{createMany:async({data}:{data:{date:Date}[]})=>{stored=data[0].date;assert.equal(data.length,1);return {count:1};}},dailyActivity:{upsert:async()=>({})}}),'u',[1,1],2,new Date('2026-10-31T01:00:00Z'));
+ assert.equal(stored?.toISOString(),'2026-10-30T00:00:00.000Z','Deferred room recording uses the match completion day in the chosen zone');
+}
 function room(){
   const settings={title:'Test',level:'all',questionCount:5,secondsPerQuestion:10};
   assert.equal(createRoomSchema.parse(settings).maxPlayers,8);
@@ -108,4 +114,4 @@ function room(){
   assert.throws(()=>joinRoomPlayer(state,{id:'late'},2),RoomError);
   state.players[1].left=true;joinRoomPlayer(state,{id:state.players[1].id},2);assert.equal(state.players[1].left,false);
 }
-(async()=>{await sources();await persistence();room();console.log('Study tests passed: SRS, time zones, grading, source authorization, stable stages, exact replay, idempotency, mistakes and 40-player room logic. Database locking/load and browser interaction still require integration verification.');})().catch(e=>{console.error(e);process.exitCode=1;});
+(async()=>{await sources();await persistence();await activityDate();room();console.log('Study tests passed: SRS, time zones, grading, source authorization, stable stages, exact replay, idempotency, mistakes and 40-player room logic. Database locking/load and browser interaction still require integration verification.');})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -5,7 +5,7 @@ import { MessageBar } from '@fluentui/react-components';
 import PracticeResults from '@/components/PracticeResults';
 import LoadingState from '@/components/LoadingState';
 import type { PracticeResult, PracticeWord } from '@/lib/study';
-type Run={id:string;mode:string;results:PracticeResult[];source:{kind:string;stageId?:string};words:PracticeWord[]};
+type Run={id:string;mode:string;results:PracticeResult[];source:{kind:string;stageId?:string;roomCode?:string};words:PracticeWord[]};
 export default function PracticeHistoryPage({params}:{params:Promise<{id:string}>}){
   const {id}=use(params),router=useRouter();
   const [run,setRun]=useState<Run|null>(null),[error,setError]=useState('');
@@ -13,5 +13,5 @@ export default function PracticeHistoryPage({params}:{params:Promise<{id:string}
   if(error)return <MessageBar intent="error">{error}</MessageBar>;
   if(!run)return <LoadingState/>;
   const words=run.words;
-  return <PracticeResults saved sessionId={id} mode={run.mode} words={words} results={run.results} stageId={run.source.kind==='stage'?run.source.stageId:undefined} onRestart={()=>router.push('/'+run.mode+(run.source.stageId?'?stageId='+encodeURIComponent(run.source.stageId):''))} onReplay={ids=>router.push('/'+run.mode+'?sessionId='+encodeURIComponent(id)+'&replayIds='+ids.join(','))}/>;
+  return <PracticeResults saved sessionId={id} mode={run.mode} words={words} results={run.results} stageId={run.source.kind==='stage'?run.source.stageId:undefined} onRestart={()=>router.push(run.mode==='rooms'?'/rooms'+(run.source.roomCode?'/'+encodeURIComponent(run.source.roomCode):''):'/'+run.mode+(run.source.stageId?'?stageId='+encodeURIComponent(run.source.stageId):''))} onReplay={ids=>router.push('/'+(run.mode==='rooms'?'spelling-bee':run.mode)+'?sessionId='+encodeURIComponent(id)+'&replayIds='+ids.join(','))}/>;
 }

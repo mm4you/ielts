@@ -24,7 +24,12 @@
     "test:local-integration": "tsx scripts/test-local-integration.ts",
     "test:local-http": "tsx scripts/test-local-http.ts",
     "qa:database": "tsx scripts/qa-local-database.ts --init",
-    "qa:app": "tsx scripts/qa-local-app.ts"
+    "qa:app": "tsx scripts/qa-local-app.ts",
+    "test:room-lifecycle": "tsx scripts/test-room-lifecycle.ts",
+    "test:room-features": "tsx scripts/test-room-features.ts",
+    "test:room-http": "tsx scripts/test-room-http.ts",
+    "qa:start-cluster": "tsx scripts/qa-cluster.ts --start",
+    "qa:stop-cluster": "tsx scripts/qa-cluster.ts --stop"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -18,9 +18,10 @@ export async function completePractice(tx:Prisma.TransactionClient,userId:string
         return { ...r, outcome, attempts, failedAttempts: outcome === 'correct' || attempts === 0 ? 0 : Math.min(attempts, Math.max(1, r.failedAttempts ?? 1)) };
       });
       const source = practiceSourceSchema.parse(run.source);
+      const roomOrigin=source.mistakeMode==='rooms'||source.kind==='replay'&&!!await tx.practiceSession.findFirst({where:{id:source.sessionId,userId,mode:'rooms',completedAt:{not:null}},select:{id:true}});
       for (const r of results) {
         if (r.attempts === 0) continue;
-        const key = { userId, wordId: r.wordId, mode: run.mode };
+        const key = { userId, wordId: r.wordId, mode: roomOrigin?'rooms':run.mode };
         if (r.outcome !== 'correct') {
           const errors = r.failedAttempts ?? 1;
           await tx.wordMistake.upsert({ where: { userId_wordId_mode: key }, create: { ...key, wrongCount: errors }, update: { wrongCount: { increment: errors }, lastWrongAt: new Date(), resolvedAt: null } });

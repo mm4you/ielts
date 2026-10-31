@@ -17,4 +17,4 @@ export function stagePassed(ids: number[], results: { wordId: number; outcome: s
 }
 export type PracticeWord = { id: number; word: string; meaning: string; pos: string | null; ipa: string | null; example: string | null; acceptedAnswers?: string[]; context?:string; promptMeaning?:string };
 export type PracticeResult = { wordId: number; answer: string; outcome: 'correct' | 'wrong' | 'missed'; hinted: boolean; corrected: boolean; attempts?: number; failedAttempts?: number };
-export type PracticeSource = { kind: 'all' | 'collection' | 'due' | 'mistakes' | 'stage' | 'replay'; collectionId?: string; stageId?: string; sessionId?: string; replayIds?: number[]; level?: string; topic?: string; limit?: number };
+export type PracticeSource = { kind: 'all' | 'collection' | 'due' | 'mistakes' | 'stage' | 'replay'; collectionId?: string; stageId?: string; sessionId?: string; replayIds?: number[]; level?: string; topic?: string; limit?: number; mistakeMode?:'rooms' };

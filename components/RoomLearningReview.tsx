@@ -1,0 +1,11 @@
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { Button, MessageBar } from '@fluentui/react-components';
+import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
+import type { PracticeResult, PracticeWord } from '@/lib/study';
+export default function RoomLearningReview({id}:{id:string}){
+ const [data,setData]=useState<{results:PracticeResult[];words:PracticeWord[]}|null>(null),[error,setError]=useState(''),[retry,setRetry]=useState(0);const audio=useRef<HTMLAudioElement|null>(null);
+ useEffect(()=>{const c=new AbortController();fetch('/api/practice/'+encodeURIComponent(id),{signal:c.signal}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error);return d;}).then(setData).catch(e=>{if(!c.signal.aborted)setError(e.message);});return()=>{c.abort();audio.current?.pause();};},[id,retry]);
+ const missed=data?.results.filter(r=>r.outcome!=='correct'||r.corrected)||[];
+ return <section className="room-learning-review"><h3>Mang từ mới về sau trận</h3><p>Danh sách này chỉ dành cho bạn. Trả lời đúng trong trận không tự đổi lịch ôn.</p>{error&&<MessageBar intent="warning">{error}<Button onClick={()=>{setError('');setRetry(n=>n+1);}}>Tải lại</Button></MessageBar>}{!data&&!error?<p role="status">Đang mở kết quả của bạn…</p>:data&&<>{missed.length?<><Button as="a" appearance="primary" href={'/spelling-bee?sessionId='+encodeURIComponent(id)+'&replayIds='+missed.map(r=>r.wordId).join(',')}>Luyện lại {missed.length} từ cần nhớ thêm</Button><ul className="study-result-list">{missed.map(r=>{const w=data.words.find(w=>w.id===r.wordId);return w&&<li key={r.wordId}><div><strong>{w.word}</strong><p>{w.meaning}</p><small>{r.attempts===0?'Chưa luyện':r.outcome==='missed'?'Bỏ lỡ':r.corrected?'Đã sửa sau khi trả lời sai':'Cần luyện lại'}{r.answer?' · Bạn trả lời: '+r.answer:''}</small></div><Button icon={<Speaker2Regular/>} aria-label={'Phát âm '+w.word} onClick={async()=>{audio.current?.pause();const a=new Audio('/api/tts?lang=en&text='+encodeURIComponent(w.word));audio.current=a;try{await a.play();}catch{setError('Chưa phát được âm thanh. Bạn thử lại nhé.');}}}>Nghe</Button></li>;})}</ul></>:<p>Bạn đã trả lời đúng toàn bộ từ. Tiếp tục giữ nhịp nhé!</p>}<Button as="a" href={'/practice-history/'+encodeURIComponent(id)}>Xem lại toàn bộ kết quả</Button></>}</section>;
+}

@@ -1,7 +1,8 @@
 import type { RoomMode } from './settings';
-export type RoomSettings = { level: string; questionCount: number; secondsPerQuestion: number; mode?: RoomMode; durationSeconds?: number; maxPlayers?: number };
+export type RoomSettings = { level: string; questionCount: number; secondsPerQuestion: number; mode?: RoomMode; durationSeconds?: number; maxPlayers?: number; topic?:string; sourceKind?:'all'|'collection'; collectionId?:string };
 export type RoomPlayer = { id: string; name: string; ready: boolean; left: boolean };
-export type RoomQuestion = { word: string; choices: string[]; correctIndex: number; prompt?: string };
+export type RoomQuestion = { word: string; choices: string[]; correctIndex: number; prompt?: string; wordId?:number; meaning?:string; ipa?:string|null; example?:string|null };
+export type RoomWordAttempt={outcome:'correct'|'wrong'|'missed';answer:string;attempts:number;wrongAttempts:number};
 export type RoomAnswer = { choice: number; points: number };
 export type RoomState = {
   version: 1; title: string; hostId: string; settings: RoomSettings;
@@ -9,14 +10,21 @@ export type RoomState = {
   answers: Record<string, Record<string, RoomAnswer>>;
   games?: Record<string, RoomGameProgress>;
   decks?: number[][];
+  roundId?:string; previousRoundId?:string; finishedAt?:number; removedIds?:string[]; sourceLabel?:string;
+  learning?:Record<string,Record<string,RoomWordAttempt>>;
+  previousRanks?:Record<string,number>; rankRevision?:number;
+  lastFinishedRoundId?:string;lastFinishedParticipants?:string[];
 };
 export type RoomPhase = 'waiting' | 'countdown' | 'question' | 'reveal' | 'finished' | 'closed';
 export type RoomView = {
   code: string; title: string; hostId: string; meId: string; settings: RoomSettings;
   phase: RoomPhase; serverNow: number; nextAt: number | null; questionNumber: number;
-  players: (RoomPlayer & { score: number; correct: number; answered: boolean })[];
+  players: (RoomPlayer & { score: number; correct: number; answered: boolean; rank:number; rankDelta:number })[];
   question: { word: string; choices: string[]; correctIndex?: number; myChoice?: number } | null;
   game?: RoomGameView;
+  roundId:string; sourceLabel:string; reviewSessionId?:string;
+  previousReviewSessionId?:string;
+  rankingEvent:string;
 };
 
 export type RoomGameProgress = {

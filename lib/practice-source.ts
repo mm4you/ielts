@@ -12,6 +12,7 @@ export const practiceSourceSchema = z.object({
   sessionId: z.string().min(1).max(100).optional(), level: z.enum(['all', ...LEVELS]).default('all'),
   topic: z.enum(['all', ...TOPICS]).default('all'), limit: z.number().int().min(1).max(160).default(20),
   replayIds: z.array(z.number().int().positive()).min(1).max(160).optional(),
+  mistakeMode:z.literal('rooms').optional(),
 });
 export class StudyError extends Error { constructor(message: string, public status = 400) { super(message); } }
 export async function selectPracticeWords(tx: Prisma.TransactionClient, userId: string, mode: string, source: z.infer<typeof practiceSourceSchema>) {
@@ -23,7 +24,7 @@ export async function selectPracticeWords(tx: Prisma.TransactionClient, userId: 
   } else if (source.kind === 'due') {
     where.progress = { some: dueProgressWhere(userId) };
   } else if (source.kind === 'mistakes') {
-    where.mistakes = { some: { userId, mode, resolvedAt: null } };
+    where.mistakes = { some: { userId, mode:source.mistakeMode??mode, resolvedAt: null } };
   } else if (source.kind === 'replay') {
     const previous = source.sessionId && await tx.practiceSession.findFirst({ where: { id: source.sessionId, userId, completedAt: { not: null } } });
     if (!previous) throw new StudyError('Không tìm thấy lượt luyện của bạn.', 404);

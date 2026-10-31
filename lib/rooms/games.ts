@@ -1,5 +1,6 @@
 import { RoomError } from './error';
 import type { RoomGameAction, RoomGameProgress, RoomGameView, RoomState } from './types';
+import { logRoomWord } from './learning';
 
 export const ROOM_SHAPES = [
   [[1]], [[1, 1]], [[1], [1]], [[1, 1, 1]], [[1], [1], [1]],
@@ -27,17 +28,18 @@ function advance(state: RoomState, progress: RoomGameProgress, now: number) {
 export function expireGames(state: RoomState, now: number) {
   if (!state.startedAt || now < state.startedAt || gameMode(state) === 'quiz') return false;
   let changed = false;
-  for (const progress of Object.values(state.games || {})) {
+  for (const [userId,progress] of Object.entries(state.games || {})) {
     if (progress.finished) continue;
-    if (now >= gameDeadline(state)) { progress.finished = true; progress.revision++; changed = true; continue; }
-    if (!['sniper', 'typing'].includes(gameMode(state))) continue;
+    const timed=['sniper','typing'].includes(gameMode(state)),cutoff=Math.min(now,gameDeadline(state));
     const duration = state.settings.secondsPerQuestion * 1000;
-    while (!progress.finished && now >= progress.changedAt + duration) {
+    while (timed&&!progress.finished && cutoff >= progress.changedAt + duration) {
       const at = progress.changedAt + duration;
       progress.lastResult = { correct: false, answer: state.questions[progress.cursor].word };
+      logRoomWord(state,userId,progress.cursor,'missed');
       progress.lives--; progress.combo = 0; progress.revision++;
       advance(state, progress, at); changed = true;
     }
+    if(!progress.finished&&now>=gameDeadline(state)){if(timed)logRoomWord(state,userId,progress.cursor,'missed');progress.finished=true;progress.revision++;changed=true;}
   }
   return changed;
 }
@@ -70,6 +72,7 @@ export function playGame(state: RoomState, userId: string, action: RoomGameActio
       progress.moves++;
       const [a, b] = progress.flipped.map(index => Math.floor(deck[index] / 2));
       if (a === b) {
+        logRoomWord(state,userId,progress.cursor+a,'correct',state.questions[progress.cursor+a].word);
         progress.matched.push(...progress.flipped); progress.correct++;
         const elapsed = now - progress.changedAt;
         progress.score += 100 + Math.max(0, 50 - Math.floor(elapsed / 1000));
@@ -82,6 +85,8 @@ export function playGame(state: RoomState, userId: string, action: RoomGameActio
           progress.finished = progress.cursor >= state.questions.length;
         }
       } else {
+        logRoomWord(state,userId,progress.cursor+a,'wrong',state.questions[progress.cursor+b].word);
+        logRoomWord(state,userId,progress.cursor+b,'wrong',state.questions[progress.cursor+a].word);
         progress.lastResult = { correct: false, answer: 'Chưa khớp, thử cặp khác.' };
         progress.lockUntil = now + 900;
       }
@@ -105,6 +110,7 @@ export function playGame(state: RoomState, userId: string, action: RoomGameActio
       : Number.isInteger(action.choice) && action.choice >= 0 && action.choice < 4 && action.choice === question.correctIndex;
     if (action.kind === 'type' && !correct) throw new RoomError('Từ chưa đúng. Kiểm tra lại ký tự.');
     if (action.kind === 'choice' && (!Number.isInteger(action.choice) || action.choice < 0 || action.choice > 3)) throw new RoomError('Đáp án không hợp lệ.');
+    logRoomWord(state,userId,progress.cursor,correct?'correct':'wrong',action.kind==='type'?action.text:question.choices[action.choice]);
     if (correct) {
       progress.combo++; progress.correct++;
       progress.score += 100 + Math.min(50, (progress.combo - 1) * 10);

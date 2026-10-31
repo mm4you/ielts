@@ -6,7 +6,7 @@ import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
 import GameResult from './GameResult';
 import { stagePassed, type PracticeResult, type PracticeWord } from '@/lib/study';
 
-export default function PracticeResults({ sessionId, words, results, onReplay, onRestart, stageId, saved = false }: { sessionId: string; mode: string; words: PracticeWord[]; results: PracticeResult[]; onReplay: (ids: number[])=>void; onRestart: ()=>void; stageId?: string; saved?: boolean }) {
+export default function PracticeResults({ sessionId, mode, words, results, onReplay, onRestart, stageId, saved = false }: { sessionId: string; mode: string; words: PracticeWord[]; results: PracticeResult[]; onReplay: (ids: number[])=>void; onRestart: ()=>void; stageId?: string; saved?: boolean }) {
   const [status, setStatus] = useState<'saving'|'saved'|'error'>(saved ? 'saved' : 'saving');
   const [verified, setVerified] = useState(results), [passed, setPassed] = useState(saved && !!stageId && stagePassed(words.map(w=>w.id),results));
   const [includeCorrected, setIncludeCorrected] = useState(false);
@@ -28,7 +28,7 @@ export default function PracticeResults({ sessionId, words, results, onReplay, o
   const missed=verified.filter(r=>r.outcome!=='correct'||r.hinted||(includeCorrected&&r.corrected));
   const practiced=verified.filter(r=>r.attempts!==0);
   const correct=verified.filter(r=>r.outcome==='correct'&&!r.hinted).length;
-  return <GameResult title={stageId ? passed ? 'Bạn đã qua chặng!' : 'Kết quả luyện chặng' : 'Kết quả luyện tập'} value={practiced.length ? Math.round(correct/practiced.length*100) : 0} label="Độ chính xác (%)" onReplay={onRestart} exitRoute={stageId?'/decks':'/'} loading={status==='saving'} replayDisabled={status!=='saved'} busyLabel="Đang lưu kết quả">
+  return <GameResult replayLabel={mode==='rooms'?'Về phòng thi đấu':undefined} title={mode==='rooms'?'Từ vựng sau trận':stageId ? passed ? 'Bạn đã qua chặng!' : 'Kết quả luyện chặng' : 'Kết quả luyện tập'} value={practiced.length ? Math.round(correct/(mode==='rooms'?verified.length:practiced.length)*100) : 0} label="Độ chính xác (%)" onReplay={onRestart} exitRoute={stageId?'/decks':mode==='rooms'?'/rooms':'/'} loading={status==='saving'} replayDisabled={status!=='saved'} busyLabel="Đang lưu kết quả">
     <p>{practiced.length} từ đã luyện ({verified.reduce((n,r)=>n+(r.attempts??1),0)} lượt) · {correct} tự trả lời đúng · {verified.filter(r=>r.outcome==='wrong').length} sai · {practiced.filter(r=>r.outcome==='missed').length} bỏ lỡ · {verified.filter(r=>r.hinted).length} có gợi ý</p>
     {status==='saving'&&<p role="status">Đang lưu kết quả…</p>}
     {status==='error'&&<MessageBar intent="error">{message} Kết quả chưa được lưu.<Button onClick={save}>Thử lưu lại</Button></MessageBar>}

@@ -7,7 +7,7 @@ import type { PracticeSource } from '@/lib/study';
 export function initialPracticeSource(query?: string): PracticeSource {
   if (query === undefined && typeof window === 'undefined') return { kind: 'all', level: 'all', topic: 'all', limit: 20 };
   const p = new URLSearchParams(query ?? window.location.search);
-  return { kind: p.has('stageId') ? 'stage' : p.has('sessionId') ? 'replay' : p.has('collectionId') ? 'collection' : p.get('source') === 'due' ? 'due' : p.get('source') === 'mistakes' ? 'mistakes' : 'all', stageId: p.get('stageId') || undefined, sessionId: p.get('sessionId') || undefined, replayIds:p.get('replayIds')?.split(',').map(Number), collectionId: p.get('collectionId') || undefined, level: p.get('level') || 'all', topic: p.get('topic') || 'all', limit: 20 };
+  return { kind: p.has('stageId') ? 'stage' : p.has('sessionId') ? 'replay' : p.has('collectionId') ? 'collection' : p.get('source') === 'due' ? 'due' : p.get('source') === 'mistakes' ? 'mistakes' : 'all', stageId: p.get('stageId') || undefined, sessionId: p.get('sessionId') || undefined, replayIds:p.get('replayIds')?.split(',').map(Number), collectionId: p.get('collectionId') || undefined, level: p.get('level') || 'all', topic: p.get('topic') || 'all', limit: 20,mistakeMode:p.get('mistakeMode')==='rooms'?'rooms':undefined };
 }
 export default function WordSourceFields({ value, onChange, limits=[10,20,160], itemLabel="từ" }: { value: PracticeSource; onChange: (v: PracticeSource)=>void; limits?:number[]; itemLabel?:string }) {
   const [collections, setCollections] = useState<{ id: string; name: string }[]>([]);
