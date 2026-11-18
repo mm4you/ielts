@@ -1,0 +1,62 @@
+.surface:global(.fui-DialogSurface) {
+  display: grid;
+  width: min(calc(100% - 28px), 408px);
+  max-height: calc(100dvh - 24px);
+  aspect-ratio: 3 / 4;
+  padding: clamp(14px, 4vw, 22px);
+  border-block-start: 4px solid #e9b64c;
+  border-radius: 18px;
+}
+
+.body:global(.fui-DialogBody) {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.surface :global(.eng-brand-pair) {
+  flex-wrap: nowrap;
+  gap: 7px;
+  font-size: clamp(.875rem, 4.5vw, 1.25rem);
+}
+
+.surface :global(.eng-brand-logo) { width: 3.2em; }
+.surface :global(.brand-symbol) { width: 26px; height: 26px; }
+
+.close:global(.fui-Button) {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.content:global(.fui-DialogContent) {
+  display: flex;
+  flex-direction: column;
+}
+
+.content p {
+  flex: none;
+  margin-top: 10px;
+  line-height: 1.55;
+}
+
+.content p[lang="en"] { color: var(--colorNeutralForeground2); }
+
+.art {
+  position: relative;
+  flex: 1 0 112px;
+  overflow: hidden;
+  border-radius: 10px 10px 30px 10px;
+  background: #173bb2;
+}
+
+.art img {
+  object-fit: cover;
+  object-position: center 53%;
+}
+
+.actions :global(.btn-primary) { min-height: 44px; }
+
+@media (max-height: 430px) {
+  .surface:global(.fui-DialogSurface) { aspect-ratio: auto; }
+  .body:global(.fui-DialogBody) { grid-template-rows: auto minmax(0, 230px) auto; }
+  .art { flex-basis: 80px; }
+}

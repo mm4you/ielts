@@ -1,0 +1,230 @@
+.page {
+  --about-gutter: clamp(20px, 5vw, 62px);
+  --about-width: 1240px;
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.topbar,
+.content {
+  width: min(100%, var(--about-width));
+  margin: 0 auto;
+  padding-inline: var(--about-gutter);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 76px;
+  gap: 12px;
+}
+
+.brand,
+.navigation,
+.clubLink {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.navigation {
+  gap: clamp(14px, 3vw, 32px);
+  font-size: .9rem;
+}
+
+.navigation a, .clubLink {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 6vw, 88px);
+  padding-block: clamp(30px, 5vw, 66px);
+  border-block-start: 1px solid var(--line);
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.kicker::before {
+  content: '';
+  width: 24px;
+  height: 3px;
+  background: #e9b64c;
+}
+
+.hero h1 {
+  font-size: clamp(2.45rem, 6.25vw, 5.25rem);
+  font-weight: 750;
+  line-height: 1.04;
+  letter-spacing: -.055em;
+}
+
+.hero em {
+  color: var(--blue);
+  font-style: normal;
+}
+
+.lead {
+  max-width: 35ch;
+  margin: 22px 0 24px;
+  color: var(--muted);
+  font-size: clamp(1.025rem, 1.8vw, 1.25rem);
+  line-height: 1.58;
+}
+
+.heroCopy :global(.btn-primary) {
+  gap: 14px;
+  min-height: 48px;
+}
+
+.art {
+  position: relative;
+  aspect-ratio: 1.14;
+  overflow: hidden;
+  border-radius: 16px 16px 54px 16px;
+  background: #173bb2;
+}
+
+.art img { object-fit: cover; }
+
+.learning,
+.club {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr);
+  gap: clamp(18px, 5vw, 72px);
+  scroll-margin-top: 20px;
+}
+
+.learning {
+  align-items: start;
+  padding-block: clamp(32px, 5vw, 64px);
+  border-block-start: 1px solid var(--line);
+}
+
+.learning h2,
+.clubCopy h2 {
+  max-width: 15ch;
+  font-size: clamp(1.75rem, 3.55vw, 3rem);
+  font-weight: 720;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+
+.activities { list-style: none; padding: 0; }
+
+.activities li {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 14px;
+  padding-block: 15px;
+  border-block-end: 1px solid var(--line);
+}
+
+.activities li:first-child { padding-top: 0; }
+.activities li:last-child { border: 0; }
+
+.activityIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--blue);
+  font-size: 22px;
+}
+
+.activities h3, .values dt {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.activities p, .clubCopy p, .values dd {
+  margin-top: 4px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.club {
+  align-items: center;
+  margin-bottom: clamp(36px, 6vw, 78px);
+  padding: clamp(20px, 4vw, 46px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+}
+
+.clubBrand :global(.eng-credit-full) {
+  padding: clamp(14px, 3vw, 26px);
+  border-block-start: 3px solid #e9b64c;
+}
+
+.clubBrand :global(.eng-brand-pair) { font-size: clamp(1rem, 2vw, 1.375rem); }
+.clubCopy p { margin-top: 12px; max-width: 48ch; }
+
+.clubLink {
+  width: fit-content;
+  gap: 7px;
+  margin-top: 8px;
+  color: var(--blue);
+  font-weight: 650;
+}
+
+.navigation a:hover,
+.clubLink:hover {
+  text-decoration: underline;
+  text-underline-offset: .24em;
+}
+
+.values {
+  grid-column: 1 / -1;
+  padding-top: 18px;
+  border-block-start: 1px solid var(--line);
+}
+
+.values h3 { margin: 0 0 14px; font-weight: 650; }
+
+.values dl {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.values dt { color: var(--blue); }
+.values dd { font-size: .875rem; }
+
+@media (max-width: 900px) {
+  .values dl { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .topbar { min-height: 62px; }
+  .hero, .learning, .club { grid-template-columns: 1fr; }
+  .art { aspect-ratio: 1.42; border-bottom-right-radius: 36px; }
+  .learning h2 { max-width: none; }
+  .clubBrand { grid-row: 2; }
+}
+
+@media (max-width: 360px) {
+  .navigation { gap: 9px; font-size: .82rem; }
+  .brand { gap: 4px; font-size: .925rem; }
+}
