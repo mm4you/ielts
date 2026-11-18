@@ -3,11 +3,11 @@ import { actOnRoom, getRoom } from '@/lib/rooms/store';
 import { roomBody, roomCode, roomFailure, roomIdentity, roomResponse } from '@/lib/rooms/http';
 import { RoomError } from '@/lib/rooms/engine';
 import { MAX_ROOM_QUESTIONS } from '@/lib/rooms/settings';
-import { roomSettingsSchema } from '@/lib/rooms/validation';
+import { roomNicknameSchema, roomSettingsSchema } from '@/lib/rooms/validation';
 
 type Context = { params: Promise<{ code: string }> };
 const actionSchema = z.union([
-  z.object({ action: z.literal('join') }), z.object({ action: z.literal('start') }), z.object({ action: z.literal('leave') }),
+  z.object({ action: z.literal('join'), nickname: roomNicknameSchema }), z.object({ action: z.literal('start') }), z.object({ action: z.literal('leave') }),
   z.object({ action: z.literal('ready'), ready: z.boolean() }),
   z.object({action:z.literal('settings'),settings:roomSettingsSchema}),z.object({action:z.literal('rematch'),settings:roomSettingsSchema.optional()}),
   z.object({action:z.enum(['kick','transfer']),targetId:z.string().min(1).max(100)}),

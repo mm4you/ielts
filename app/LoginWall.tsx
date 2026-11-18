@@ -11,6 +11,7 @@ import EngCredit from '@/components/EngCredit';
 import BrandMark from '@/components/BrandMark';
 import { signIn } from 'next-auth/react';
 import { signInWithGoogle } from '@/lib/google-sign-in';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function LoginWall({ initialError = '' }: { initialError?: string }) {
@@ -466,7 +467,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
 
         {mode === 'register' && (
           <form onSubmit={handleRegister} className="flex flex-col gap-4">
-            <Field className="flex flex-col gap-1" label="Họ và Tên">
+            <Field className="flex flex-col gap-1" label="Tên hiển thị">
 
               <Input
                 type="text"
@@ -700,6 +701,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
           </div>
         )}
 
+        <p className="login-privacy-note">IELTS Vocab dùng thông tin tài khoản để đăng nhập và lưu tiến độ học. <Link href="/privacy">Cách chúng mình sử dụng dữ liệu</Link></p>
 
         {/* Divider */}
         <div className="border-t-2 border-dashed border-[var(--line)] w-full my-6 relative flex items-center justify-center">
@@ -708,6 +710,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
           </span>
         </div>
 
+        <p className="login-privacy-note">Nếu dùng Google, IELTS Vocab nhận tên, email và ảnh hồ sơ để tạo hoặc liên kết tài khoản.</p>
         {/* Google Login Button */}
         <Button
           appearance="secondary"

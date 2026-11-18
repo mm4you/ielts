@@ -18,7 +18,7 @@ export async function roomIdentity(request: Request) {
   }
   const session = await auth();
   if (!session?.user?.id) throw new RoomError('Đăng nhập để tham gia phòng.', 401);
-  return { id: session.user.id, name: session.user.name };
+  return { id: session.user.id };
 }
 export function roomCode(value: string) {
   const code = value.toUpperCase();

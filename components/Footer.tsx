@@ -7,6 +7,7 @@ export default function Footer() {
       <EngCredit variant="footer" />
       <nav className="app-footer-links" aria-label="Liên kết chân trang">
         <Link href="/about">Giới thiệu</Link>
+        <Link href="/privacy">Quyền riêng tư</Link>
         <Link href="https://ungnhutkhang.id.vn">Contact</Link>
       </nav>
     </footer>

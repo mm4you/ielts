@@ -18,6 +18,12 @@ async function main(){
  const signed=await fetch(base+'/api/auth/callback/credentials',{method:'POST',headers:{Cookie:[...cookies].map(([k,v])=>k+'='+v).join('; '),'Content-Type':'application/x-www-form-urlencoded','X-Auth-Return-Redirect':'1'},body:new URLSearchParams({csrfToken:csrf.data.csrfToken,email:config.accounts.browser.email,password:config.accounts.browser.password,callbackUrl:base}),redirect:'manual'});
  for(const c of signed.headers.getSetCookie()){const [pair]=c.split(';'),p=pair.indexOf('=');cookies.set(pair.slice(0,p),pair.slice(p+1));}
  const session=await request('/api/auth/session');assert.equal(session.data.user.id,'qa_browser');
+ const preview=await request('/api/practice','POST',{mode:'spelling-bee',preview:true,source:{kind:'collection',collectionId:'qa_single'}});
+ assert.equal(preview.status,200);assert.deepEqual(preview.data,{available:1});
+ assert.equal((await request('/api/practice','POST',{mode:'spelling-bee',preview:true,source:{kind:'collection',collectionId:'qa_foreign'}})).status,404);
+ const emptyPreview=await request('/api/exercises','POST',{mode:'context',preview:true,source:{level:'C2'}});
+ assert.equal(emptyPreview.status,200);assert.deepEqual(emptyPreview.data,{available:0});
+ assert.equal((await request('/api/exercises','POST',{mode:'context',preview:true,source:{kind:'collection',collectionId:'qa_foreign'}})).status,404);
  assert.equal((await request('/api/exercises','POST',{mode:'context',source:{kind:'collection',collectionId:'qa_foreign',limit:10}})).status,404);
  const empty=await request('/api/exercises','POST',{mode:'context',source:{level:'C2',limit:10}});assert.equal(empty.status,409);assert(empty.data.error.includes('0'));
  for(const mode of ['collocations','context','spelling-hunt']){

@@ -15,7 +15,7 @@ export const practiceSourceSchema = z.object({
   mistakeMode:z.literal('rooms').optional(),
 });
 export class StudyError extends Error { constructor(message: string, public status = 400) { super(message); } }
-export async function selectPracticeWords(tx: Prisma.TransactionClient, userId: string, mode: string, source: z.infer<typeof practiceSourceSchema>) {
+export async function selectPracticeWords(tx: Prisma.TransactionClient, userId: string, mode: string, source: z.infer<typeof practiceSourceSchema>, preview = false) {
   const where: Prisma.WordWhereInput = { ...(source.level !== 'all' ? { level: source.level } : {}), ...(source.topic !== 'all' ? { topic: source.topic } : {}) };
   let orderedIds: number[] | undefined;let stagePosition=1;
   if (source.kind === 'collection') {
@@ -49,29 +49,39 @@ export async function selectPracticeWords(tx: Prisma.TransactionClient, userId: 
   // Filter reviewed content before sampling: a small approved bank must not be
   // lost inside a random 500-row sample of the entire legacy vocabulary.
   if(mode==='word-rain'||source.kind==='stage')where.contentReview={is:{status:'reviewed',sourceUrl:{not:null},reviewedBy:{not:null},reviewedAt:{not:null}}};
-  const count = await tx.word.count({ where });
-  const take = orderedIds ? orderedIds.length : Math.min(count, 500);
-  const skip = orderedIds ? 0 : Math.max(0, Math.floor(Math.random() * (count - take + 1)));
-  const rows = await tx.word.findMany({ where, orderBy: { id: 'asc' }, take, skip, include: { contentReview: true } });
+  const rows = await tx.word.findMany({ where, orderBy: { id: 'asc' }, include: { contentReview: true } });
   const meanings = rows.map(w=>{const sense=reviewedPracticeSense(w.contentReview);return {row:w,sense,meaning:parseMeaning(sense?sense.definitionEn+' /// '+sense.meaningVi:w.meaning_vi,sense?.pos??w.pos)};});
+  const labels = new Map<string, number>();
+  if (mode === 'word-rain') {
+    for (const { row, sense, meaning } of meanings) {
+      const label = normalizeAnswer((meaning.vi || meaning.en) + '|' + (sense?.pos ?? row.pos ?? ''));
+      labels.set(label, (labels.get(label) ?? 0) + 1);
+    }
+  }
   const seen = new Set<string>();
-  const words: PracticeWord[] = meanings.flatMap(({ row: w, meaning, sense }) => {
+  const eligible = meanings.filter(({ row: w, meaning, sense }) => {
     const reviewed=contentIsReviewed(w.contentReview);
-    if((source.kind==='stage'||mode==='word-rain') && !reviewed)return [];
+    if((source.kind==='stage'||mode==='word-rain') && !reviewed)return false;
     const answer = normalizeAnswer(w.word);
     const vi = meaning.vi || (/[à-ỹđ]/i.test(meaning.en) ? meaning.en : '');
     const pos=sense?.pos??w.pos;
     const label = normalizeAnswer(vi + '|' + (pos || ''));
-    const ambiguous = mode === 'word-rain' && meanings.filter(m => normalizeAnswer((m.meaning.vi || m.meaning.en) + '|' + (m.sense?.pos??m.row.pos??'')) === label).length > 1;
-    if (!/^[a-z]+(?:[ '-][a-z]+)*$/.test(answer) || answer.length > (mode === 'typing' ? 20 : 40) || seen.has(answer) || (mode === 'word-rain' && (!vi || vi.length>180 || ambiguous || normalizeAnswer(vi).includes(answer)))) return [];
+    const ambiguous = (labels.get(label) ?? 0) > 1;
+    if (!/^[a-z]+(?:[ '-][a-z]+)*$/.test(answer) || answer.length > (mode === 'typing' ? 20 : 40) || seen.has(answer) || (mode === 'word-rain' && (!vi || vi.length>180 || ambiguous || normalizeAnswer(vi).includes(answer)))) return false;
     seen.add(answer);
+    return true;
+  });
+  if (orderedIds && eligible.length !== orderedIds.length) throw new StudyError('Bộ từ này đang được cập nhật. Bạn chọn bộ khác hoặc quay lại sau nhé.', 409);
+  const selected = preview ? [] : orderedIds ? orderedIds.map(id=>eligible.find(w=>w.row.id===id)!) : shuffle(eligible).slice(0, source.limit);
+  if (!preview && !selected.length) throw new StudyError('Nguồn này chưa có từ phù hợp. Bạn thử bỏ lọc hoặc chọn nguồn khác nhé.', 409);
+  const words: PracticeWord[] = selected.map(({ row: w, meaning, sense }) => {
+    const answer = normalizeAnswer(w.word);
+    const vi = meaning.vi || (/[à-ỹđ]/i.test(meaning.en) ? meaning.en : '');
+    const pos = sense?.pos ?? w.pos;
     const acceptedAnswers=practiceAnswers(w.word,mode,w.contentReview).filter(a=>normalizeAnswer(a)!==answer);
     const example=sense?sense.exampleEn+' /// '+sense.exampleVi:w.example;
     const context=mode==='word-rain'&&example?maskPracticeText(example.split(/\/\/\/|\|\|\|/)[0],[w.word,...acceptedAnswers]):undefined;
-    return [{ id: w.id, word: w.word.trim().replace(/\s+/g,' '), meaning: vi || meaning.en, pos, ipa: sense?.ipa??w.ipa, example, acceptedAnswers,context,promptMeaning:maskPracticeText(vi||meaning.en,[w.word,...acceptedAnswers]) }];
+    return { id: w.id, word: w.word.trim().replace(/\s+/g,' '), meaning: vi || meaning.en, pos, ipa: sense?.ipa??w.ipa, example, acceptedAnswers,context,promptMeaning:maskPracticeText(vi||meaning.en,[w.word,...acceptedAnswers]) };
   });
-  if (orderedIds && words.length !== orderedIds.length) throw new StudyError('Bộ từ này đang được cập nhật. Bạn chọn bộ khác hoặc quay lại sau nhé.', 409);
-  const selected = orderedIds ? orderedIds.map(id=>words.find(w=>w.id===id)!) : shuffle(words).slice(0, source.limit);
-  if (!selected.length) throw new StudyError('Nguồn đã chọn không có từ đủ điều kiện. Hãy đổi bộ lọc hoặc duyệt nội dung.', 409);
-  return { words: selected, stagePosition, excluded: rows.length - words.length };
+  return { words, stagePosition, excluded: rows.length - eligible.length, available: eligible.length };
 }

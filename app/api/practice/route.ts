@@ -3,13 +3,18 @@ import { studyTransaction } from '@/lib/prisma';
 import { practiceSourceSchema, selectPracticeWords, StudyError } from '@/lib/practice-source';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-const schema = z.object({ mode: z.enum(['typing','word-rain','spelling-bee']), source: practiceSourceSchema });
+const schema = z.object({ mode: z.enum(['typing','word-rain','spelling-bee']), source: practiceSourceSchema, preview: z.literal(true).optional() });
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: 'Đăng nhập để luyện tập.' }, { status: 401 });
   const input = schema.safeParse(await request.json().catch(()=>null));
   if (!input.success) return NextResponse.json({ error: 'Nguồn từ không hợp lệ.' }, { status: 400 });
   try {
+    if (input.data.preview) {
+      const userId = session.user.id;
+      const { available } = await studyTransaction(userId, tx => selectPracticeWords(tx, userId, input.data.mode, input.data.source, true), true);
+      return NextResponse.json({ available }, { headers: { 'Cache-Control': 'private, no-store' } });
+    }
     const result = await studyTransaction(session.user.id, async tx => {
       const { words, excluded, stagePosition } = await selectPracticeWords(tx, session.user!.id!, input.data.mode, input.data.source);
       const practice = await tx.practiceSession.create({ data: { userId: session.user!.id!, mode: input.data.mode, source: {...input.data.source,answerKey:Object.fromEntries(words.map(w=>[String(w.id),[w.word,...w.acceptedAnswers||[]]])),wordsSnapshot:words}, wordIds: words.map(w=>w.id) } });

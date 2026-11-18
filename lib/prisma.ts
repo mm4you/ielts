@@ -54,10 +54,11 @@ const basePrisma = globalForPrisma.prismaBase ?? new PrismaClient(
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaBase = basePrisma;
 
 /** Keep RLS identity, idempotency and study writes on one connection. */
-export async function studyTransaction<T>(userId: string, run: (tx: Prisma.TransactionClient) => Promise<T>) {
+export async function studyTransaction<T>(userId: string, run: (tx: Prisma.TransactionClient) => Promise<T>, readOnly = false) {
   return basePrisma.$transaction(async tx => {
+    if (readOnly) await tx.$executeRaw`SET TRANSACTION READ ONLY`;
     await tx.$executeRaw`SELECT set_config('app.current_user_id', ${userId}, true)`;
-    await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
+    if (!readOnly) await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
     return run(tx);
   }, { maxWait: 10000, timeout: 15000 });
 }

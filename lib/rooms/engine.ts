@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import type { RoomState, RoomView, RoomPhase } from './types';
 import { RoomError } from './error';
 import { expireGames, gameDeadline, gameMode, gameView } from './games';
@@ -74,10 +75,15 @@ export function roomView(code: string, state: RoomState, meId: string, now: numb
   const { phase, index, nextAt } = phaseAt(state, now);
   const publishedThrough = phase === 'reveal' || phase === 'finished' ? index : index - 1;
   const before=gameMode(state)==='quiz'?Object.fromEntries(rankedPlayers(state,now,publishedThrough-1).map(p=>[p.id,p.rank])):state.previousRanks??{};
-  const players=rankedPlayers(state,now).map(p=>({...p,rankDelta:(before[p.id]??p.rank)-p.rank}));
+  const displayName = (id: string) => {
+    const chosen = state.nicknames && Object.hasOwn(state.nicknames, id) ? state.nicknames[id] : undefined;
+    const suffix = createHash('sha256').update(JSON.stringify([code, id])).digest('hex').slice(0, 5).toUpperCase();
+    return chosen || (id === state.hostId ? 'Chủ phòng ' : 'Bạn chơi ') + suffix;
+  };
+  const players=rankedPlayers(state,now).map(p=>({...p,name:displayName(p.id),rankDelta:(before[p.id]??p.rank)-p.rank}));
   const q = gameMode(state) === 'quiz' && (phase === 'question' || phase === 'reveal') ? state.questions[index] : null;
   return {
-    code, title: state.title, hostId: state.hostId, meId, hostName:state.hostName??state.players.find(p=>p.id===state.hostId)?.name??'Chủ phòng',isObserver:isRoomObserver(state,meId),observers:state.observers??[], settings: { ...state.settings, maxPlayers: roomCapacity(state.settings) },
+    code, title: state.title, hostId: state.hostId, meId, hostName:displayName(state.hostId),isObserver:isRoomObserver(state,meId),observers:(state.observers??[]).map(p=>({...p,name:displayName(p.id)})), settings: { ...state.settings, maxPlayers: roomCapacity(state.settings) },
     phase, serverNow: now, nextAt, questionNumber: state.startedAt === null ? 0 : index + 1, players,
     roundId:roomRoundId(state),sourceLabel:state.sourceLabel||'Kho từ vựng',rankingEvent:gameMode(state)==='quiz'?'Sau câu '+Math.max(0,publishedThrough+1):'Lượt ghi điểm gần nhất',
     ...(state.lastFinishedRoundId&&state.lastFinishedParticipants?.includes(meId)?{previousReviewSessionId:'room:'+code+':'+state.lastFinishedRoundId+':'+meId}:{}),

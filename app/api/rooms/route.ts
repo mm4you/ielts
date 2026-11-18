@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const user = await roomIdentity(request);
     const result = schema.safeParse(await roomBody(request));
     if (!result.success) throw new RoomError('Kiểm tra tên phòng và cài đặt.');
-    const { title, ...settings } = result.data;
-    return roomResponse(await createRoom(user, title, settings));
+    const { title, nickname, ...settings } = result.data;
+    return roomResponse(await createRoom(user, title, settings, nickname));
   } catch (error) { return roomFailure(error); }
 }

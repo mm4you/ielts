@@ -29,7 +29,7 @@ export default function PracticeResults({ sessionId, mode, words, results, onRep
   const practiced=verified.filter(r=>r.attempts!==0);
   const correct=verified.filter(r=>r.outcome==='correct'&&!r.hinted).length;
   return <GameResult replayLabel={mode==='rooms'?'Về phòng thi đấu':undefined} title={mode==='rooms'?'Từ vựng sau trận':stageId ? passed ? 'Bạn đã qua chặng!' : 'Kết quả luyện chặng' : 'Kết quả luyện tập'} value={practiced.length ? Math.round(correct/(mode==='rooms'?verified.length:practiced.length)*100) : 0} label="Độ chính xác (%)" onReplay={onRestart} exitRoute={stageId?'/decks':mode==='rooms'?'/rooms':'/'} loading={status==='saving'} replayDisabled={status!=='saved'} busyLabel="Đang lưu kết quả">
-    <p>{practiced.length} từ đã luyện ({verified.reduce((n,r)=>n+(r.attempts??1),0)} lượt) · {correct} tự trả lời đúng · {verified.filter(r=>r.outcome==='wrong').length} sai · {practiced.filter(r=>r.outcome==='missed').length} bỏ lỡ · {verified.filter(r=>r.hinted).length} có gợi ý</p>
+    <p>{practiced.length} từ đã luyện ({verified.reduce((n,r)=>n+(r.attempts??1),0)} lượt) · {correct} tự trả lời đúng · {missed.length} từ nên ôn · {verified.filter(r=>r.outcome==='wrong').length} sai · {practiced.filter(r=>r.outcome==='missed').length} bỏ lỡ · {verified.filter(r=>r.hinted).length} có gợi ý</p>
     {status==='saving'&&<p role="status">Đang lưu kết quả…</p>}
     {status==='error'&&<MessageBar intent="error">{message} Kết quả chưa được lưu.<Button onClick={save}>Thử lưu lại</Button></MessageBar>}
     {status==='saved'&&<p role="status">Đã lưu. <Link href={'/practice-history/'+sessionId}>Mở lại kết quả này</Link></p>}

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button, MessageBar, ProgressBar, Spinner } from '@fluentui/react-components';
+import { Button, Field, Input, MessageBar, ProgressBar, Spinner } from '@fluentui/react-components';
 import { CopyRegular } from '@fluentui/react-icons/svg/copy';
 import { CheckmarkRegular } from '@fluentui/react-icons/svg/checkmark';
 import { PlayRegular } from '@fluentui/react-icons/svg/play';
@@ -11,7 +11,7 @@ import { TrophyRegular } from '@fluentui/react-icons/svg/trophy';
 import PageHeader from '@/components/PageHeader';
 import AppLoading from '@/components/AppLoading';
 import type { RoomView } from '@/lib/rooms/types';
-import { ROOM_MODE_INFO } from '@/lib/rooms/settings';
+import { ROOM_MODE_INFO, roomDurationLabel } from '@/lib/rooms/settings';
 import RoomModeGame from './RoomModeGame';
 import RoomRoundSettings from '@/components/RoomRoundSettings';
 import RoomScoreboard from '@/components/RoomScoreboard';
@@ -24,6 +24,7 @@ export default function RoomClient({ code }: { code: string }) {
   const [connected,setConnected]=useState(true);
   const [room, setRoom] = useState<RoomView | null>(null);
   const [error, setError] = useState('');
+  const [nickname, setNickname] = useState('');
   const [canJoin, setCanJoin] = useState(false);
   const [busy, setBusy] = useState(false);
   const [now, setNow] = useState(0);
@@ -90,7 +91,7 @@ export default function RoomClient({ code }: { code: string }) {
     try { await navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2500); }
     catch { setError(`Không sao chép được. Mã phòng: ${code}`); }
   }
-  if (!room) return error ? <section className="panel empty-state"><h1>{canJoin ? 'Tham gia phòng thi đấu' : 'Chưa vào được phòng'}</h1><p>{error}</p>{canJoin ? <Button appearance="primary" disabled={busy} onClick={() => act({ action: 'join' })}>Tham gia phòng {code}</Button> : <Button onClick={() => setRetry(n => n + 1)}>Thử lại</Button>}<Link href="/rooms">Về danh sách phòng</Link></section> : <AppLoading contained label="Đang kết nối phòng" />;
+  if (!room) return error ? <section className="panel empty-state"><h1>{canJoin ? 'Tham gia phòng thi đấu' : 'Chưa vào được phòng'}</h1><p>{error}</p>{canJoin ? <form onSubmit={e=>{e.preventDefault();void act({action:'join',nickname});}}><Field label="Biệt danh trong phòng" hint="Tùy chọn, tối đa 24 ký tự. Thành viên sẽ thấy biệt danh và điểm thi đấu."><Input value={nickname} onChange={(_,d)=>setNickname(d.value)} maxLength={24} autoComplete="off" /></Field><Button type="submit" appearance="primary" disabled={busy}>Tham gia phòng {code}</Button></form> : <Button onClick={() => setRetry(n => n + 1)}>Thử lại</Button>}<Link href="/rooms">Về danh sách phòng</Link></section> : <AppLoading contained label="Đang kết nối phòng" />;
   const me = room.players.find(p => p.id === room.meId);
   const observer=!!room.isObserver;
   const host = room.hostId === room.meId;
@@ -104,7 +105,7 @@ export default function RoomClient({ code }: { code: string }) {
   if (room.phase === 'closed') return <section className="panel empty-state"><h1>Phòng đã đóng</h1><p>Bạn có thể tạo hoặc tham gia một phòng khác.</p><Link className="btn-primary" href="/rooms">Về phòng thi đấu</Link></section>;
 
   return <div className="battle-room">
-    <PageHeader title={finished ? 'Kết quả thi đấu' : room.title} description={`${modeInfo.name} · ${room.settings.level === 'all' ? 'Tất cả cấp độ' : room.settings.level} · ${room.settings.questionCount} ${mode === 'match' ? 'cặp' : 'từ'} · ${mode === 'quiz' ? `${room.settings.secondsPerQuestion} giây/câu` : `${room.settings.durationSeconds || 90} giây/trận`}`} actions={<Button appearance="subtle" icon={<ArrowExitRegular />} onClick={async() => {if(host&&!waiting&&!finished&&!(await confirm({title:'Đóng phòng và rời đi?',description:'Trận đấu sẽ dừng với tất cả người chơi. Bạn có thể chờ hết trận để chuyển quyền ở sảnh.',confirmLabel:'Đóng phòng',danger:true})))return;void act({ action: 'leave' });}} disabled={busy}>Rời phòng</Button>} />
+    <PageHeader title={finished ? 'Kết quả thi đấu' : room.title} description={`${modeInfo.name} · ${room.settings.level === 'all' ? 'Tất cả cấp độ' : room.settings.level} · ${room.settings.questionCount} ${mode === 'match' ? 'cặp' : 'từ'} · ${mode === 'quiz' ? `${room.settings.secondsPerQuestion} giây/câu` : `${roomDurationLabel(room.settings.durationSeconds || 90)}/trận`}`} actions={<Button appearance="subtle" icon={<ArrowExitRegular />} onClick={async() => {if(host&&!waiting&&!finished&&!(await confirm({title:'Đóng phòng và rời đi?',description:'Trận đấu sẽ dừng với tất cả người chơi. Bạn có thể chờ hết trận để chuyển quyền ở sảnh.',confirmLabel:'Đóng phòng',danger:true})))return;void act({ action: 'leave' });}} disabled={busy}>Rời phòng</Button>} />
     {error && <MessageBar intent={connected?'error':'warning'}>{error}{!connected&&<Button onClick={()=>setRetry(n=>n+1)}>Kết nối lại</Button>}</MessageBar>}<p className="room-source-label">{observer?(host?'Bạn là chủ phòng · Chỉ điều hành':'Bạn đang xem trận')+' · ':''}Bộ từ: {room.sourceLabel}</p>{room.previousReviewSessionId&&(waiting||finished)&&<Button as="a" href={'/practice-history/'+encodeURIComponent(room.previousReviewSessionId)}>Kết quả trận trước của bạn</Button>}
     <div className="battle-columns">
       <section className="battle-main">

@@ -84,7 +84,8 @@ export default function FeedbackModal() {
       <DialogContent className="feedback-fields">
         <Field label="Phân loại"><ChoiceSelect value={type} onChange={e=>setType(e.target.value)} disabled={isSubmitting}><option value="bug">Lỗi hệ thống</option><option value="feature">Đề xuất tính năng</option><option value="vocab">Góp ý từ vựng</option><option value="other">Ý kiến khác</option></ChoiceSelect></Field>
         <Field label="Nội dung" required hint={message.length+'/1000 ký tự'}><Textarea value={message} onChange={(_,data)=>setMessage(data.value)} required maxLength={1000} rows={5} disabled={isSubmitting} resize="vertical" placeholder="Mô tả vấn đề hoặc đề xuất" /></Field>
-        <Field label="Liên hệ" hint="Không bắt buộc"><Input value={contact} onChange={(_,data)=>setContact(data.value)} disabled={isSubmitting} placeholder="Email hoặc số điện thoại" /></Field>
+        <p>Nội dung góp ý sẽ được gửi qua email tới đội vận hành IELTS Vocab.</p>
+        <Field label="Liên hệ" hint="Chỉ điền nếu bạn muốn nhận phản hồi."><Input value={contact} onChange={(_,data)=>setContact(data.value)} disabled={isSubmitting} placeholder="Email hoặc số điện thoại" /></Field>
       </DialogContent>
       <DialogActions><Button appearance="secondary" onClick={onClose} disabled={isSubmitting}>Hủy</Button><Button appearance="primary" type="submit" disabled={isSubmitting} icon={isSubmitting?<Spinner size="tiny" />:undefined}>{isSubmitting?'Đang gửi':'Gửi góp ý'}</Button></DialogActions>
     </DialogBody></form></DialogSurface>

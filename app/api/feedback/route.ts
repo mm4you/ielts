@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
 import { createMailTransport, mailSender } from '@/lib/mail-transport';
 import path from 'node:path';
 import { EMAIL_BRAND_CID, feedbackEmail } from '@/lib/email-templates';
@@ -23,7 +22,7 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       const errorMessage = validation.error.issues[0]?.message || 'Dữ liệu không hợp lệ';
-      logger.warn({ errors: validation.error.format() }, 'Validation failed for feedback submission');
+      logger.warn('Validation failed for feedback submission');
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
@@ -41,12 +40,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const session = await auth();
-    // A01:2021 - Securely bind user context on server, don't trust client input for identity
-    const userDisplay = session?.user
-      ? `${session.user.name || 'Người dùng'} (${session.user.email || 'Không có email'})`
-      : 'Khách (Chưa đăng nhập)';
-
     const typeLabels: Record<string, string> = {
       bug: 'Báo lỗi',
       feature: 'Đề xuất tính năng',
@@ -62,16 +55,16 @@ export async function POST(request: Request) {
     const mailOptions = {
       from: mailSender(),
       to: receiverEmail,
-      ...feedbackEmail({ sender: userDisplay, type: rawTypeLabel, contact, message }),
+      ...feedbackEmail({ sender: 'Qua biểu mẫu góp ý', type: rawTypeLabel, contact, message }),
       attachments: [{ filename: 'ielts-vocab.png', path: path.join(process.cwd(), 'public/email-brand.png'), cid: EMAIL_BRAND_CID }],
     };
 
     await transporter.sendMail(mailOptions);
-    logger.info({ type: rawTypeLabel, userDisplay }, 'Feedback email sent successfully');
+    logger.info({ type: rawTypeLabel }, 'Feedback email sent successfully');
 
     return NextResponse.json({ success: true, message: 'Góp ý của bạn đã được gửi đi thành công!' });
-  } catch (error: any) {
-    logger.error({ error }, 'Lỗi khi gửi email góp ý');
+  } catch {
+    logger.error('Lỗi khi gửi email góp ý');
     return NextResponse.json(
       { 
         error: 'Không thể gửi email góp ý. Vui lòng thử lại sau.'

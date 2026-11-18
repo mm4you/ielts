@@ -8,7 +8,7 @@ export const MAX_ROOM_QUESTIONS = 50;
 
 export const ROOM_MODES = ['quiz', 'speedrun', 'match', 'sniper', 'blockblast', 'typing'] as const;
 export type RoomMode = typeof ROOM_MODES[number];
-export const ROOM_DURATIONS = [60, 90, 120, 180] as const;
+export const ROOM_DURATIONS = [60, 90, 120, 180, 300, 480, 600, 900] as const;
 export const ROOM_MODE_INFO: Record<RoomMode, { name: string; description: string; rules: string }> = {
   quiz: { name: 'Trắc nghiệm', description: 'Cùng trả lời từng câu', rules: 'Cùng một câu hỏi và thời hạn. Đúng được 100 điểm, nhanh được thêm tối đa 50 điểm.' },
   speedrun: { name: 'Tốc chiến', description: 'Đua trả lời liên tiếp', rules: 'Tự chuyển câu sau mỗi đáp án. Trả lời đúng liên tiếp để tăng combo; sai sẽ mất combo.' },
@@ -17,3 +17,14 @@ export const ROOM_MODE_INFO: Record<RoomMode, { name: string; description: strin
   blockblast: { name: 'Xếp hình', description: 'Xếp khối, giải từ vựng', rules: 'Chọn khối rồi chọn ô để đặt. Đầy hàng hoặc cột sẽ xóa và ghi điểm. Hết 3 khối, trả lời từ vựng để nhận bộ mới; sai thêm một ô chặn.' },
   typing: { name: 'Chíu chíu luyện gõ', description: 'Gõ đủ từ để bắn', rules: 'Gõ đúng từ đang rơi để tự bắn. Dùng Backspace để sửa. Bỏ lỡ 3 mục tiêu sẽ hết lượt; trận vẫn tiếp tục với những người còn lại.' },
 };
+
+export function roomDurationLabel(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return [minutes ? minutes + ' phút' : '', remainder ? remainder + ' giây' : ''].filter(Boolean).join(' ');
+}
+
+export function suggestedRoomDuration(mode: RoomMode, count: number, secondsPerTarget: number) {
+  const seconds = count * (mode === 'match' ? 12 : mode === 'typing' || mode === 'sniper' ? secondsPerTarget : mode === 'blockblast' ? 20 : 8);
+  return ROOM_DURATIONS.find(duration => duration >= Math.max(90, seconds)) ?? 900;
+}

@@ -12,4 +12,5 @@ const fields={
 };
 const validSource=(v:{sourceKind:string;collectionId?:string})=>v.sourceKind!=='collection'||!!v.collectionId;
 export const roomSettingsSchema=z.object(fields).refine(validSource,{message:'Chọn bộ từ của bạn.'});
-export const createRoomSchema=z.object({...fields,title:z.string().trim().min(1).max(60)}).refine(validSource,{message:'Chọn bộ từ của bạn.'});
+export const roomNicknameSchema = z.string().trim().max(24).regex(/^[\p{L}\p{M}\p{N} _.-]*$/u).optional();
+export const createRoomSchema=z.object({...fields,nickname:roomNicknameSchema,title:z.string().trim().min(1).max(60)}).refine(validSource,{message:'Chọn bộ từ của bạn.'});

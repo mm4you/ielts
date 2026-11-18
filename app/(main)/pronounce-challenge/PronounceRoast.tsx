@@ -7,6 +7,7 @@ import { Speaker2Regular } from '@fluentui/react-icons/svg/speaker';
 import { ArrowClockwiseRegular } from '@fluentui/react-icons/svg/arrow-clockwise';
 import SaveToCollection from '@/app/(main)/collections/SaveToCollection';
 import { parseMeaning } from '@/lib/parse';
+import { VOICE_CONSENT_VERSION } from '@/lib/privacy';
 import { recordingExtension } from '@/lib/pronunciation';
 
 type Props = {wordId:number;wordText:string;ipa?:string|null;meaning?:string|null;example?:string|null;onFinish?:()=>void};
@@ -27,6 +28,8 @@ export default function PronounceRoast({wordId,wordText,ipa,meaning,example,onFi
   const clock=useRef<ReturnType<typeof setInterval>|null>(null);
   const request=useRef<AbortController|null>(null);
   const urlRef=useRef('');
+  const pendingRecording=useRef<Blob|null>(null);
+  const [canSend,setCanSend]=useState(false);
   const stopTimers=()=>{if(timeout.current)clearTimeout(timeout.current);if(clock.current)clearInterval(clock.current);};
   useEffect(()=>{
     alive.current=true;
@@ -47,13 +50,17 @@ export default function PronounceRoast({wordId,wordText,ipa,meaning,example,onFi
     speech.onerror=e=>{if(alive.current&&!['canceled','interrupted'].includes(e.error))setError('Chưa phát được giọng mẫu. Bạn thử bấm nghe lại nhé.');};
     window.speechSynthesis.speak(speech);
   };
-  const process=async(blob:Blob)=>{
+  const sendRecording=async()=>{
+    const blob=pendingRecording.current;
+    if (!blob || lock.current) return;
+    lock.current=true;
+    setError('');
     const controller=new AbortController();request.current=controller;
     const deadline=setTimeout(()=>controller.abort(),45000);
     try {
       setPhase('transcribing');
       const form=new FormData();form.append('file',blob,'recording.'+recordingExtension(blob.type));
-      const response=await fetch('/api/transcribe',{method:'POST',body:form,signal:controller.signal});
+      const response=await fetch('/api/transcribe',{method:'POST',headers:{'X-Voice-Consent':VOICE_CONSENT_VERSION},body:form,signal:controller.signal});
       const data=await response.json();
       if(!response.ok)throw new Error(data.error||'Chưa thể nhận diện bản thu. Bạn thử lại nhé.');
       const text=typeof data.text==='string'?data.text.trim():'';
@@ -63,15 +70,22 @@ export default function PronounceRoast({wordId,wordText,ipa,meaning,example,onFi
       const checked=await fetch('/api/word/'+wordId+'/pronounce-roast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({transcribedText:text}),signal:controller.signal});
       const feedback=await checked.json();
       if(!checked.ok)throw new Error(feedback.error||'Chưa thể đối chiếu từ.');
-      if(alive.current){setResult(feedback);onFinish?.();}
+      if(alive.current){pendingRecording.current=null;setCanSend(false);setResult(feedback);onFinish?.();}
     } catch(e) {
       if(alive.current)setError(e instanceof Error&&e.name!=='AbortError'?e.message:'Nhận diện mất nhiều thời gian. Bạn thử thu lại nhé.');
     } finally {clearTimeout(deadline);lock.current=false;if(alive.current)setPhase('idle');}
   };
+  const discardRecording=()=>{
+    pendingRecording.current=null;
+    setCanSend(false);
+    if(urlRef.current)URL.revokeObjectURL(urlRef.current);
+    urlRef.current='';
+    setRecordingUrl('');
+  };
   const start=async()=>{
     if(lock.current||!supported)return;
     lock.current=true;setPhase('permission');setError('');setResult(null);setTranscript('');setSeconds(0);
-    if(urlRef.current){URL.revokeObjectURL(urlRef.current);urlRef.current='';setRecordingUrl('');}
+    discardRecording();
     window.speechSynthesis?.cancel();
     try {
       const stream=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -87,7 +101,10 @@ export default function PronounceRoast({wordId,wordText,ipa,meaning,example,onFi
         if(!chunks.length){lock.current=false;setPhase('idle');setError('Bản thu chưa có âm thanh. Bạn thử lại nhé.');return;}
         const blob=new Blob(chunks,{type:media.mimeType||mime||'audio/webm'});
         urlRef.current=URL.createObjectURL(blob);setRecordingUrl(urlRef.current);
-        void process(blob);
+        pendingRecording.current=blob;
+        setCanSend(true);
+        lock.current=false;
+        setPhase('idle');
       };
       media.onerror=()=>{
         stopTimers();media.onstop=null;stream.getTracks().forEach(t=>t.stop());lock.current=false;
@@ -120,13 +137,13 @@ export default function PronounceRoast({wordId,wordText,ipa,meaning,example,onFi
         <div className={'pronunciation-mic-symbol'+(recording?' is-recording':'')} aria-hidden="true"><MicRegular/></div>
         <h3>{recording?'Mình đang nghe bạn':phase==='permission'?'Cho phép dùng micro':phase==='transcribing'?'Đang nghe lại bản thu':phase==='checking'?'Đang đối chiếu từ':result?'Thử thêm một lần nhé':'Đến lượt bạn đọc'}</h3>
         <p>{recording?'Đọc rõ từ, rồi bấm dừng khi nói xong.':'Nghe mẫu, bấm ghi âm rồi đọc từ bằng giọng tự nhiên của bạn.'}</p>
-        <Button appearance="primary" size="large" icon={recording?<StopRegular/>:busy?<Spinner size="tiny"/>:result?<ArrowClockwiseRegular/>:<MicRegular/>} disabled={!supported||(busy&&!recording)} onClick={recording?()=>{if(recorder.current?.state==='recording')recorder.current.stop();}:start}>{recording?'Dừng và kiểm tra':phase==='permission'?'Đang mở micro…':busy?'Đang xử lý…':result||recordingUrl?'Thu lại':'Bắt đầu ghi âm'}</Button>
-        <span className="pronunciation-record-hint" role="status">{recording?seconds+' / 10 giây':'Tối đa 10 giây · Bản thu dùng để nhận diện từ'}</span>
+        <Button appearance="primary" size="large" icon={recording?<StopRegular/>:busy?<Spinner size="tiny"/>:result?<ArrowClockwiseRegular/>:<MicRegular/>} disabled={!supported||(busy&&!recording)} onClick={recording?()=>{if(recorder.current?.state==='recording')recorder.current.stop();}:start}>{recording?'Dừng ghi âm':phase==='permission'?'Đang mở micro…':busy?'Đang xử lý…':result||recordingUrl?'Thu lại':'Bắt đầu ghi âm'}</Button>
+        <span className="pronunciation-record-hint" role="status">{recording?seconds+' / 10 giây':'Tối đa 10 giây. Bản thu ở trong trình duyệt cho tới khi bạn chọn gửi sang Groq để nhận diện lời đọc.'}{!recording&&<> <a href="/privacy">Quyền riêng tư</a></>}</span>
         {!supported&&<MessageBar intent="warning">Bạn cần trình duyệt có hỗ trợ micro. Hãy mở trang bằng HTTPS hoặc localhost trong Chrome, Edge hay Safari.</MessageBar>}
       </div>
     </div>
     {error&&<MessageBar intent="error">{error}</MessageBar>}
-    {recordingUrl&&<div className="pronunciation-playback"><span>Nghe lại giọng của bạn</span><audio controls src={recordingUrl} aria-label="Bản thu của bạn"/></div>}
+    {recordingUrl&&<div className="pronunciation-playback"><span>Nghe lại giọng của bạn</span><audio controls src={recordingUrl} aria-label="Bản thu của bạn"/>{canSend&&<Button appearance="primary" disabled={busy} onClick={sendRecording}>Đồng ý gửi Groq để nhận diện</Button>}<Button disabled={busy} onClick={discardRecording}>Bỏ bản thu</Button></div>}
     {transcript&&<div className="pronunciation-feedback" aria-live="polite"><div><span>Hệ thống nghe được</span><strong lang="en">{transcript}</strong></div>{result&&<><div className="pronunciation-score"><strong>{result.score}%</strong><span>Khớp với từ mẫu</span></div><p>{result.roast}</p></>}</div>}
     <p className="pronunciation-note">Kết quả cho biết hệ thống có nhận đúng từ bạn đọc hay không. Chưa đánh giá chi tiết từng âm, trọng âm hoặc giọng Anh–Mỹ.</p>
   </section>;

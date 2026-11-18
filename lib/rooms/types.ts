@@ -6,6 +6,7 @@ export type RoomWordAttempt={outcome:'correct'|'wrong'|'missed';answer:string;at
 export type RoomAnswer = { choice: number; points: number };
 export type RoomState = {
   version: 1; title: string; hostId: string; settings: RoomSettings;
+  nicknames?: Record<string, string>;
   hostOnly?:boolean; hostName?:string; observers?:{id:string;name:string}[];
   players: RoomPlayer[]; questions: RoomQuestion[]; startedAt: number | null; closed: boolean;
   answers: Record<string, Record<string, RoomAnswer>>;

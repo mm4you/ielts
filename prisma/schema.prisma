@@ -43,6 +43,7 @@ model User {
   role          String          @default("user")
   accounts      Account[]
   sessions      Session[]
+  voiceConsents VoiceConsent[]
   progress      UserProgress[]
   dailyActivity DailyActivity[]
   collections   Collection[]
@@ -172,6 +173,7 @@ model BattleRoom {
   expiresAt  DateTime @default(dbgenerated("(now() + '02:00:00'::interval)")) @db.Timestamptz(6)
 
   @@index([hostUserId, expiresAt])
+  @@index([expiresAt])
 }
 
 model BattleRoomRate {
@@ -332,4 +334,15 @@ model ExerciseMistake {
   word Word @relation(fields: [wordId], references: [id], onDelete: Restrict)
   @@id([userId, questionId])
   @@index([userId, resolvedAt])
+}
+
+model VoiceConsent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String
+  version   String
+  purpose   String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

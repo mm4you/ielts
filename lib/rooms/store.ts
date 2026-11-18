@@ -44,7 +44,7 @@ async function read(tx: Prisma.TransactionClient, roomCode: string, lock: boolea
   if (!rows[0]) throw new RoomError('Không tìm thấy phòng hoặc phòng đã hết hạn.', 404);
   return rows[0];
 }
-export async function createRoom(user: Identity, title: string, settings: RoomSettings) {
+export async function createRoom(user: Identity, title: string, settings: RoomSettings, nickname?: string) {
   if(settings.maxPlayers !== undefined && (!Number.isInteger(settings.maxPlayers)||settings.maxPlayers<2||settings.maxPlayers>MAX_ROOM_PLAYERS))throw new RoomError('Chọn sức chứa từ 2 đến 40 người.');
   for (let attempt = 0; attempt < 3; attempt++) {
     const roomCode = code();
@@ -54,7 +54,7 @@ export async function createRoom(user: Identity, title: string, settings: RoomSe
         const count = await tx.$queryRaw<{ count: number }[]>`SELECT count(*)::int AS "count" FROM "BattleRoom" WHERE "hostUserId" = ${user.id} AND "createdAt" > now() - interval '1 hour'`;
         if (count[0].count >= 10) throw new RoomError('Bạn đã tạo nhiều phòng. Thử lại sau.', 429);
         const source=await roomSource(tx,user.id,settings);
-        const state: RoomState = { roundId:randomUUID(),sourceLabel:source.label,version: 1, title, hostId: user.id, settings, hostOnly:true,hostName:user.name?.trim().slice(0,60)||'Chủ phòng',observers:[],players: [], questions: [], startedAt: null, closed: false, answers: {} };
+        const state: RoomState = { roundId:randomUUID(),sourceLabel:source.label,version: 1, title, hostId: user.id, settings, hostOnly:true,hostName:'Chủ phòng',nicknames:nickname?{[user.id]:nickname}:{},observers:[],players: [], questions: [], startedAt: null, closed: false, answers: {} };
         const rows = await tx.$queryRaw<{ now: number }[]>`INSERT INTO "BattleRoom" ("code", "hostUserId", "state") VALUES (${roomCode}, ${user.id}, ${JSON.stringify(state)}::jsonb) RETURNING (extract(epoch FROM clock_timestamp()) * 1000)::float8 AS "now"`;
         return roomView(roomCode, state, user.id, rows[0].now);
       });
@@ -76,7 +76,7 @@ export async function getRoom(user: Identity, roomCode: string) {
   });
 }
 
-export type RoomAction = ({ action: 'join' | 'ready' | 'start' | 'leave' | 'answer' | 'settings' | 'rematch' | 'kick' | 'transfer'; ready?: boolean; question?: number; choice?: number; targetId?:string; settings?:RoomSettings } | RoomGameAction)&{roundId?:string};
+export type RoomAction = ({ action: 'join' | 'ready' | 'start' | 'leave' | 'answer' | 'settings' | 'rematch' | 'kick' | 'transfer'; ready?: boolean; question?: number; choice?: number; targetId?:string; nickname?:string; settings?:RoomSettings } | RoomGameAction)&{roundId?:string};
 export async function actOnRoom(user: Identity, roomCode: string, action: RoomAction) {
   return transaction(user, roomCode, async tx => {
     await throttle(tx, user.id);
@@ -97,7 +97,10 @@ export async function actOnRoom(user: Identity, roomCode: string, action: RoomAc
     const me = state.players.find(p => p.id === user.id);
     if (phase === 'closed') throw new RoomError('Chủ phòng đã đóng phòng.', 410);
     if (action.action === 'join') {
-      joinRoomPlayer(state,user,row.now);
+      joinRoomPlayer(state,{id:user.id},row.now);
+      if (action.nickname && phase === 'waiting') {
+        state.nicknames = {...state.nicknames, [user.id]: action.nickname};
+      }
     } else {
       assertRoomMember(state,user.id);
       if(action.action==='settings'||action.action==='rematch'){

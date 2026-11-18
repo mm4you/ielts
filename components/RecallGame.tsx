@@ -31,6 +31,7 @@ export default function RecallGame({ mode, initialQuery='' }: { mode: 'word-rain
   const current=pool[index];
   const deadline=source.kind==='stage'?Math.max(8000,16000-(stagePosition-1)*1000-index*150):15000;
   const timed=pressure==='quick'||source.kind==='stage';
+  const secondsLeft=Math.ceil(Math.max(0,Math.min(deadline*(1-y/93),source.kind==='stage'?deadline:60000-elapsed))/1000);
   const [speaking,setSpeaking]=useState(false);
   useEffect(()=>()=>audio.current?.pause(),[]);
   useEffect(()=>{
@@ -71,7 +72,7 @@ export default function RecallGame({ mode, initialQuery='' }: { mode: 'word-rain
       const r=await fetch('/api/practice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,source:nextSource}),signal:AbortSignal.timeout(15000)});
       const data=await r.json();if(!r.ok)throw new Error(data.error);
       setSource(nextSource);setStagePosition(data.stagePosition||1);setPool(data.words);setSessionId(data.id);setIndex(0);setResults([]);setAnswer('');setFeedback(null);setHinted(false);setY(0);setElapsed(0);setLives(3);setPaused(false);submitted.current=false;setScreen('play');
-      setNotice(data.excluded?data.excluded+' từ trong mẫu nguồn không đủ điều kiện đã được loại.':'');
+      setNotice(nextSource.kind!=='stage'&&nextSource.kind!=='replay'&&data.words.length<(nextSource.limit||20)?'Nguồn này có '+data.words.length+' từ phù hợp.':'');
     }catch(e){setError(e instanceof Error?e.message:'Chưa tải được từ.');}finally{starting.current=false;setLoading(false);}
   }
   async function speak(slow=false){
@@ -88,8 +89,8 @@ export default function RecallGame({ mode, initialQuery='' }: { mode: 'word-rain
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[screen,mode,index,sessionId,paused]);
   function submit(missed=false){
-    if(!current||submitted.current||paused||composing.current)return;
-    submitted.current=true;audio.current?.pause();
+    if(!current||submitted.current||paused||(!missed&&composing.current))return;
+    submitted.current=true;composing.current=false;audio.current?.pause();
     const correct=[current.word,...(current.acceptedAnswers||[])].some(w=>normalizeAnswer(w)===normalizeAnswer(answer));
     const result:PracticeResult={wordId:current.id,answer,outcome:missed?'missed':correct?'correct':'wrong',hinted,corrected:false};
     setFeedback(result);setResults(r=>[...r,result]);if(result.outcome!=='correct')setLives(n=>Math.max(0,n-1));
@@ -103,8 +104,8 @@ export default function RecallGame({ mode, initialQuery='' }: { mode: 'word-rain
     }else {audio.current?.pause();setAnswer('');setHinted(false);setY(0);setFeedback(null);submitted.current=false;setIndex(i=>i+1);}
   }
   if(screen==='result')return <>{error&&<MessageBar intent="error">{error}</MessageBar>}<PracticeResults key={sessionId} sessionId={sessionId} mode={mode} words={pool} results={results} stageId={source.kind==='stage'?source.stageId:undefined} onRestart={()=>start()} onReplay={ids=>{void start({kind:'replay',sessionId,replayIds:ids} as PracticeSource);}} /></>;
-  if(screen==='setup')return <>{error&&<MessageBar intent="error">{error}</MessageBar>}<PracticeSetup mode={mode} hideLevel={source.kind==='stage'||source.kind==='replay'} title={title} level={source.level||'all'} onLevelChange={level=>setSource({...source,level})} exitRoute="/" loading={loading} onStart={()=>start()} rules={[mode==='spelling-bee'?'Nhấn Nghe từ, tự gõ từ tiếng Anh. Có thể nghe lại hoặc nghe chậm.':mode==='typing'?'Gõ từ đang rơi, nhấn Enter để kiểm tra.':'Một nghĩa tiếng Việt mỗi lượt. Tự nhớ và gõ từ tiếng Anh; không khóa bằng ký tự đầu.','Không phân biệt hoa thường, khoảng trắng và dấu nháy cong. Lỗi chính tả không được chấp nhận.','Gợi ý được ghi riêng. Xem phản hồi rồi nhấn Tiếp theo; mục tiêu mới không che phản hồi.','Chặng: đúng toàn bộ từ không gợi ý để qua màn; luyện thêm bằng thẻ học để ghi nhớ lâu hơn.']}>{mode==='spelling-bee'&&<div className="recall-setup-preview"><BeeMascot/><p>Ong mang đến một từ. Bạn nghe rồi gõ lại nhé.</p></div>}<WordSourceFields value={source} onChange={setSource}/>{source.kind!=='stage'&&<Field label="Cách chơi"><ChoiceSelect value={pressure} onChange={e=>setPressure(e.target.value)}><option value="calm">Luyện không áp lực</option><option value="quick">Chơi nhanh · 60 giây · 3 mạng</option></ChoiceSelect></Field>}<Button as="a" href="/decks">Chọn bộ IELTS / Vượt màn</Button></PracticeSetup></>;
-  return <section className={'study-panel recall-game recall-'+mode}><h1>{title}</h1>{notice&&<MessageBar intent="info">{notice}</MessageBar>}{error&&<MessageBar intent="error">{error}</MessageBar>}<div className="study-toolbar"><span>Từ {index+1}/{pool.length}{timed?' · '+lives+' mạng':''}</span><Button icon={paused?<PlayRegular/>:<PauseRegular/>} onClick={()=>{setPaused(p=>!p);audio.current?.pause();}}>{paused?'Tiếp tục':'Tạm dừng'}</Button><Button onClick={()=>{audio.current?.pause();setScreen('setup');}}>Thoát</Button></div><ProgressBar value={index/pool.length} aria-label="Tiến độ lượt luyện"/>
+  if(screen==='setup')return <>{error&&<MessageBar intent="error">{error}</MessageBar>}<PracticeSetup mode={mode} hideLevel={source.kind==='stage'||source.kind==='replay'} title={title} level={source.level||'all'} onLevelChange={level=>setSource({...source,level})} exitRoute="/" loading={loading} onStart={()=>start()} rules={[mode==='spelling-bee'?'Nhấn Nghe từ, tự gõ từ tiếng Anh. Có thể nghe lại hoặc nghe chậm.':mode==='typing'?'Gõ từ đang rơi, nhấn Enter để kiểm tra.':'Một nghĩa tiếng Việt mỗi lượt. Tự nhớ và gõ từ tiếng Anh; không khóa bằng ký tự đầu.','Không phân biệt hoa thường, khoảng trắng và dấu nháy cong. Lỗi chính tả không được chấp nhận.','Gợi ý được ghi riêng. Xem phản hồi rồi nhấn Tiếp theo; mục tiêu mới không che phản hồi.','Chặng: đúng toàn bộ từ không gợi ý để qua màn; luyện thêm bằng thẻ học để ghi nhớ lâu hơn.']}>{mode==='spelling-bee'&&<div className="recall-setup-preview"><BeeMascot/><p>Ong mang đến một từ. Bạn nghe rồi gõ lại nhé.</p></div>}<WordSourceFields mode={mode} value={source} onChange={setSource}/>{source.kind!=='stage'&&<Field label="Cách chơi"><ChoiceSelect value={pressure} onChange={e=>setPressure(e.target.value)}><option value="calm">Luyện không áp lực</option><option value="quick">Chơi nhanh · 60 giây · 3 mạng</option></ChoiceSelect></Field>}<Button as="a" href="/decks">Chọn bộ IELTS / Vượt màn</Button></PracticeSetup></>;
+  return <section className={'study-panel recall-game recall-'+mode}><h1>{title}</h1>{notice&&<MessageBar intent="info">{notice}</MessageBar>}{error&&<MessageBar intent="error">{error}</MessageBar>}<div className="study-toolbar"><span>Từ {index+1}/{pool.length}{timed?' · '+lives+' mạng':''}{timed&&<strong className="recall-clock" role="timer" aria-label={secondsLeft+' giây còn lại'}>{secondsLeft}s</strong>}</span><Button icon={paused?<PlayRegular/>:<PauseRegular/>} onClick={()=>{setPaused(p=>!p);audio.current?.pause();}}>{paused?'Tiếp tục':'Tạm dừng'}</Button><Button onClick={()=>{audio.current?.pause();setScreen('setup');}}>Thoát</Button></div><ProgressBar value={index/pool.length} aria-label="Tiến độ lượt luyện"/>
     {paused?<section className="panel study-card"><h2>Đã tạm dừng</h2><Button appearance="primary" onClick={()=>setPaused(false)}>Tiếp tục</Button></section>:<>
     {!feedback&&<><div ref={arenaRef} className={'recall-arena '+(mode==='spelling-bee'?'recall-meadow':'recall-rain')}>
       <div className="recall-arena-caption"><span>{mode==='spelling-bee'?'Lắng nghe · Nhớ âm · Gõ từ':'Nhìn nghĩa · Nhớ từ · Gõ đáp án'}</span><strong>{timed?'Còn '+lives+' lượt':'Luyện không áp lực'}</strong></div>
