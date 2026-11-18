@@ -32,46 +32,41 @@
   flex-direction: column;
 }
 
-.content p {
-  flex: none;
+.content p { line-height: 1.55; }
+
+.content > p {
   margin-top: 10px;
-  line-height: 1.55;
+  color: var(--colorNeutralForeground2);
 }
 
-.content p[lang="en"] { color: var(--colorNeutralForeground2); }
-
-.poster {
+.intro {
   flex: 1 0 auto;
   display: grid;
   align-content: center;
-  gap: clamp(12px, 3vw, 22px);
-  min-height: 156px;
-  padding: clamp(15px, 4vw, 26px);
-  border-radius: 10px;
-  background: #112e4b;
-  color: #fff;
+  gap: 14px;
+  padding-block: 14px;
 }
 
-.poster h3 {
-  font-size: clamp(1.7rem, 7vw, 2.65rem);
+.intro h3 {
+  font-size: clamp(1.65rem, 6.5vw, 2.35rem);
   font-weight: 720;
-  line-height: 1.05;
+  line-height: 1.14;
   letter-spacing: -.035em;
 }
 
-.poster ul {
+.intro ul {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
   padding: 10px 0 0;
-  border-block-start: 1px solid #6d8196;
+  border-block-start: 1px solid var(--colorNeutralStroke2);
   list-style: none;
-  color: #ffdd92;
+  color: var(--colorNeutralForeground2);
   font-size: .8125rem;
   line-height: 1.4;
 }
 
-.actions :global(.btn-primary) { min-height: 44px; }
+.actions :global(.btn-brutal) { min-height: 44px; }
 
 @media (max-height: 430px) {
   .surface:global(.fui-DialogSurface) { aspect-ratio: auto; }

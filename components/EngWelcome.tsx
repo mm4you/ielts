@@ -42,17 +42,19 @@ export default function EngWelcome() {
             <EngBrandPair />
           </DialogTitle>
           <DialogContent className={styles.content}>
-            <div className={styles.poster}>
-              <h3>Kết nối qua<br />tiếng Anh</h3>
+            <div className={styles.intro}>
+              <h3>Kết nối qua tiếng Anh</h3>
+              <p>ENG là câu lạc bộ học thuật tiếng Anh, nơi mọi người chia sẻ cách học và thực hành cùng nhau.</p>
               <ul lang="en" aria-label="ENG core values">
                 {engValues.map(({ name }) => <li key={name}>{name}</li>)}
               </ul>
             </div>
             <p lang="en">A project by a member of the <strong>ENG Executive Board</strong>.</p>
-            <p>ENG là câu lạc bộ học thuật tiếng Anh, nơi mọi người chia sẻ cách học và thực hành cùng nhau.</p>
           </DialogContent>
           <DialogActions className={styles.actions}>
-            <Link className="btn-primary" href="/about#eng" onClick={close}>Khám phá ENG <ArrowRightRegular aria-hidden="true" /></Link>
+            <Link className="btn-brutal" href="/about#eng" onClick={close}>
+              Khám phá ENG <ArrowRightRegular aria-hidden="true" />
+            </Link>
           </DialogActions>
         </DialogBody>
       </DialogSurface>

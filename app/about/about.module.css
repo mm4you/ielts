@@ -102,7 +102,6 @@
   min-height: clamp(144px, 23vw, 268px);
   padding: clamp(20px, 4vw, 44px);
   border-block-start: 4px solid #e9b64c;
-  background: var(--brand-soft);
 }
 
 .heroBrand :global(.eng-brand-pair) { font-size: clamp(1rem, 2vw, 1.5rem); }
