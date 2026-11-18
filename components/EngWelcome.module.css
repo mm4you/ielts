@@ -40,23 +40,40 @@
 
 .content p[lang="en"] { color: var(--colorNeutralForeground2); }
 
-.art {
-  position: relative;
-  flex: 1 0 112px;
-  overflow: hidden;
-  border-radius: 10px 10px 30px 10px;
-  background: #173bb2;
+.poster {
+  flex: 1 0 auto;
+  display: grid;
+  align-content: center;
+  gap: clamp(12px, 3vw, 22px);
+  min-height: 156px;
+  padding: clamp(15px, 4vw, 26px);
+  border-radius: 10px;
+  background: #112e4b;
+  color: #fff;
 }
 
-.art img {
-  object-fit: cover;
-  object-position: center 53%;
+.poster h3 {
+  font-size: clamp(1.7rem, 7vw, 2.65rem);
+  font-weight: 720;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.poster ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 10px 0 0;
+  border-block-start: 1px solid #6d8196;
+  list-style: none;
+  color: #ffdd92;
+  font-size: .8125rem;
+  line-height: 1.4;
 }
 
 .actions :global(.btn-primary) { min-height: 44px; }
 
 @media (max-height: 430px) {
   .surface:global(.fui-DialogSurface) { aspect-ratio: auto; }
-  .body:global(.fui-DialogBody) { grid-template-rows: auto minmax(0, 230px) auto; }
-  .art { flex-basis: 80px; }
+  .body:global(.fui-DialogBody) { grid-template-rows: auto minmax(0, 250px) auto; }
 }

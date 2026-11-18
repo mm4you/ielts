@@ -96,15 +96,16 @@
   min-height: 48px;
 }
 
-.art {
-  position: relative;
-  aspect-ratio: 1.14;
-  overflow: hidden;
-  border-radius: 16px 16px 54px 16px;
-  background: #173bb2;
+.heroBrand :global(.eng-credit-full) {
+  display: grid;
+  align-content: center;
+  min-height: clamp(144px, 23vw, 268px);
+  padding: clamp(20px, 4vw, 44px);
+  border-block-start: 4px solid #e9b64c;
+  background: var(--brand-soft);
 }
 
-.art img { object-fit: cover; }
+.heroBrand :global(.eng-brand-pair) { font-size: clamp(1rem, 2vw, 1.5rem); }
 
 .learning,
 .club {
@@ -165,7 +166,8 @@
 }
 
 .club {
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 24px;
   margin-bottom: clamp(36px, 6vw, 78px);
   padding: clamp(20px, 4vw, 46px);
   border: 1px solid var(--line);
@@ -173,12 +175,6 @@
   background: var(--bg);
 }
 
-.clubBrand :global(.eng-credit-full) {
-  padding: clamp(14px, 3vw, 26px);
-  border-block-start: 3px solid #e9b64c;
-}
-
-.clubBrand :global(.eng-brand-pair) { font-size: clamp(1rem, 2vw, 1.375rem); }
 .clubCopy p { margin-top: 12px; max-width: 48ch; }
 
 .clubLink {
@@ -219,9 +215,7 @@
 @media (max-width: 700px) {
   .topbar { min-height: 62px; }
   .hero, .learning, .club { grid-template-columns: 1fr; }
-  .art { aspect-ratio: 1.42; border-bottom-right-radius: 36px; }
   .learning h2 { max-width: none; }
-  .clubBrand { grid-row: 2; }
 }
 
 @media (max-width: 360px) {

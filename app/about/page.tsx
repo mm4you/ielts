@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRightRegular } from '@fluentui/react-icons/svg/arrow-right';
 import { ArrowUpRightRegular } from '@fluentui/react-icons/svg/arrow-up-right';
@@ -9,6 +8,7 @@ import { ArrowRepeatAllRegular } from '@fluentui/react-icons/svg/arrow-repeat-al
 import BrandMark from '@/components/BrandMark';
 import EngCredit from '@/components/EngCredit';
 import Footer from '@/components/Footer';
+import { engValues } from '@/lib/eng-values';
 import styles from './about.module.css';
 
 export const metadata: Metadata = {
@@ -20,14 +20,6 @@ const activities = [
   { icon: BookOpenRegular, title: 'Chọn từ theo mục tiêu', detail: 'Tìm từ trong thư viện theo chủ đề và cấp độ, rồi lưu vào bộ sưu tập của bạn.' },
   { icon: ArrowRepeatAllRegular, title: 'Ôn khi đến hạn', detail: 'Dùng flashcard để nhớ lại từ đã học. Mục Học tiếp đưa bạn về đúng phần đang cần ôn.' },
   { icon: GamesRegular, title: 'Đổi nhịp bằng trò chơi', detail: 'Nghe và gõ với Ong Chính Tả, học từ trong ngữ cảnh hoặc mở phòng thi cùng bạn bè.' },
-];
-
-const engValues = [
-  { name: 'Education', meaning: 'Giáo dục' },
-  { name: 'Enlightenment', meaning: 'Khai mở nhận thức' },
-  { name: 'Evolution', meaning: 'Không ngừng phát triển' },
-  { name: 'Empowerment', meaning: 'Trao quyền' },
-  { name: 'Exploration', meaning: 'Khám phá' },
 ];
 
 export default function AboutPage() {
@@ -48,15 +40,7 @@ export default function AboutPage() {
             <p className={styles.lead}>Chọn bộ từ hợp với mục tiêu IELTS của bạn, luyện một chút mỗi ngày và ôn lại đúng lúc.</p>
             <Link className="btn-primary" href="/">Mở IELTS Vocab <ArrowRightRegular aria-hidden="true" /></Link>
           </div>
-          <div className={styles.art}>
-            <Image
-              src="/about-study.webp"
-              alt=""
-              fill
-              preload
-              sizes="(max-width: 700px) 92vw, (max-width: 1160px) 46vw, 520px"
-            />
-          </div>
+          <div className={styles.heroBrand}><EngCredit variant="about" /></div>
         </header>
 
         <section className={styles.learning} id="cach-hoc" aria-labelledby="about-learning">
@@ -72,7 +56,6 @@ export default function AboutPage() {
         </section>
 
         <section className={styles.club} id="eng" aria-labelledby="about-eng">
-          <div className={styles.clubBrand}><EngCredit variant="about" /></div>
           <div className={styles.clubCopy}>
             <h2 id="about-eng">Gặp gỡ ENG</h2>
             <p>ENG là câu lạc bộ học thuật tiếng Anh, nơi những người yêu thích tiếng Anh có thể gặp gỡ, chia sẻ cách học và thực hành cùng nhau.</p>

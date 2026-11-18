@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import {
   Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle,
 } from '@fluentui/react-components';
 import { ArrowRightRegular } from '@fluentui/react-icons/svg/arrow-right';
 import { DismissRegular } from '@fluentui/react-icons/svg/dismiss';
+import { engValues } from '@/lib/eng-values';
 import { EngBrandPair } from './EngCredit';
 import styles from './EngWelcome.module.css';
 
@@ -42,11 +42,14 @@ export default function EngWelcome() {
             <EngBrandPair />
           </DialogTitle>
           <DialogContent className={styles.content}>
-            <div className={styles.art}>
-              <Image src="/about-study.webp" alt="" fill sizes="(max-width: 600px) 85vw, 476px" />
+            <div className={styles.poster}>
+              <h3>Kết nối qua<br />tiếng Anh</h3>
+              <ul lang="en" aria-label="ENG core values">
+                {engValues.map(({ name }) => <li key={name}>{name}</li>)}
+              </ul>
             </div>
             <p lang="en">A project by a member of the <strong>ENG Executive Board</strong>.</p>
-            <p>Làm quen với ENG, câu lạc bộ học thuật tiếng Anh nơi mọi người kết nối, chia sẻ và cùng thực hành.</p>
+            <p>ENG là câu lạc bộ học thuật tiếng Anh, nơi mọi người chia sẻ cách học và thực hành cùng nhau.</p>
           </DialogContent>
           <DialogActions className={styles.actions}>
             <Link className="btn-primary" href="/about#eng" onClick={close}>Khám phá ENG <ArrowRightRegular aria-hidden="true" /></Link>
