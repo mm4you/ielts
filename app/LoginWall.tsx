@@ -7,6 +7,7 @@ import { LibraryRegular } from '@fluentui/react-icons/svg/library';
 import { GamesRegular } from '@fluentui/react-icons/svg/games';
 import { Button, Field, Input, Tab, TabList} from '@fluentui/react-components';
 import StudyBackdrop from '@/components/StudyBackdrop';
+import EngCredit from '@/components/EngCredit';
 import BrandMark from '@/components/BrandMark';
 import { signIn } from 'next-auth/react';
 import { signInWithGoogle } from '@/lib/google-sign-in';
@@ -372,7 +373,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
       <aside className="login-branding">
         <div className="app-brand"><BrandMark size={38} /><span className="brand-name">IELTS Vocab</span></div>
         <div className="login-branding-content"><BookOpenRegular style={{fontSize:52,color:'var(--blue)'}} /><h2>Thêm một từ mới.<br/>Tự tin hơn mỗi ngày.</h2><p>Chọn bộ từ bạn thích, chơi một chút và ghi nhớ lâu hơn.</p><ul className="login-feature-list"><li><ArrowRepeatAllRegular />Ôn tập bằng flashcard</li><li><LibraryRegular />Từ vựng theo chủ đề và cấp độ</li><li><GamesRegular />Luyện phản xạ qua trò chơi</li></ul></div>
-        <div className="login-branding-footer">Một góc nhỏ cho hành trình IELTS của bạn</div>
+        <div className="login-eng-desktop"><EngCredit variant="full" /></div>
       </aside>
 
       {/* Right side: Form (Takes full screen on mobile, 50% on desktop) */}
@@ -699,6 +700,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
           </div>
         )}
 
+
         {/* Divider */}
         <div className="border-t-2 border-dashed border-[var(--line)] w-full my-6 relative flex items-center justify-center">
           <span className="bg-[var(--paper)] px-3 text-xs font-sans font-semibold text-[var(--muted)] uppercase absolute">
@@ -720,6 +722,7 @@ export default function LoginWall({ initialError = '' }: { initialError?: string
         >
           Đăng nhập bằng Google
         </Button>
+        <div className="login-eng-mobile"><EngCredit variant="full" /></div>
       </div>
       </div>
     </main>

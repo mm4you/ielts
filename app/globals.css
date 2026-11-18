@@ -818,3 +818,74 @@ input,select,textarea { color:var(--ink); }
 @media(max-height:550px) and (max-width:700px){ .recall-game>h1 { display:none; } .recall-game>.study-toolbar { top:8px; } .recall-game>.fui-ProgressBar { top:48px; } .recall-arena { --recall-target-top:66px; } .recall-arena-caption { display:none; } .recall-falling-target>p { margin:3px 0; font-size:12px; } .recall-falling-target h2 { font-size:20px; } .recall-landscape,.recall-bee-home { opacity:.35; } }
 
 .game-viewport.is-viewport-short .recall-game>h1 { display:none; } .game-viewport.is-viewport-short .recall-game>.study-toolbar { top:8px; } .game-viewport.is-viewport-short .recall-game>.fui-ProgressBar { top:48px; } .game-viewport.is-viewport-short .recall-arena { --recall-target-top:64px; } .game-viewport.is-viewport-short .recall-arena-caption,.game-viewport.is-viewport-short .recall-context { display:none; } .game-viewport.is-viewport-short .recall-answer-dock { padding:6px 10px; gap:6px; } .game-viewport.is-viewport-short .recall-answer-dock .fui-Label { display:none; } .game-viewport.is-viewport-short .recall-answer-dock .fui-Input { min-height:36px; } .game-viewport.is-viewport-short .recall-answer-dock .fui-Button { min-height:32px; } .game-viewport.is-viewport-short .recall-falling-target>p { margin:3px 0; font-size:12px; } .game-viewport.is-viewport-short .recall-landscape,.game-viewport.is-viewport-short .recall-bee-home { display:none; }
+
+
+.eng-brand-pair {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+}
+.eng-brand-ielts { display: inline-flex; align-items: center; gap: 5px; font-weight: 650; white-space: nowrap; }
+.eng-brand-cross { color: var(--muted); font-size: 1.25em; }
+.eng-brand-logo {
+  display: block;
+  width: 3.5em;
+  height: auto;
+  padding: 2px 3px;
+  border-radius: 3px;
+  background: #fcfcfc;
+}
+.eng-credit-full {
+  padding: 18px clamp(14px, 3vw, 26px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-block-start: 3px solid var(--blue);
+  border-radius: 12px;
+}
+.eng-credit-full > p { margin: 8px 0 0; color: var(--muted); line-height: 1.55; font-size: .875rem; }
+.eng-credit-full > a, .eng-credit-link { display: inline-flex; align-items: center; gap: 6px; }
+.eng-credit-full > a { margin-top: 10px; }
+.eng-credit-link, .eng-credit-full > a { font-size: .875rem; color: var(--blue); }
+.eng-credit-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 16px 0;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--blue);
+  background: var(--paper);
+  border-radius: 9px;
+}
+.eng-credit-strip:hover .eng-credit-link, .eng-credit-full > a:hover { text-decoration: underline; }
+.eng-credit-footer { display: inline-flex; align-items: center; min-height: 40px; color: var(--ink); }
+.eng-credit-footer .brand-symbol { width: 23px; height: 23px; }
+.app-footer { flex-wrap: wrap; gap: 4px 18px; }
+.app-footer-links { display: flex; gap: 6px 18px; flex-wrap: wrap; }
+.app-footer-links > a { display: inline-flex; align-items: center; min-height: 36px; }
+.dashboard > .learning-shortcuts { margin: 0 0 20px; }
+.dashboard > .learning-shortcuts .shortcut-card { min-height: 90px; }
+.login-eng-mobile { display: none; }
+.login-eng-desktop { max-width: 390px; }
+.about-page { position: relative; isolation: isolate; min-height: 100dvh; display: flex; flex-direction: column; }
+.about-content { position: relative; width: min(100%, 760px); margin: 0 auto; padding: clamp(24px, 6vw, 64px); flex: 1; }
+.about-heading { margin: 24px 0; }
+.about-heading h1 { margin: 0 0 10px; font-size: clamp(1.65rem, 4vw, 2.5rem); line-height: 1.2; }
+.about-heading p, .about-section p { line-height: 1.65; color: var(--muted); }
+.about-content .eng-credit-full { padding-block: clamp(20px, 4vw, 36px); }
+.about-content .eng-brand-pair { font-size: clamp(1rem, 3vw, 1.45rem); }
+.about-section { margin-top: 28px; }
+.about-section h2 { font-size: 1.25rem; margin-bottom: 8px; }
+.about-cta { display: inline-flex; margin-top: 16px; }
+@media (min-width: 920px) {
+  .dashboard-practice .practice-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
+  .dashboard-practice .practice-item { border-top: 0; border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 760px) {
+  .login-eng-mobile { display: block; margin-top: 24px; }
+  .app-footer-links { column-gap: 14px; }
+}

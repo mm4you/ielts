@@ -1,5 +1,6 @@
 'use client';
 
+import EngCredit from './EngCredit';
 import ContinueLearning from './ContinueLearning';
 import PageHeader from '@/components/PageHeader';
 import Link from 'next/link';
@@ -48,11 +49,10 @@ export default function Dashboard({name,totalWords,dueWords,collectionsCount,sav
   ];
   return <div className="dashboard">
     <PageHeader title="Góc học của bạn" description={"Chào " + name + ", hôm nay mình học một chút nhé."} actions={<Button as="a" href="/library" appearance="secondary" icon={<LibraryRegular />}>Thư viện</Button>} />
+    <ContinueLearning />
     <section className="metrics-grid" aria-label="Tổng quan học tập">
       {metrics.map(({label,value,icon:Icon,href})=><Link className="metric" href={href} key={label}><div className="metric-label"><Icon /><span>{label}</span></div><strong>{value.toLocaleString('vi-VN')}</strong><ChevronRightRegular className="metric-arrow" /></Link>)}
     </section>
-    <ContinueLearning /><div className="dashboard-columns">
-      <div className="dashboard-primary">
         <section className="review-feature" aria-labelledby="review-title">
           <div className="feature-heading"><span className="feature-icon"><ArrowRepeatAllRegular /></span><span>Ôn tập hôm nay</span></div>
           <h2 id="review-title">{dueWords > 0 ? <><strong>{dueWords.toLocaleString('vi-VN')}</strong> thẻ đến hạn</> : 'Hôm nay mình học gì?'}</h2>
@@ -60,12 +60,11 @@ export default function Dashboard({name,totalWords,dueWords,collectionsCount,sav
           <Button as="a" href={dueWords > 0 ? "/review?source=due" : "/decks"} appearance="secondary" size="large" icon={<ArrowRightRegular />} iconPosition="after">{dueWords > 0 ? 'Bắt đầu ôn tập' : 'Chọn bộ từ đầu tiên'}</Button>
           <div className="flashcard-preview" aria-hidden="true"><div className="preview-card-back" /><div className="preview-card"><span>Vocabulary</span><strong>consistent</strong><span>/kənˈsɪstənt/</span><div /><b>nhất quán, đều đặn</b></div></div>
         </section>
+    <EngCredit variant="dashboard" />
         <section className="learning-shortcuts" aria-label="Góc khám phá">
           <Link href="/collections" className="shortcut-card"><span className="shortcut-icon"><BookOpenRegular /></span><div><h2>Bộ sưu tập của tôi</h2><p>{collectionsCount} bộ · {savedWordsCount.toLocaleString('vi-VN')} từ đã lưu</p></div><ArrowRightRegular /></Link>
           <Link href="/library" className="shortcut-card"><span className="shortcut-icon"><LibraryRegular /></span><div><h2>Thư viện từ vựng</h2><p>Tìm theo chủ đề và cấp độ A1–C2</p></div><ArrowRightRegular /></Link>
         </section>
-      </div>
-      <section className="practice-panel" aria-labelledby="practice-title"><div className="section-heading"><h2 id="practice-title">Chơi mà học</h2><span>{games.length} chế độ</span></div><div className="practice-list">{games.map(({href,name,description,icon:Icon})=><Link href={href} key={href} className="practice-item"><span className="practice-icon"><Icon /></span><div><h3>{name}</h3><p>{description}</p></div><ChevronRightRegular /></Link>)}</div><Link href="/analytics" className="practice-footer">Xem thống kê học tập<ArrowRightRegular /></Link></section>
-    </div>
+    <section className="practice-panel dashboard-practice" aria-labelledby="practice-title"><div className="section-heading"><h2 id="practice-title">Chơi mà học</h2><span>{games.length} chế độ</span></div><div className="practice-list">{games.map(({href,name,description,icon:Icon})=><Link href={href} key={href} className="practice-item"><span className="practice-icon"><Icon /></span><div><h3>{name}</h3><p>{description}</p></div><ChevronRightRegular /></Link>)}</div><Link href="/analytics" className="practice-footer">Xem thống kê học tập<ArrowRightRegular /></Link></section>
   </div>;
 }
