@@ -28,23 +28,22 @@ export default function AboutPage() {
       <header className={styles.topbar}>
         <Link className={styles.brand} href="/"><BrandMark size={32} /> IELTS Vocab</Link>
         <nav className={styles.navigation} aria-label="Trên trang Giới thiệu">
-          <a href="#cach-hoc">Cách học</a>
           <a href="#eng">Về ENG</a>
+          <a href="#cach-hoc">Cách học</a>
         </nav>
       </header>
       <main className={styles.content} id="main-content">
         <header className={styles.hero}>
           <div className={styles.heroCopy}>
-            <p className={styles.kicker}>Giới thiệu IELTS Vocab</p>
-            <h1>Học từ mới.<br /><em>Nhớ lâu hơn.</em></h1>
-            <p className={styles.lead}>Chọn bộ từ hợp với mục tiêu IELTS của bạn, luyện một chút mỗi ngày và ôn lại đúng lúc.</p>
-            <Link className="btn-primary" href="/">Mở IELTS Vocab <ArrowRightRegular aria-hidden="true" /></Link>
+            <h1>Học từ vựng IELTS cùng bạn bè</h1>
+            <p className={styles.lead}>Chọn từ theo trình độ của bạn, ôn bằng flashcard và luyện cùng bạn bè ngay trên IELTS Vocab.</p>
+            <Link className="btn-brutal" href="/">Mở IELTS Vocab <ArrowRightRegular aria-hidden="true" /></Link>
           </div>
-          <div className={styles.heroBrand}><EngCredit variant="about" /></div>
+          <EngCredit variant="about" />
         </header>
 
         <section className={styles.learning} id="cach-hoc" aria-labelledby="about-learning">
-          <h2 id="about-learning">Bạn có thể học gì ở đây?</h2>
+          <h2 id="about-learning">Cách học trên IELTS Vocab</h2>
           <ul className={styles.activities}>
             {activities.map(({ icon: Icon, title, detail }) => (
               <li key={title}>
@@ -57,7 +56,7 @@ export default function AboutPage() {
 
         <section className={styles.club} id="eng" aria-labelledby="about-eng">
           <div className={styles.clubCopy}>
-            <h2 id="about-eng">Gặp gỡ ENG</h2>
+            <h2 id="about-eng">Về câu lạc bộ ENG</h2>
             <p>ENG là câu lạc bộ học thuật tiếng Anh, nơi những người yêu thích tiếng Anh có thể gặp gỡ, chia sẻ cách học và thực hành cùng nhau.</p>
             <a href="https://www.facebook.com/E4newgen" className={styles.clubLink}>
               Theo dõi ENG trên Facebook <ArrowUpRightRegular aria-hidden="true" />

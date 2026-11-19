@@ -8,7 +8,7 @@ export function EngBrandPair() {
     <span className="eng-brand-pair">
       <span className="eng-brand-ielts"><BrandMark size={30} /> IELTS Vocab</span>
       <span className="eng-brand-cross" aria-hidden="true">×</span>
-      <Image className="eng-brand-logo" src="/eng-logo.png" alt="ENG" width={460} height={180} unoptimized />
+      <Image className="eng-brand-logo" src="/eng-logo.svg" alt="ENG" width={960} height={424} unoptimized />
     </span>
   );
 }

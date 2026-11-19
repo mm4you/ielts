@@ -840,9 +840,6 @@ input,select,textarea { color:var(--ink); }
   display: block;
   width: 3.5em;
   height: auto;
-  padding: 2px 3px;
-  border-radius: 3px;
-  background: #fcfcfc;
 }
 .eng-credit-full {
   padding: 18px clamp(14px, 3vw, 26px);
