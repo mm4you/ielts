@@ -1,4 +1,6 @@
 .page {
+  position: relative;
+  isolation: isolate;
   --about-gutter: clamp(20px, 5vw, 62px);
   --about-width: 1120px;
   min-height: 100dvh;
@@ -47,8 +49,6 @@
 }
 
 .hero {
-  position: relative;
-  isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   align-items: center;
@@ -57,24 +57,32 @@
   border-block-start: 1px solid var(--line);
 }
 
-.heroPattern {
+.pagePattern {
   position: absolute;
-  inset: 0 calc(-1 * var(--about-gutter));
+  inset: 0;
   z-index: -1;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
   overflow: hidden;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, #000 65%, transparent);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--muted) 15%, transparent) .7px, transparent 1.2px);
+  background-size: 24px 24px;
 }
 
-.heroPattern :global(.study-backdrop) {
+.pagePattern > div { position: relative; }
+
+.pagePattern :global(.study-backdrop) {
   color: var(--muted);
-  opacity: .16;
+  opacity: .14;
 }
 
-.heroPattern :global(.study-backdrop > svg) {
+.pagePattern :global(.study-backdrop > svg) {
   height: 100%;
   min-height: 0;
+  max-height: none;
 }
+
+.pagePattern > :last-child :global(.study-backdrop > svg) { transform: scaleX(-1); }
 
 .hero h1 {
   max-width: 18ch;

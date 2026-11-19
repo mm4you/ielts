@@ -33,6 +33,10 @@ const practiceFormats = [
 export default function AboutPage() {
   return (
     <div className={styles.page}>
+      <div className={styles.pagePattern} aria-hidden="true">
+        <div><StudyBackdrop patternId="about-study-top" /></div>
+        <div><StudyBackdrop patternId="about-study-bottom" /></div>
+      </div>
       <header className={styles.topbar}>
         <Link className={styles.brand} href="/"><BrandMark size={32} /> IELTS Vocab</Link>
         <nav className={styles.navigation} aria-label="Trên trang Giới thiệu">
@@ -42,7 +46,6 @@ export default function AboutPage() {
       </header>
       <main className={styles.content} id="main-content">
         <header className={styles.hero}>
-          <div className={styles.heroPattern} aria-hidden="true"><StudyBackdrop /></div>
           <div className={styles.heroCopy}>
             <h1>Học từ vựng IELTS cùng bạn bè</h1>
             <p className={styles.lead}>Tìm nhóm từ bạn cần, ôn lại bằng flashcard và thử dùng từ trong câu, trò chơi hoặc một trận cùng bạn bè.</p>
