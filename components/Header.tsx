@@ -107,7 +107,7 @@ export default function Header({ collapsed = false, onCollapse }: { collapsed?: 
         <div className="topbar-location"><strong>{pathname.startsWith('/pronounce-challenge') ? 'Phát âm' : title}</strong></div>
       </div>
       <form action="/library" className="topbar-search" role="search">
-        <Input name="search" aria-label="Tìm từ trong thư viện" placeholder="Tìm từ vựng trong thư viện" contentBefore={<SearchRegular />} appearance="filled-lighter" />
+        <Input name="search" aria-label="Tìm từ trong thư viện" placeholder="Tìm từ vựng trong thư viện" contentBefore={<SearchRegular />} appearance="outline" />
       </form>
       <div className="topbar-actions">
         <ThemeToggle />

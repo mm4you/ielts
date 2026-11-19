@@ -261,7 +261,7 @@ input,select,textarea { color:var(--ink); }
 .topbar-location { font-size:14px; white-space:nowrap; }
 .topbar-location strong { font-weight:600; }
 .topbar-search { width:320px; max-width:32%; margin-left:auto; }
-.topbar-search>span { width:100%; border-radius:6px; background:var(--bg); }
+.topbar-search > .fui-Input { width:100%; min-height:36px; border:1px solid var(--line); border-radius:8px; background:var(--paper); }
 .topbar-search input { font-size:13px; }
 .profile-trigger { padding:3px 5px !important; gap:9px !important; }
 .profile-name { max-width:125px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px; font-weight:500; }
